@@ -23,6 +23,13 @@ public class SubmissionServiceImpl implements SubmissionService {
 	private SubmissionRepository submissionRepository;
 
 	@Override
+	public void populateFields(Submission submission) {
+		if (submission.getPriority() == null) {
+			submission.setPriority(5);
+		}
+	}
+
+	@Override
 	public List<Submission> getSubmissions() {
 		LOG.info("Reading all Submissions from database.");
 		return submissionRepository.findAll();

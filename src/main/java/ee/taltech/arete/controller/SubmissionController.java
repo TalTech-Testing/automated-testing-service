@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.exception.RequestFormatException;
+import ee.taltech.arete.service.submission.SubmissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class SubmissionController {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@Autowired
+	private SubmissionService submissionService;
+
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/test/hash")
 	public Submission TestHash(HttpEntity<String> httpEntity) {
@@ -29,6 +33,8 @@ public class SubmissionController {
 
 		try {
 			Submission submission = objectMapper.readValue(requestBody, Submission.class);
+			submissionService.populateFields(submission);
+			submissionService.saveSubmission(submission);
 			return submission;
 
 		} catch (JsonProcessingException e) {

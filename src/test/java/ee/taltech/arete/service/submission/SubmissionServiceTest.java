@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static ee.taltech.arete.initializers.SubmissionInitializer.getControllerEndpointSubmission;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class SubmissionServiceTest {
 
-	private Submission submission = new Submission("envomp", "hash", "python", "neti.ee", new String[]{"style"});
+	private Submission submission = getControllerEndpointSubmission();
 
 	@Autowired
 	private SubmissionService submissionService;

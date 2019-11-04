@@ -14,8 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 
-import static ee.taltech.arete.controller.SubmissionInit.assertFullSubmission;
-import static ee.taltech.arete.controller.SubmissionInit.getFullSubmission;
+import static ee.taltech.arete.initializers.SubmissionInitializer.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
@@ -33,7 +32,7 @@ public class SubmissionControllerTest {
 
 	@Before
 	public void init() {
-		submission = new Submission("envomp", "hash", "python", "neti.ee", new String[]{"style"});
+		submission = getControllerEndpointSubmission();
 		RestAssured.baseURI = "http://localhost";
 		RestAssured.port = port;
 	}
@@ -41,7 +40,7 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmission() throws IOException, JSONException {
 
-		String payload = getFullSubmission();
+		String payload = getFullSubmissionString();
 		Submission submission = given()
 				.when()
 				.body(payload)

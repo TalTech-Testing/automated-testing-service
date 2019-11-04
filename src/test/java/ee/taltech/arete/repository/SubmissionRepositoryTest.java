@@ -1,7 +1,6 @@
 package ee.taltech.arete.repository;
 
 import ee.taltech.arete.domain.Submission;
-import ee.taltech.arete.service.submission.SubmissionService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import static ee.taltech.arete.initializers.SubmissionInitializer.getControllerEndpointSubmission;
 
 
 @RunWith(SpringRunner.class)
@@ -25,7 +26,7 @@ public class SubmissionRepositoryTest {
 
 	@Before
 	public void init() {
-		submission = new Submission("envomp", "hash", "python", "neti.ee", new String[]{"style"});
+		submission = getControllerEndpointSubmission();
 		entityManager.persist(submission);
 	}
 
