@@ -1,0 +1,37 @@
+stages:
+  - build
+  - deploy
+build:
+  image: docker:latest
+  stage: build
+  variables:
+    DOCKER_DRIVER: overlay
+  services:
+    - docker:dind
+  script:
+    - docker rm -vf $(docker ps -aq) &&
+      docker rmi -f $(docker images -aq) &&
+      docker volume prune -f
+    - docker-compose down --rmi all -v --remove-orphans
+    - docker image ls
+    - docker-compose up --no-start --force-recreate
+    - docker images
+  only:
+    - master
+deploy:
+  image: docker:latest
+  stage: deploy
+  variables:
+    DOCKER_DRIVER: overlay
+  services:
+    - docker:dind
+  script:
+    - docker images
+    - echo "$DOCKER_USER $DOCKER_PASSWD $DOCKER_REPOSITORY"
+    - docker login $DOCKER_REPOSITORY -u $DOCKER_USER -p $DOCKER_PASSWD
+    - docker tag postgres:11.5 $DOCKER_REPOSITORY/$DOCKER_USER/postgres:11.5
+    - docker push $DOCKER_REPOSITORY/$DOCKER_USER/postgres:11.5
+    - docker tag adminer $DOCKER_REPOSITORY/$DOCKER_USER/adminer
+    - docker push $DOCKER_REPOSITORY/$DOCKER_USER/adminer:latest
+    - docker tag back_and_front $DOCKER_REPOSITORY/$DOCKER_USER/arete:latest
+    - docker push $DOCKER_REPOSITORY/$DOCKER_USER/arete:latest

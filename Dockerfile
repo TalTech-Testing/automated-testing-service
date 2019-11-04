@@ -1,7 +1,7 @@
 # Docker multi-stage build
 
 # Building the App with Maven
-FROM maven:3-jdk-11
+FROM maven:3-jdk-13
 
 ADD . /arete
 WORKDIR /arete
@@ -13,14 +13,14 @@ RUN ls -l
 RUN mvn clean install
 
 # Just using the build artifact and then removing the build-container
-FROM openjdk:11-jdk
+FROM openjdk:13-jdk
 
 MAINTAINER Agonaudid
 
 VOLUME /tmp
 
 # Add Spring Boot app.jar to Container
-COPY --from=0 "/automated-testing-service/target/arete-0.0.1-SNAPSHOT.jar" arete.jar
+COPY --from=0 "/arete/target/arete-0.0.1-SNAPSHOT.jar" arete.jar
 
 ENV JAVA_OPTS=""
 
