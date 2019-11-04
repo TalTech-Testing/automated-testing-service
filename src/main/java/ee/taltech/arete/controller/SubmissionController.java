@@ -17,27 +17,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SubmissionController {
-	private static Logger LOGGER = LoggerFactory.getLogger(SubmissionController.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(SubmissionController.class);
 
-	@Autowired private ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	@PostMapping("/test")
-	public ResponseEntity<Object> test(HttpEntity<String> httpEntity) {
-		String requestBody = httpEntity.getBody();
-		LOGGER.info("Parsing request body: " + requestBody);
-		if (requestBody == null) throw new RequestFormatException("Empty input!");
+    @PostMapping("/test/hash")
+    public ResponseEntity<Object> TestHash(HttpEntity<String> httpEntity) {
+        String requestBody = httpEntity.getBody();
+        LOGGER.info("Parsing request body: " + requestBody);
+        if (requestBody == null) throw new RequestFormatException("Empty input!");
 
-		try {
+        try {
 
-			Submission submission = objectMapper.readValue(requestBody, Submission.class);
-			return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            Submission submission = objectMapper.readValue(requestBody, Submission.class);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
 
-		} catch (JsonProcessingException e) {
-			LOGGER.error("Request format invalid!", e);
-			throw new RequestFormatException(e.getMessage(), e);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Request format invalid!", e);
+            throw new RequestFormatException(e.getMessage(), e);
 
-		}
+        }
 
-	}
+    }
 
 }

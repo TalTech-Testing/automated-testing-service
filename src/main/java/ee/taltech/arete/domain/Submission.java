@@ -4,48 +4,42 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @ToString
 @Entity
 @Getter
 @Setter
+@Table(name = "submission")
 public class Submission {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-  private String uniid;
 
-  private String testingPlatform;
-  private String returnUrl;
+    private String uniid;
+    private String hash;
 
-  private String studentRepositoryHash;
-  private String userRepositoryToken;
+    private String testingPlatform;
+    private String returnUrl;
 
-  private String testerRepositoryHash;
-  private String testerRepositoryToken;
+    private String[] extra;
 
-  public Submission(
-      String uniid,
-      String testingPlatform,
-      String returnUrl,
-      String studentRepositoryHash,
-      String userRepositoryToken,
-      String testerRepositoryHash,
-      String testerRepositoryToken) {
-    this.uniid = uniid;
-    this.testingPlatform = testingPlatform;
-    this.returnUrl = returnUrl;
-    this.studentRepositoryHash = studentRepositoryHash;
-    this.userRepositoryToken = userRepositoryToken;
-    this.testerRepositoryHash = testerRepositoryHash;
-    this.testerRepositoryToken = testerRepositoryToken;
-  }
 
-  protected Submission() {}
+    public Submission(
+            String uniid,
+            String hash,
+            String testingPlatform,
+            String returnUrl,
+            String[] extra) {
+        this.uniid = uniid;
+        this.hash = hash;
+        this.testingPlatform = testingPlatform;
+        this.returnUrl = returnUrl;
+        this.extra = extra;
+    }
+
+    protected Submission() {
+    }
 }

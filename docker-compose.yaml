@@ -5,7 +5,7 @@ services:
   db:
     container_name: postgres
     image: postgres:11.5
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: arete
       POSTGRES_DB: arete
@@ -16,6 +16,16 @@ services:
   adminer:
     container_name: adminer
     image: adminer
-    restart: always
+    restart: unless-stopped
     ports:
       - "8090:8080"
+
+  back:
+    container_name: arete
+    image: arete:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+    build: .
+    ports:
+      - "8098:8098"
