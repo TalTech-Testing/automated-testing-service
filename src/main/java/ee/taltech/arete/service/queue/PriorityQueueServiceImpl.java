@@ -17,7 +17,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
     @Autowired
     private JobRunnerService jobRunnerService;
 
-    private Integer MAX_JOBS = 3;
+    private static final Integer MAX_JOBS = 3;
     private Integer runningJobs = 0;
 
     private static Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);

@@ -1,6 +1,6 @@
 HELP.md
-#students
-#tests
+students
+tests
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
