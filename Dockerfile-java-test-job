@@ -1,0 +1,23 @@
+# VERSION 0.0.1
+
+FROM openjdk:13
+
+#FROM ubuntu:latest
+#
+#RUN apt-get update -y && apt-get install default-jre -y
+
+LABEL Description="New java testing container"
+
+MAINTAINER Agonaudid
+
+WORKDIR /
+
+COPY jars/studenttester-core-2.0.jar JavaTester.jar
+COPY students/envomp/iti0202-2019/EX01IdCode student
+COPY tests/iti0202-2019/ex/EX01IdCode tester
+
+#RUN java -jar JavaTester.jar -c student/ -t tester/ -jsontxt -r REPORT,CHECKSTYLE,JAR,COMPILER,TESTNG
+CMD ["java", "-jar", "JavaTester.jar", "-c", "student/", "-t", "tester/", "-jsontxt", "-r", "REPORT,CHECKSTYLE,COMPILER,TESTNG"]
+
+
+#java -jar tester-java/build/libs/studenttester-core-2.0.jar -c envomp/iti0202-2019/EX01IdCode/ -t iti0202-2019/ex/EX01IdCode/ -jsontxt -r REPORT,CHECKSTYLE,COMPILER,TESTNG

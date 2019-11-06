@@ -22,6 +22,7 @@ public class Submission {
 	private String uniid;
 	private String hash;
 
+	private String slug;
 	private String testingPlatform;
 	private String returnUrl;
 
