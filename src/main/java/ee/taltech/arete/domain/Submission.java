@@ -35,9 +35,10 @@ public class Submission {
 	public Submission() {
 	}
 
-	public Submission(long id, String uniid, String hash, String testingPlatform, String returnUrl, String[] extra, long timestamp, Integer priority) {
+	public Submission(long id, String uniid, String hash, String slug, String testingPlatform, String returnUrl, String[] extra, long timestamp, Integer priority) {
 		this.uniid = uniid;
 		this.hash = hash;
+		this.slug = slug;
 		this.testingPlatform = testingPlatform;
 		this.returnUrl = returnUrl;
 		this.extra = extra;

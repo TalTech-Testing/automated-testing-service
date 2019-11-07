@@ -17,16 +17,12 @@ MAINTAINER Agonaudid
 
 WORKDIR /
 
+RUN ls -l
+
 COPY jars/studenttester-core-2.0.jar JavaTester.jar
 COPY students/${uniid}/${project}/${slug} student
 COPY tests/${project}/${projectBase}/${slug} tester
 
-RUN ls -l
-
-RUN bash -c 'echo -e ${uniid}'
-RUN bash -c 'echo -e ${slug}'
-RUN bash -c 'echo -e ${project}'
-RUN bash -c 'echo -e ${projectbase}'
 
 #RUN java -jar JavaTester.jar -c student/ -t tester/ -jsontxt -r REPORT,CHECKSTYLE,JAR,COMPILER,TESTNG
 CMD ["java", "-jar", "JavaTester.jar", "-c", "student/", "-t", "tester/", "-jsontxt", "-r", "REPORT,CHECKSTYLE,COMPILER,TESTNG"]

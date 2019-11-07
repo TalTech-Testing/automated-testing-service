@@ -11,7 +11,8 @@ import java.util.Random;
 public class SubmissionInitializer {
 	private final static String UNIID = "envomp";
 	private final static String HASH = "hash";
-	private final static String TESTING_PLATFORM = "python";
+	private final static String SLUG = "EX01IdCode";
+	private final static String TESTING_PLATFORM = "java";
 	private final static String RETURN_URL = "neti.ee";
 	private final static String[] EXTRA = new String[]{"style"};
 //	final static long TIMESTAMP = System.currentTimeMillis();
@@ -24,6 +25,7 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
 				.extra(EXTRA)
+				.slug(SLUG)
 				.timestamp(System.currentTimeMillis())
 				.priority( new Random().nextInt(10) + 1)
 				.build();
