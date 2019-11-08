@@ -7,11 +7,13 @@ import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.command.BuildImageResultCallback;
 import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import ee.taltech.arete.domain.Submission;
+import ee.taltech.arete.service.queue.PriorityQueueService;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -25,10 +27,19 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(JobRunnerServiceImpl.class);
 
+	@Autowired
+	PriorityQueueService priorityQueueService;
+
 	@Override
 	public void runJob(Submission submission) {
-		System.out.println("RUNNING JOB " + submission);
 		pullJobRequirements(submission);
+
+		for (String slug : submission.getSlugs()) {
+			runDocker(submission, slug);
+		}
+		LOGGER.info("Job {} has been ran", submission);
+
+		priorityQueueService.runJob();
 	}
 
 	public void pullJobRequirements(Submission submission) {
@@ -40,17 +51,17 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 
 	/**
-	 * @param testJob : test job to be tested.
-	 *                testJob.getHash().substring(0, 8).lower() : image name and container name
-	 *                <p>
-	 *                input(testJob) > create image > create docker > start docker > read tester output to file
+	 * @param submission : test job to be tested.
+	 *                   submission.getHash().substring(0, 8).lower() : image name and container name
+	 *                   <p>
+	 *                   input(submission) > create image > create docker > start docker > read tester output to file
 	 */
-	public void runDocker(Submission testJob) {
+	public void runDocker(Submission submission, String slug) {
 		DockerClient dockerClient = null;
 		CreateContainerResponse container = null;
 		String imageId;
 
-		String containerName = testJob.getHash().substring(0, 8).toLowerCase();
+		String containerName = submission.getHash().substring(0, 8).toLowerCase();
 		String containerFile = "/output/output.json";
 		String hostFile = String.format("output/%s.json", containerName);
 
@@ -61,8 +72,10 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 			imageId =
 					dockerClient.buildImageCmd()
-							.withBuildArg("uniid", testJob.getUniid())
-							.withBuildArg("slug", testJob.getSlug())
+							.withBuildArg("uniid", submission.getUniid())
+							.withBuildArg("slug", slug)
+							.withBuildArg("project", submission.getProject())
+							.withBuildArg("projectBase", submission.getProjectBase())
 							.withBaseDirectory(new File("./"))
 							.withDockerfile(new File("Dockerfile-java-test-job"))
 							.withPull(true)
@@ -113,7 +126,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 				try {
 					dockerClient.removeContainerCmd(container.getId()).exec();
 				} catch (Exception image) {
-					LOGGER.error("Container {} has already been removed", testJob.getHash());
+					LOGGER.error("Container {} has already been removed", submission.getHash());
 				}
 			}
 
@@ -127,7 +140,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 		while ((tarEntry = tis.getNextTarEntry()) != null) {
 			if (tarEntry.isDirectory()) {
 				if (!destFile.exists()) {
-					destFile.mkdirs();
+					boolean a = destFile.mkdirs();
 				}
 			} else {
 				FileOutputStream fos = new FileOutputStream(destFile);

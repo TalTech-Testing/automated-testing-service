@@ -6,6 +6,6 @@ public interface JobRunnerService {
 
     void runJob(Submission submission);
     void pullJobRequirements(Submission submission);
-    void runDocker(Submission submission);
+    void runDocker(Submission submission, String slug);
 
 }

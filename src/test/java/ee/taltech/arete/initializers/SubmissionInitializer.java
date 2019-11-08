@@ -10,9 +10,11 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class SubmissionInitializer {
-	private final static String UNIID = "envomp";
-	private final static String SLUG = "EX01IdCode";
+	private final static String UNIID = "uniid";
+	private final static String[] SLUGS = new String[]{"EX01IdCode", "EX02Cpu", "EX03SocialNetwork"};
 	private final static String TESTING_PLATFORM = "java";
+	private static final String PROJECT = "iti69-420";
+	private static final String PROJECT_BASE = "ex";
 	private final static String RETURN_URL = "neti.ee";
 	private final static String[] EXTRA = new String[]{"style"};
 
@@ -23,7 +25,9 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
 				.extra(EXTRA)
-				.slug(SLUG)
+				.slugs(SLUGS)
+				.project(PROJECT)
+				.projectBase(PROJECT_BASE)
 				.timestamp(System.currentTimeMillis())
 				.priority(new Random().nextInt(10) + 1)
 				.build();
@@ -42,7 +46,7 @@ public class SubmissionInitializer {
 	public static String getFullSubmissionString() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
-		for(String extra : EXTRA) {
+		for (String extra : EXTRA) {
 			jsonArray.put(extra);
 		}
 		jsonObject.put("uniid", UNIID);

@@ -27,6 +27,19 @@ public class SubmissionServiceImpl implements SubmissionService {
 		if (submission.getPriority() == null) {
 			submission.setPriority(5);
 		}
+
+		if (submission.getTimestamp() == null) {
+			submission.setTimestamp(System.currentTimeMillis());
+		}
+
+		if (submission.getExtra() == null) {
+			submission.setExtra(new String[]{"style"});
+		}
+
+		if (submission.getProjectBase() == null) {
+			submission.setProjectBase("ex");
+		}
+
 	}
 
 	@Override

@@ -22,23 +22,27 @@ public class Submission {
 	private String uniid;
 	private String hash;
 
-	private String slug;
+	private String[] slugs;
+	private String project;
+	private String projectBase;
+
 	private String testingPlatform;
 	private String returnUrl;
 
 	private String[] extra;
 
-	private long timestamp = System.currentTimeMillis();
+	private Long timestamp;
 	private Integer priority;
-
 
 	public Submission() {
 	}
 
-	public Submission(long id, String uniid, String hash, String slug, String testingPlatform, String returnUrl, String[] extra, long timestamp, Integer priority) {
+	public Submission(long id, String uniid, String hash, String[] slugs, String project, String projectBase, String testingPlatform, String returnUrl, String[] extra, Long timestamp, Integer priority) {
 		this.uniid = uniid;
 		this.hash = hash;
-		this.slug = slug;
+		this.slugs = slugs;
+		this.project = project;
+		this.projectBase = projectBase;
 		this.testingPlatform = testingPlatform;
 		this.returnUrl = returnUrl;
 		this.extra = extra;

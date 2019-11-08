@@ -30,6 +30,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
     @Override
     public void enqueue(Submission submission) {
         submissionPriorityQueue.add(submission);
+        runJob();
     }
 
     @Override
@@ -45,14 +46,19 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
             if (runningJobs < MAX_JOBS) {
 
                 runningJobs++;
-                Submission job = submissionPriorityQueue.remove();
-                jobRunnerService.runJob(job);
+	            Submission job = submissionPriorityQueue.remove();
+
+	            Thread thread = new Thread(() -> {
+		            jobRunnerService.runJob(job);
+	            });
+
+	            thread.start();
 
                 LOGGER.info("Running job: {}", job);
                 return Optional.of(job);
             }
 
-            LOGGER.info("Queue is full. Cant run job.");
+            LOGGER.info("Queue is full. Cant run job. Job will be ran in the future.");
             return Optional.empty();
 
         }

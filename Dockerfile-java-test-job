@@ -4,8 +4,8 @@ FROM openjdk:13
 
 ARG uniid
 ARG slug
-ARG project=iti0202-2019
-ARG projectBase=ex
+ARG project
+ARG projectBase
 
 #FROM ubuntu:latest
 #

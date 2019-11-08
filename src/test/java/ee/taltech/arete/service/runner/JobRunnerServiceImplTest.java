@@ -1,5 +1,6 @@
 package ee.taltech.arete.service.runner;
 
+import ee.taltech.arete.domain.Submission;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ class JobRunnerServiceImplTest {
 
 	@Test
 	void runJob() {
-		jobRunnerService.runDocker(getFullSubmission());
+		Submission submission = getFullSubmission();
+		for (String slug : submission.getSlugs()) {
+			jobRunnerService.runDocker(getFullSubmission(), slug);
+		}
 	}
 }
