@@ -1,8 +1,11 @@
 HELP.md
-students/
-tests/
-target/
-output/*.json
+students/*
+!students/uniid/iti69-420/code_tests.dab
+tests/*
+!tests/iti69-420/code_tests.dab
+target/*
+output/*
+!output/output_schema.json
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
