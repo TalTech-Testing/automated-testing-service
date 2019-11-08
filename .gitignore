@@ -1,7 +1,8 @@
 HELP.md
-students
-tests
+students/
+tests/
 target/
+output/*.json
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
