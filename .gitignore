@@ -1,8 +1,8 @@
 HELP.md
-students/
+students/*
 !students/uniid
 tests/*
-!tests/iti69-420/code_tests
+!tests/iti69-420
 output/*
 !output/output_schema.json
 target/*
