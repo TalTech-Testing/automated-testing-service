@@ -22,7 +22,13 @@ RUN apt-get install -y wget
 RUN apt-get install -y apt-utils
 
 # get docker
-RUN apt-get install -y docker.io
+RUN apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable edge"
+
+RUN apt-get update
+RUN apt-get install -y docker-ce
+RUN systemctl status docker
 
 # get maven 3.6.2
 RUN wget --no-verbose -O /tmp/apache-maven-3.6.2.tar.gz http://archive.apache.org/dist/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz
@@ -48,6 +54,8 @@ RUN apt-get update && \
     apt-get install -y openjdk-13-jdk && \
     apt-get install -y ant && \
     apt-get clean;
+
+RUN apt-get install -y default-jre
 
 # Fix certificate issues
 RUN apt-get update && \
