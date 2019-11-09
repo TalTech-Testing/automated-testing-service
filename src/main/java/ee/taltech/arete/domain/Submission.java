@@ -1,5 +1,6 @@
 package ee.taltech.arete.domain;
 
+import com.sun.istack.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,32 +20,34 @@ public class Submission {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
+	@NotNull
 	private String uniid;
-	private String hash;
-
-	private String[] slugs;
+	@NotNull
 	private String project;
+	@NotNull
 	private String projectBase;
-
+	@NotNull
 	private String testingPlatform;
+	@NotNull
 	private String returnUrl;
 
+	private String hash;
+	private String[] slugs;
 	private String[] extra;
-
 	private Long timestamp;
 	private Integer priority;
 
 	public Submission() {
 	}
 
-	public Submission(long id, String uniid, String hash, String[] slugs, String project, String projectBase, String testingPlatform, String returnUrl, String[] extra, Long timestamp, Integer priority) {
+	public Submission(long id, String uniid, String project, String projectBase, String testingPlatform, String returnUrl, String hash, String[] slugs, String[] extra, Long timestamp, Integer priority) {
 		this.uniid = uniid;
-		this.hash = hash;
-		this.slugs = slugs;
 		this.project = project;
 		this.projectBase = projectBase;
 		this.testingPlatform = testingPlatform;
 		this.returnUrl = returnUrl;
+		this.hash = hash;
+		this.slugs = slugs;
 		this.extra = extra;
 		this.timestamp = timestamp;
 		this.priority = priority;

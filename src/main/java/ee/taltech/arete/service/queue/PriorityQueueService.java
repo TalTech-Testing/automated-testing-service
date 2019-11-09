@@ -2,14 +2,16 @@ package ee.taltech.arete.service.queue;
 
 import ee.taltech.arete.domain.Submission;
 
-import java.util.Optional;
-
 public interface PriorityQueueService {
 
 	void enqueue(Submission submission);
 
-	Integer getQueueSize();
+	void runJob();
 
-	Optional<Submission> runJob();
+	void killThread();
+
+	Integer getSuccessfulJobsRan();
+
+	Integer getQueueSize();
 
 }

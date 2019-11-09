@@ -5,7 +5,6 @@ FROM openjdk:13
 ARG uniid
 ARG slug
 ARG project
-ARG projectBase
 
 #FROM ubuntu:latest
 #
@@ -21,7 +20,7 @@ RUN ls -l
 
 COPY jars/studenttester-core-2.0.jar JavaTester.jar
 COPY students/${uniid}/${project}/${slug} student
-COPY tests/${project}/${projectBase}/${slug} tester
+COPY tests/${project}/${slug} tester
 
 RUN mkdir output
 RUN echo '{}' > output/output.json

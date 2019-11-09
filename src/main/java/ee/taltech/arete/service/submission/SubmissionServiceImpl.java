@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.exception.RequestFormatException;
 import ee.taltech.arete.repository.SubmissionRepository;
+import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,10 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 		if (submission.getProjectBase() == null) {
 			submission.setProjectBase("ex");
+		}
+
+		if (submission.getHash() == null) {
+			submission.setHash(RandomStringUtils.random(64, true, true).toLowerCase());
 		}
 
 	}

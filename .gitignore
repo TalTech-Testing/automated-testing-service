@@ -1,8 +1,8 @@
 HELP.md
 students/*
-!students/uniid
+!students/.gitkeep
 tests/*
-!tests/iti69-420
+!tests/.gitkeep
 output/*
 !output/output_schema.json
 target/*

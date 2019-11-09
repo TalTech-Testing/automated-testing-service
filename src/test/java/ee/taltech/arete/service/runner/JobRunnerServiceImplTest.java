@@ -19,8 +19,6 @@ class JobRunnerServiceImplTest {
 	@Test
 	void runJob() {
 		Submission submission = getFullSubmission();
-		for (String slug : submission.getSlugs()) {
-			jobRunnerService.runDocker(getFullSubmission(), slug);
-		}
+		jobRunnerService.runJob(submission);
 	}
 }

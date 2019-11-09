@@ -1,13 +1,11 @@
 package ee.taltech.arete.service.queue;
 
-import ee.taltech.arete.domain.Submission;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmission;
@@ -27,7 +25,10 @@ class PriorityQueueServiceTest {
 
 	@Test
 	void runJob() throws InterruptedException {
-		for (int i = 0; i < 10; i++) { //Todo: not sync
+
+		int jobSets = 2;
+
+		for (int i = 0; i < jobSets; i++) {
 			priorityQueueService.enqueue(getFullSubmission());
 		}
 
@@ -52,7 +53,8 @@ class PriorityQueueServiceTest {
 //			}
 //		}
 
-		TimeUnit.MINUTES.sleep(5);
-
+		while (priorityQueueService.getSuccessfulJobsRan() != jobSets) {
+			TimeUnit.SECONDS.sleep(1);
+		}
 	}
 }
