@@ -26,6 +26,15 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-    build: .
+    build:
+      args:
+        PASSWORD: ${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
+      dockerfile:
+        Dockerfile
+      context: .
     ports:
       - "8098:8098"
+    env_file:
+      - .env
+    environment:
+      - PASSWORD=${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
