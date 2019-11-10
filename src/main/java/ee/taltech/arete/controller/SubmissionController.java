@@ -29,7 +29,7 @@ public class SubmissionController {
 	private PriorityQueueService priorityQueueService;
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PostMapping("/test/hash")
+	@PostMapping("/test")
 	public Submission TestHash(HttpEntity<String> httpEntity) {
 		String requestBody = httpEntity.getBody();
 		LOGGER.info("Parsing request body: " + requestBody);
@@ -47,7 +47,5 @@ public class SubmissionController {
 			throw new RequestFormatException(e.getMessage(), e);
 
 		}
-
 	}
-
 }

@@ -13,22 +13,15 @@ ENV AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=${PASSWORD}
 # Just echo so we can see, if everything is there :)
 RUN ls -l
 
-RUN apt-get update
+RUN apt -y update
 
-# install wget
-RUN apt-get install -y wget
-
-# install apt-utils
-RUN apt-get install -y apt-utils
+# get apt-tools
+RUN apt-get install -y wget apt-utils curl gnupg2
 
 # get docker
-RUN apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable edge"
-
-RUN apt-get update
-RUN apt-get install -y docker-ce
-RUN systemctl status docker
+RUN apt install -y docker-compose docker
+RUN docker -v
+RUN service docker start
 
 # get maven 3.6.2
 RUN wget --no-verbose -O /tmp/apache-maven-3.6.2.tar.gz http://archive.apache.org/dist/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz
@@ -72,12 +65,9 @@ ENV LANG en_US.utf8
 ENV JAVA_OPTS=""
 
 # Run Maven build
-RUN mvn clean install
-
-# Add Spring Boot app.jar to Container
-COPY "/arete/target/arete-0.0.1-SNAPSHOT.jar" arete.jar
+RUN mvn clean install -DskipTests
 
 # Fire up our Spring Boot app by default
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /arete.jar" ]
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar target/arete-0.0.1-SNAPSHOT.jar" ]
 
 EXPOSE 8098:8098

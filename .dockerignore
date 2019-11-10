@@ -1,1 +1,3 @@
-automated-testing-service/target
+target/*
+#tests/*
+#students/*

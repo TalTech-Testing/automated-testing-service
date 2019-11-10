@@ -32,7 +32,6 @@ public class SubmissionRepositoryTest {
 
 	@Test
 	public void testSubmission() {
-		System.out.println(submission);
 		assert submissionRepository.findByHash(submission.getHash()).get(0).equals(submission);
 	}
 

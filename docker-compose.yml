@@ -24,17 +24,19 @@ services:
     container_name: arete
     image: arete:latest
     restart: unless-stopped
+    privileged: true
     depends_on:
       - db
     build:
       args:
         PASSWORD: ${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
       dockerfile:
-        Dockerfile
+        Dockerfile-ubuntu
       context: .
     ports:
       - "8098:8098"
     env_file:
       - .env
     environment:
+      - DOCKER_HOST=${HOST_DOCKER_HOST}
       - PASSWORD=${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
