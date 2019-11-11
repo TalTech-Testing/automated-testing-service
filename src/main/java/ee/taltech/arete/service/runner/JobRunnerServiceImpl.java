@@ -3,6 +3,7 @@ package ee.taltech.arete.service.runner;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.docker.DockerService;
 import ee.taltech.arete.service.git.GitPullService;
+import ee.taltech.arete.service.response.ReportService;
 import ee.taltech.arete.service.queue.PriorityQueueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,9 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 	@Autowired
 	GitPullService gitPullService;
 
+	@Autowired
+	ReportService reportService;
+
 	@Override
 	public void runJob(Submission submission) {
 		gitPullService.repositoryMaintenance(submission);
@@ -34,6 +38,9 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 		LOGGER.info("Job {} has been ran", submission);
 
 		priorityQueueService.killThread();
+		reportService.sendToReturnUrl(submission);
+		reportService.sendMail(submission);
+
 	}
 
 }
