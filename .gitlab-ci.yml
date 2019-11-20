@@ -14,14 +14,14 @@ stages:
 
 
 test_coverage:
+  allow_failure: true
   stage:
     test
   script:
     - export JAVA_HOME=/usr/lib/jvm/jdk-11.0.5+10
     - export PATH=/usr/lib/jvm/jdk-11.0.5+10/bin:$PATH
     - echo $JAVA_HOME
-    - mvn --version
-    - mvn install -B
+    - chmod +x mvnw && ./mvnw clean install
     - cat target/site/jacoco/index.html
 
 
