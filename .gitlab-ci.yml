@@ -12,10 +12,15 @@ stages:
   - test
   - deploy
 test_coverage:
+  image: docker:dind
   stage:
     test
+  services:
+    - name: docker:dind
   variables:
     DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
   script:
     - export JAVA_HOME=/usr/lib/jvm/jdk-11.0.5+10
     - export PATH=/usr/lib/jvm/jdk-11.0.5+10/bin:$PATH
@@ -23,14 +28,17 @@ test_coverage:
     - mvn --version
     - mvn install -B
     - cat target/site/jacoco/index.html
+
+
 build:
-  image: docker:18-dind
+  image: docker:dind
   stage: build
   variables:
     DOCKER_TLS_CERTDIR: ""
-    DOCKER_DRIVER: overlay
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
   services:
-    - docker:18-dind
+    - name: docker:dind
   script:
     - docker version
     - chkconfig docker on
@@ -46,13 +54,14 @@ build:
     - master
 
 deploy:
-  image: docker:18-dind
+  image: docker:dind
   stage: deploy
   variables:
     DOCKER_TLS_CERTDIR: ""
-    DOCKER_DRIVER: overlay
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
   services:
-    - docker:18-dind
+    - name: docker:dind
   script:
     - docker images
     - echo "$DOCKER_USER $DOCKER_PASSWD"
@@ -63,3 +72,5 @@ deploy:
     - docker push $DOCKER_USER/$DOCKER_USER/adminer:latest
     - docker tag arete $DOCKER_USER/$DOCKER_USER/arete:latest
     - docker push $DOCKER_USER/$DOCKER_USER/arete:latest
+  only:
+    - master
