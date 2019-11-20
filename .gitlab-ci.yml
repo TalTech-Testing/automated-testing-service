@@ -30,6 +30,8 @@ build:
   stage: build
   services:
     - name: docker:dind
+  variables:
+    DOCKER_DRIVER: overlay
   script:
     - docker version
     - docker info
@@ -49,6 +51,8 @@ deploy:
   stage: deploy
   services:
     - name: docker:dind
+  variables:
+    DOCKER_DRIVER: overlay
   script:
     - docker images
     - echo "$DOCKER_USER $DOCKER_PASSWD"
