@@ -9,11 +9,6 @@ build:
   services:
     - docker:dind
   script:
-    - docker info
-    - apk update
-    - apk upgrade
-    - apk add python python-dev py-pip build-base
-    - pip install docker-compose
     - docker rm -vf $(docker ps -aq) &&
       docker rmi -f $(docker images -aq) &&
       docker volume prune -f
