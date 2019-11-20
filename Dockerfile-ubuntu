@@ -9,9 +9,11 @@ WORKDIR /arete
 ARG PASSWORD
 ENV AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=${PASSWORD}
 
-
 # Just echo so we can see, if everything is there :)
 RUN ls -l
+
+# Deal with pesky errors
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 RUN apt -y update
 
@@ -19,7 +21,7 @@ RUN apt -y update
 RUN apt-get install -y wget apt-utils curl gnupg2
 
 # get docker
-RUN apt install -y docker-compose docker
+RUN apt --allow-unauthenticated --yes install docker docker-compose
 RUN docker -v
 RUN service docker start
 

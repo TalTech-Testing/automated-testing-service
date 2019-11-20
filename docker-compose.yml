@@ -38,5 +38,9 @@ services:
     env_file:
       - .env
     environment:
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - DOCKER_TLS_CERTDIR=/certs
       - DOCKER_HOST=${HOST_DOCKER_HOST}
       - PASSWORD=${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

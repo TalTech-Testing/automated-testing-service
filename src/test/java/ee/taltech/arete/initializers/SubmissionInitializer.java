@@ -18,7 +18,7 @@ public class SubmissionInitializer {
 	private static final String PROJECT_DOCKER = "iti69-420";
 	private static final String PROJECT_GIT = "iti0202-2019";
 	private static final String PROJECT_BASE = "ex";
-	private final static String RETURN_URL = "neti.ee";
+	private final static String RETURN_URL = "http://localhost:8080/answer";
 	private final static String[] EXTRA = new String[]{"style"};
 
 	public static Submission getFullSubmission() {
