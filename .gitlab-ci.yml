@@ -1,6 +1,26 @@
+include:
+  - template: Code-Quality.gitlab-ci.yml
+code_quality:
+  allow_failure: true
+  artifacts:
+    paths: [gl-code-quality-report.json]
+  script:
+    - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+    - docker run --env SOURCE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
 stages:
   - build
+  - test
   - deploy
+test_coverage:
+  stage:
+    test
+  script:
+    - export JAVA_HOME=/usr/lib/jvm/jdk-11.0.5+10
+    - export PATH=/usr/lib/jvm/jdk-11.0.5+10/bin:$PATH
+    - echo $JAVA_HOME
+    - mvn --version
+    - mvn install -B
+    - cat target/site/jacoco/index.html
 build:
   image: docker:latest
   stage: build
