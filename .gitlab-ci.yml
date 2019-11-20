@@ -17,10 +17,6 @@ test_coverage:
     test
   services:
     - name: docker:dind
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_DRIVER: overlay2
   script:
     - export JAVA_HOME=/usr/lib/jvm/jdk-11.0.5+10
     - export PATH=/usr/lib/jvm/jdk-11.0.5+10/bin:$PATH
@@ -33,10 +29,6 @@ test_coverage:
 build:
   image: docker:dind
   stage: build
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_DRIVER: overlay2
   services:
     - name: docker:dind
   script:
@@ -56,10 +48,6 @@ build:
 deploy:
   image: docker:dind
   stage: deploy
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_DRIVER: overlay2
   services:
     - name: docker:dind
   script:
