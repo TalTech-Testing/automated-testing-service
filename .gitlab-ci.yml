@@ -27,8 +27,11 @@ build:
   variables:
     DOCKER_DRIVER: overlay
   services:
-    - docker:18-dind
+    - docker:dind
   script:
+    - docker version
+    - chkconfig docker on
+    - docker info
     - docker rm -vf $(docker ps -aq) &&
       docker rmi -f $(docker images -aq) &&
       docker volume prune -f
@@ -45,7 +48,7 @@ deploy:
   variables:
     DOCKER_DRIVER: overlay
   services:
-    - docker:18-dind
+    - docker:dind
   script:
     - docker images
     - echo "$DOCKER_USER $DOCKER_PASSWD"
