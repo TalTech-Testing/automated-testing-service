@@ -24,13 +24,13 @@ test_coverage:
     - mvn install -B
     - cat target/site/jacoco/index.html
 build:
-  image: docker:latest
+  image: docker:18-dind
   stage: build
   variables:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay
   services:
-    - docker:dind
+    - docker:18-dind
   script:
     - docker version
     - chkconfig docker on
@@ -46,13 +46,13 @@ build:
     - master
 
 deploy:
-  image: docker:latest
+  image: docker:18-dind
   stage: deploy
   variables:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay
   services:
-    - docker:dind
+    - docker:18-dind
   script:
     - docker images
     - echo "$DOCKER_USER $DOCKER_PASSWD"
