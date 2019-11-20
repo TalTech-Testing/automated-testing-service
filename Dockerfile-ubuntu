@@ -6,9 +6,6 @@ MAINTAINER Agonaudid
 ADD . /arete
 WORKDIR /arete
 
-ARG PASSWORD
-ENV AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=${PASSWORD}
-
 # Just echo so we can see, if everything is there :)
 RUN ls -l
 
