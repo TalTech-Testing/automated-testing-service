@@ -21,7 +21,7 @@ test_coverage:
     - export JAVA_HOME=/usr/lib/jvm/jdk-11.0.5+10
     - export PATH=/usr/lib/jvm/jdk-11.0.5+10/bin:$PATH
     - echo $JAVA_HOME
-    - chmod +x mvnw && ./mvnw clean install
+    - chmod +x mvnw && ./mvnw -T 1C clean install
     - cat target/site/jacoco/index.html
 
 
