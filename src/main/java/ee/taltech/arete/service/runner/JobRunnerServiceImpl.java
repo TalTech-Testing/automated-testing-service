@@ -33,6 +33,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 	public void runJob(Submission submission) {
 		gitPullService.repositoryMaintenance(submission);
 
+
 		for (String slug : submission.getSlugs()) {
 			dockerService.runDocker(submission, slug);
 		}

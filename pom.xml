@@ -110,6 +110,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Tutorial https://www.baeldung.com/docker-java-api-->
         <dependency>
             <groupId>com.github.docker-java</groupId>
             <artifactId>docker-java</artifactId>

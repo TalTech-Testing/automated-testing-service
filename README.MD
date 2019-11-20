@@ -4,9 +4,7 @@ TODO
 
 # Currently supported endpoints
 
-# Currently supported endpoints
-
-Schemas for post are located at ```/arete/schema```
+Schemas for post are located at ```/arete/schemas```
 
 * post
     * /test
@@ -14,18 +12,9 @@ Schemas for post are located at ```/arete/schema```
 Getting Started
 ----
 
-## Quick install and setup
-##### Debian
-run in terminal:
-```
-./arete_local_install.sh
-```
-This script has been tested on Ubuntu 18.04 and 19.04
+### Manual setup
 
-
-## Manual setup
-
-#### Local docker with postgres ####
+##### Local docker with postgres ####
 
 You need latest of: Docker
 
@@ -35,7 +24,7 @@ cd automated-testing-service
 docker-compose up -d
 ```
 
-#### Local host machine with H2 ####
+##### Local host machine with H2 ####
 You need latest of: Java13, Docker
 
 ___
@@ -55,7 +44,7 @@ java -jar -Dspring.config.location=src/main/resources/application-dev.properties
 
 #### Server
 
-Docker config
+##### Debian docker config
 
 ___
 /etc/gitlab-runner/config.toml
@@ -76,3 +65,9 @@ check_interval = 0
     [runners.cache.s3]
     [runners.cache.gcs]
 ```
+
+run in terminal:
+```
+./arete_local_install.sh
+```
+This script has been tested on Ubuntu 18.04 and 19.04

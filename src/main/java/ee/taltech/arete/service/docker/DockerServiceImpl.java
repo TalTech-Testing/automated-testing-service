@@ -43,8 +43,7 @@ public class DockerServiceImpl implements DockerService {
 
 		try {
 
-			DefaultDockerClientConfig.Builder config = DefaultDockerClientConfig.createDefaultConfigBuilder();
-			dockerClient = DockerClientBuilder.getInstance(config).build();
+			dockerClient = DockerClientBuilder.getInstance().build();
 
 			imageId =
 					dockerClient.buildImageCmd()
