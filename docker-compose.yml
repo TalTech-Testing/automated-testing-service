@@ -38,7 +38,7 @@ services:
     environment:
       - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       - DOCKER_TLS_CERTDIR=/certs
-      - DOCKER_HOST=tcp://localhost:2375
+      - DOCKER_HOST=unix:///var/run/docker.sock
       - AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
