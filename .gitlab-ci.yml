@@ -11,12 +11,11 @@ stages:
   - build
   - test
   - deploy
+
+
 test_coverage:
-  image: docker:dind
   stage:
     test
-  services:
-    - name: docker:dind
   script:
     - export JAVA_HOME=/usr/lib/jvm/jdk-11.0.5+10
     - export PATH=/usr/lib/jvm/jdk-11.0.5+10/bin:$PATH
@@ -27,7 +26,7 @@ test_coverage:
 
 
 build:
-  image: docker:dind
+  image: docker:latest
   stage: build
   services:
     - name: docker:dind
@@ -45,8 +44,9 @@ build:
   only:
     - master
 
+
 deploy:
-  image: docker:dind
+  image: docker:latest
   stage: deploy
   services:
     - name: docker:dind
