@@ -23,14 +23,14 @@ RUN docker -v
 RUN service docker start
 
 # get maven 3.6.2
-RUN wget --no-verbose -O /tmp/apache-maven-3.6.2.tar.gz http://archive.apache.org/dist/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz
+#RUN wget --no-verbose -O /tmp/apache-maven-3.6.2.tar.gz http://archive.apache.org/dist/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz
 
 # install maven
-RUN tar xzf /tmp/apache-maven-3.6.2.tar.gz -C /opt/
-RUN ln -s /opt/apache-maven-3.6.2 /opt/maven
-RUN ln -s /opt/maven/bin/mvn /usr/local/bin
-RUN rm -f /tmp/apache-maven-3.6.2.tar.gz
-ENV MAVEN_HOME /opt/maven
+#RUN tar xzf /tmp/apache-maven-3.6.2.tar.gz -C /opt/
+#RUN ln -s /opt/apache-maven-3.6.2 /opt/maven
+#RUN ln -s /opt/maven/bin/mvn /usr/local/bin
+#RUN rm -f /tmp/apache-maven-3.6.2.tar.gz
+#ENV MAVEN_HOME /opt/maven
 
 # remove download archive files
 RUN apt-get clean
@@ -59,12 +59,11 @@ RUN apt-get update && \
 ENV JAVA_HOME /usr/lib/jvm/java-13-openjdk-amd64/
 RUN export JAVA_HOME
 
-
 ENV LANG en_US.utf8
 ENV JAVA_OPTS=""
 
 # Run Maven build
-RUN mvn clean install -DskipTests
+RUN ./mvnw clean install -DskipTests
 
 # Fire up our Spring Boot app by default
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar target/arete-0.0.1-SNAPSHOT.jar" ]

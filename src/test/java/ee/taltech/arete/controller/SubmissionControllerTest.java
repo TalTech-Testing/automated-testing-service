@@ -44,7 +44,7 @@ public class SubmissionControllerTest {
 		Submission submission = given()
 				.when()
 				.body(payload)
-				.post("/test/hash")
+				.post("/test")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()

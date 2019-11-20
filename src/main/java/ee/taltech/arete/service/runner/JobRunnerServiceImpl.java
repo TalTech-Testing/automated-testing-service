@@ -1,6 +1,7 @@
 package ee.taltech.arete.service.runner;
 
 import ee.taltech.arete.domain.Submission;
+import ee.taltech.arete.exception.RequestFormatException;
 import ee.taltech.arete.service.docker.DockerService;
 import ee.taltech.arete.service.git.GitPullService;
 import ee.taltech.arete.service.response.ReportService;
@@ -38,9 +39,18 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 		LOGGER.info("Job {} has been ran", submission);
 
 		priorityQueueService.killThread();
-		reportService.sendToReturnUrl(submission);
-		reportService.sendMail(submission);
+
+		try {
+			reportService.sendToReturnUrl(submission);
+		} catch (Exception e) {
+			throw new RequestFormatException("Malformed returnUrl");
+		}
+
+		try {
+			reportService.sendMail(submission);
+		} catch (Exception e) {
+			throw new RequestFormatException("Malformed mail");
+		}
 
 	}
-
 }

@@ -1,6 +1,7 @@
 package ee.taltech.arete.service.response;
 
 import ee.taltech.arete.domain.Submission;
+import ee.taltech.arete.exception.RequestFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ public class ReportServiceImpl implements ReportService {
 		try {
 			post(submission.getReturnUrl(), Files.readString(Paths.get(submission.getResultFileName())));
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RequestFormatException("Malformed returnUrl");
 		}
 	}
 
