@@ -30,5 +30,3 @@ RUN echo '{}' > output/output.json
 CMD ["java", "-jar", "JavaTester.jar", "-c", "student/", "-t", "tester/", "-jsontxt", "-r", "REPORT,CHECKSTYLE,COMPILER,TESTNG", "-o", "/output/output.json"]
 
 #java -jar tester-java/build/libs/studenttester-core-2.0.jar -c envomp/iti0202-2019/EX01IdCode/ -t iti0202-2019/ex/EX01IdCode/ -jsontxt -r REPORT,CHECKSTYLE,COMPILER,TESTNG
-
-#docker build --build-arg uniid=envomp --build-arg slug=EX01IdCode -f Dockerfile-ubuntu-java-test-job -t somehash . && docker run -it somehash

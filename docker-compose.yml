@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.7'
 
 services:
 
@@ -28,17 +28,17 @@ services:
     depends_on:
       - db
     build:
+      args:
+        - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - DOCKER_TLS_CERTDIR=/certs
+        - DOCKER_HOST=${DOCKER_HOST}
+        - AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
       dockerfile:
-        Dockerfile-ubuntu
+        Dockerfile-spring-boot
       context: .
     ports:
       - "8098:8098"
     env_file:
-      - .env
-    environment:
-      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      - DOCKER_TLS_CERTDIR=/certs
-      - DOCKER_HOST=unix:///var/run/docker.sock
-      - AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
+      - dev.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
