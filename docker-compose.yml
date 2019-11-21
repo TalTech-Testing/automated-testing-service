@@ -22,6 +22,7 @@ services:
 
   back:
     container_name: arete
+    network_mode: host
     image: arete:latest
     restart: unless-stopped
     privileged: true
