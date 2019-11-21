@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.4'
 
 services:
 
@@ -39,6 +39,6 @@ services:
     ports:
       - "8098:8098"
     env_file:
-      - dev.env
+      - .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
