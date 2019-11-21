@@ -18,10 +18,8 @@ test_coverage:
   stage:
     test
   script:
-    - export JAVA_HOME=/usr/lib/jvm/java-13-openjdk-amd64
-    - export PATH=/usr/lib/jvm/java-13-openjdk-amd64/bin:$PATH
     - echo $JAVA_HOME
-    - chmod +x mvnw && ./mvnw -T 1C -U clean install
+    - chmod +x mvnw && ./mvnw clean install
     - cat target/site/jacoco/index.html
 
 
