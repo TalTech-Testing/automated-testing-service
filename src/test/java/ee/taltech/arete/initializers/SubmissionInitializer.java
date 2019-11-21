@@ -1,11 +1,13 @@
 package ee.taltech.arete.initializers;
 
 import ee.taltech.arete.domain.Submission;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -74,6 +76,50 @@ public class SubmissionInitializer {
 		assert submission.getReturnUrl().equals(RETURN_URL);
 		assert submission.getTestingPlatform().equals(TESTING_PLATFORM);
 		assert Arrays.equals(submission.getExtra(), EXTRA);
+	}
+
+	public static void assertTestsAreRanSuccessfully() {
+		File f2 = new File("output");
+		String[] files2 = f2.list();
+
+		assert files2 != null;
+		assert files2.length > 0;
+
+		try {
+			FileUtils.cleanDirectory(f2); //clean out directory
+		} catch (Exception ignored) {
+		}
+
+	}
+
+	public static void clearAll() {
+		File f = new File("output");
+		String[] files = f.list();
+
+		try {
+			FileUtils.cleanDirectory(f); //clean out directory
+		} catch (Exception ignored) {
+		}
+
+		try {
+			deleteDirectory(new File(String.format("students/%s", getFullSubmission().getUniid())));
+		} catch (Exception ignored) {
+		}
+
+		try {
+			deleteDirectory(new File(String.format("tests/%s", getFullSubmission().getProject())));
+		} catch (Exception ignored) {
+		}
+	}
+
+	static boolean deleteDirectory(File directoryToBeDeleted) {
+		File[] allContents = directoryToBeDeleted.listFiles();
+		if (allContents != null) {
+			for (File file : allContents) {
+				deleteDirectory(file);
+			}
+		}
+		return directoryToBeDeleted.delete();
 	}
 
 }

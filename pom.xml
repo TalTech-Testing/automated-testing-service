@@ -53,13 +53,12 @@
             <optional>true</optional>
         </dependency>
 
-
         <!-- send email -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
-
 
         <!-- In-Memory database used for local development & testing -->
 
@@ -69,6 +68,7 @@
         </dependency>
 
         <!-- Switch back from Spring Boot 2.x standard HikariCP to Tomcat JDBC -->
+
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jdbc</artifactId>
@@ -91,6 +91,13 @@
         <!--        </dependency>-->
 
         <!-- Testing -->
+
+        <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.5</version>
+        </dependency>
 
         <dependency>
             <groupId>javax.xml.bind</groupId>
@@ -131,7 +138,6 @@
             <artifactId>junixsocket-native-common</artifactId>
             <version>2.0.4</version>
         </dependency>
-
 
         <!-- Student code testing -->
 
@@ -183,7 +189,6 @@
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
-
 
         <!--Jackson-->
 
