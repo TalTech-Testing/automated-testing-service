@@ -8,7 +8,12 @@ build:
   services:
     - name: docker:dind
   script:
+    - docker rm -vf $(docker ps -aq) &&
+      docker rmi -f $(docker images -aq) &&
+      docker volume prune -f
+    - docker-compose down --rmi all -v --remove-orphans
     - docker-compose up --no-start --force-recreate
+    - docker images
   only:
     - master
 
@@ -19,7 +24,6 @@ deploy:
   services:
     - name: docker:dind
   script:
-    - docker images
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWD
     - docker tag arete $DOCKER_USER/arete:latest
     - docker push $DOCKER_USER/arete:latest
