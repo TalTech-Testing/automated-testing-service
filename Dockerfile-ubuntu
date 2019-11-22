@@ -1,4 +1,4 @@
-FROM openjdk:13-jdk
+FROM openjdk:11-jdk
 
 MAINTAINER Agonaudid
 ADD . /arete

@@ -57,6 +57,7 @@ public class DockerServiceImpl implements DockerService {
 							.withNoCache(false)
 							.exec(new BuildImageResultCallback())
 							.awaitImageId();
+
 			LOGGER.info("Created image with id: {}", imageId);
 
 			container = dockerClient.createContainerCmd(containerName + ":latest").withName(containerName).exec();
