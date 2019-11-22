@@ -27,6 +27,9 @@ services:
     privileged: true
     depends_on:
       - db
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     build:
       dockerfile:
         Dockerfile-ubuntu
@@ -42,3 +45,12 @@ services:
       - AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - jar:/jar
+      - output:/output
+
+
+volumes:
+  jar:
+    driver: local
+  output:
+    driver: local
