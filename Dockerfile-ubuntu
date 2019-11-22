@@ -18,7 +18,7 @@ ENV AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=$AUTOMATED_TESTING_SERVER_SECRET_PA
 ENV JAVA_OPTS=""
 
 # Run Maven build
-RUN chmod +x mvnw && ./mvnw -T 8 clean install -s .mvn/wrapper/settings.xml -U -e -X
+RUN chmod +x mvnw && ./mvnw -T 8 clean install -s .mvn/wrapper/settings.xml -U
 
 # Fire up our Spring Boot app by default
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar target/arete-0.0.1-SNAPSHOT.jar" ]
