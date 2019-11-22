@@ -6,10 +6,19 @@ WORKDIR /arete
 
 RUN ls -l
 
+ARG PATH
+ARG DOCKER_TLS_CERTDIR
+ARG DOCKER_HOST
+ARG AUTOMATED_TESTING_SERVER_SECRET_PASSWORD
+ENV PATH=$PATH
+ENV DOCKER_TLS_CERTDIR=$DOCKER_TLS_CERTDIR
+ENV DOCKER_HOST=$DOCKER_HOST
+ENV AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=$AUTOMATED_TESTING_SERVER_SECRET_PASSWORD
+
 ENV JAVA_OPTS=""
 
 # Run Maven build
-RUN chmod +x mvnw && ./mvnw clean install -e -X -DskipTests
+RUN chmod +x mvnw && ./mvnw clean install -e -X
 
 # Fire up our Spring Boot app by default
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar target/arete-0.0.1-SNAPSHOT.jar" ]

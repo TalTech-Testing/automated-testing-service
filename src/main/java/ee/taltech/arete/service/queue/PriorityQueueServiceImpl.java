@@ -68,7 +68,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 					LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
 					jobRunnerService.runJob(job);
 				});
-
 				thread.start();
 			}
 		}

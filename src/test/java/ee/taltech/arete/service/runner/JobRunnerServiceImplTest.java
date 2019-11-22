@@ -33,10 +33,5 @@ class JobRunnerServiceImplTest {
 		assert files != null;
 		assert files.length > 0;
 
-		try {
-			FileUtils.cleanDirectory(f); //clean out directory
-		} catch (Exception ignored) {
-		}
-
 	}
 }

@@ -53,8 +53,10 @@ class PriorityQueueServiceTest {
 //			}
 //		}
 
-		while (priorityQueueService.getSuccessfulJobsRan() != 0) {
+		while (priorityQueueService.getSuccessfulJobsRan() == 0) {
 			TimeUnit.SECONDS.sleep(1);
 		}
+
+		assert priorityQueueService.getSuccessfulJobsRan() != 0;
 	}
 }

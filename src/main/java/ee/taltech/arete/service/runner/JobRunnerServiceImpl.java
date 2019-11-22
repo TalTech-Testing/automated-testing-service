@@ -44,7 +44,8 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 		try {
 			reportService.sendToReturnUrl(submission);
 		} catch (Exception e) {
-			throw new RequestFormatException("Malformed returnUrl");
+			LOGGER.error("Malformed returnUrl");
+//			throw new RequestFormatException("Malformed returnUrl");
 		}
 
 		try {
