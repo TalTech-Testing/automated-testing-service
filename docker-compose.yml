@@ -22,24 +22,23 @@ services:
 
   back:
     container_name: arete
-    network_mode: host
     image: arete:latest
     restart: unless-stopped
     privileged: true
     depends_on:
       - db
     build:
-      args:
-        - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-        - DOCKER_TLS_CERTDIR=/certs
-        - DOCKER_HOST=${DOCKER_HOST}
-        - AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
       dockerfile:
-        Dockerfile-spring-boot
+        Dockerfile-ubuntu
       context: .
     ports:
       - "8098:8098"
     env_file:
       - .env
+    environment:
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - DOCKER_TLS_CERTDIR=/certs
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

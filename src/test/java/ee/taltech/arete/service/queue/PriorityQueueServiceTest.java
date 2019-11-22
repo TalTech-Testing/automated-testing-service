@@ -8,8 +8,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.TimeUnit;
 
-import static ee.taltech.arete.initializers.SubmissionInitializer.assertTestsAreRanSuccessfully;
-import static ee.taltech.arete.initializers.SubmissionInitializer.clearAll;
 import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmission;
 
 @RunWith(SpringRunner.class)
@@ -55,10 +53,8 @@ class PriorityQueueServiceTest {
 //			}
 //		}
 
-		while (priorityQueueService.getSuccessfulJobsRan() == 0) {
+		while (priorityQueueService.getSuccessfulJobsRan() != 0) {
 			TimeUnit.SECONDS.sleep(1);
 		}
-
-		assertTestsAreRanSuccessfully();
 	}
 }

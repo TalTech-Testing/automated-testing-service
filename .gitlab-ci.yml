@@ -14,12 +14,14 @@ stages:
 
 
 test_coverage:
-  allow_failure: true
   stage:
     test
   script:
+    - export JAVA_HOME=/usr/lib/jvm/jdk-11.0.5+10
+    - export PATH=/usr/lib/jvm/jdk-11.0.5+10/bin:$PATH
     - echo $JAVA_HOME
-    - chmod +x mvnw && ./mvnw clean install
+    - mvn --version
+    - mvn install -B
     - cat target/site/jacoco/index.html
 
 
@@ -28,8 +30,6 @@ build:
   stage: build
   services:
     - name: docker:dind
-  variables:
-    DOCKER_DRIVER: overlay
   script:
     - docker version
     - docker info
@@ -49,13 +49,15 @@ deploy:
   stage: deploy
   services:
     - name: docker:dind
-  variables:
-    DOCKER_DRIVER: overlay
   script:
     - docker images
-    - echo "$DOCKER_USER $DOCKER_PASSWD $IMAGE_NAME"
+    - echo "$DOCKER_USER $DOCKER_PASSWD"
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWD
-    - docker tag $IMAGE_NAME:latest $DOCKER_USER/$IMAGE_NAME:latest
-    - docker push $DOCKER_USER/$IMAGE_NAME:latest
+    - docker tag postgres:11.5 $DOCKER_USER/$DOCKER_USER/postgres:11.5
+    - docker push $DOCKER_USER/$DOCKER_USER/postgres:11.5
+    - docker tag adminer $DOCKER_USER/$DOCKER_USER/adminer
+    - docker push $DOCKER_USER/$DOCKER_USER/adminer:latest
+    - docker tag arete $DOCKER_USER/$DOCKER_USER/arete:latest
+    - docker push $DOCKER_USER/$DOCKER_USER/arete:latest
   only:
     - master
