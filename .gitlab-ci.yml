@@ -17,9 +17,6 @@ test_coverage:
   stage:
     test
   script:
-    - export JAVA_HOME=/usr/lib/jvm/jdk-11.0.5+10
-    - export PATH=/usr/lib/jvm/jdk-11.0.5+10/bin:$PATH
-    - echo $JAVA_HOME
     - ./mvnw -T 8 clean install -s -U .mvn/wrapper/settings.xml
     - cat target/site/jacoco/index.html
 
