@@ -9,16 +9,7 @@ code_quality:
     - docker run --env SOURCE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
 stages:
   - build
-  - test
   - deploy
-
-
-test_coverage:
-  stage:
-    test
-  script:
-    - ./mvnw -T 8 clean install -s -U .mvn/wrapper/settings.xml
-    - cat target/site/jacoco/index.html
 
 
 build:
@@ -29,13 +20,7 @@ build:
   script:
     - docker version
     - docker info
-    - docker rm -vf $(docker ps -aq) &&
-      docker rmi -f $(docker images -aq) &&
-      docker volume prune -f
-    - docker-compose down --rmi all -v --remove-orphans
-    - docker image ls
     - docker-compose up --no-start --force-recreate
-    - docker images
   only:
     - master
 
