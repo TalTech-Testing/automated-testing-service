@@ -6,8 +6,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class SubmissionInitializer {
 	private final static String UNIID_DOCKER = "uniid";
@@ -76,4 +78,29 @@ public class SubmissionInitializer {
 		assert Arrays.equals(submission.getExtra(), EXTRA);
 	}
 
+	public static void endTest() {
+
+		try {
+			File f = new File("students/");
+			deleteDirectory(f);
+		} catch (Exception ignored) {
+		}
+
+		try {
+			File f = new File("tests/");
+			deleteDirectory(f);
+		} catch (Exception ignored) {
+		}
+	}
+
+	private static void deleteDirectory(File directoryToBeDeleted) {
+		File[] allContents = directoryToBeDeleted.listFiles();
+		if (allContents != null) {
+			for (File file : allContents) {
+				deleteDirectory(file);
+			}
+		}
+		System.out.println(directoryToBeDeleted.delete());
+	}
 }
+

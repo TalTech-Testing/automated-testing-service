@@ -4,8 +4,8 @@ import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.exception.RequestFormatException;
 import ee.taltech.arete.service.docker.DockerService;
 import ee.taltech.arete.service.git.GitPullService;
-import ee.taltech.arete.service.response.ReportService;
 import ee.taltech.arete.service.queue.PriorityQueueService;
+import ee.taltech.arete.service.response.ReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +33,16 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 	public void runJob(Submission submission) {
 		gitPullService.repositoryMaintenance(submission);
 
+		LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
+
+		if (submission.getSlugs() == null) {
+			return;
+		}
 
 		for (String slug : submission.getSlugs()) {
+
 			dockerService.runDocker(submission, slug);
+
 		}
 		LOGGER.info("Job {} has been ran", submission);
 

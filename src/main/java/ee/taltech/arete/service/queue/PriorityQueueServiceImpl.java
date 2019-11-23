@@ -61,14 +61,15 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	public void runJob() {
 		if (getQueueSize() != 0) {
 			if (runningJobs < MAX_JOBS) {
-
 				runningJobs++;
+
 				Thread thread = new Thread(() -> {
 					Submission job = submissionPriorityQueue.remove();
 					LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
 					jobRunnerService.runJob(job);
 				});
 				thread.start();
+
 			}
 		}
 	}

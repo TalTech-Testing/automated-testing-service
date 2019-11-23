@@ -4,8 +4,7 @@ MAINTAINER Agonaudid
 ADD . /arete
 WORKDIR /arete
 
-RUN ls -l
-
+# Set variables for testing
 ARG PATH
 ARG DOCKER_TLS_CERTDIR
 ARG DOCKER_HOST
@@ -19,6 +18,11 @@ ENV JAVA_OPTS=""
 
 # Run Maven build
 RUN chmod +x mvnw && ./mvnw -T 8 clean install -s .mvn/wrapper/settings.xml -U
+
+# Run cleanup
+RUN rm -R /students
+RUN rm -R /tests
+RUN unset AUTOMATED_TESTING_SERVER_SECRET_PASSWORD
 
 # Fire up our Spring Boot app by default
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar target/arete-0.0.1-SNAPSHOT.jar" ]
