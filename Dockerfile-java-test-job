@@ -1,14 +1,8 @@
-# VERSION 0.0.1
-
 FROM openjdk:13
 
 ARG uniid
 ARG slug
 ARG project
-
-#FROM ubuntu:latest
-#
-#RUN apt-get update -y && apt-get install default-jre -y
 
 LABEL Description="New java testing container"
 
@@ -16,20 +10,11 @@ MAINTAINER Agonaudid
 
 WORKDIR /
 
-RUN ls -l
-
 COPY jars/studenttester-core-2.0.jar JavaTester.jar
 COPY students/${uniid}/${project}/${slug} student
 COPY tests/${project}/${slug} tester
 
 RUN mkdir output
 RUN echo '{}' > output/output.json
-#RUN touch output/output.json
 
-#RUN java -jar JavaTester.jar -c student/ -t tester/ -jsontxt -r REPORT,CHECKSTYLE,JAR,COMPILER,TESTNG
 CMD ["java", "-jar", "JavaTester.jar", "-c", "student/", "-t", "tester/", "-jsontxt", "-r", "REPORT,CHECKSTYLE,COMPILER,TESTNG", "-o", "/output/output.json"]
-
-
-#java -jar tester-java/build/libs/studenttester-core-2.0.jar -c envomp/iti0202-2019/EX01IdCode/ -t iti0202-2019/ex/EX01IdCode/ -jsontxt -r REPORT,CHECKSTYLE,COMPILER,TESTNG
-
-#docker build --build-arg uniid=envomp --build-arg slug=EX01IdCode -f Dockerfile-ubuntu-java-test-job -t somehash . && docker run -it somehash

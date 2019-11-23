@@ -1,6 +1,10 @@
+variables:
+  DOCKER_DRIVER: overlay
+
 stages:
   - build
   - deploy
+
 
 build:
   image: docker:latest
