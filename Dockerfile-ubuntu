@@ -17,7 +17,7 @@ ENV AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=$AUTOMATED_TESTING_SERVER_SECRET_PA
 ENV JAVA_OPTS=""
 
 # Run Maven build
-RUN chmod +x mvnw && ./mvnw clean install -T 8 -s .mvn/wrapper/settings.xml -U
+RUN chmod +x mvnw && ./mvnw test -T 8 -s .mvn/wrapper/settings.xml -U
 
 # Run cleanup
 RUN if [ -d "/students" ]; then rm -Rf /students; fi
