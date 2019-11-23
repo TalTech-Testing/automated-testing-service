@@ -45,3 +45,12 @@ services:
       - .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - jar:/jar
+      - output:/output
+
+
+volumes:
+  jar:
+    driver: local
+  output:
+    driver: local
