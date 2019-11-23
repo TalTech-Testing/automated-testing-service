@@ -32,9 +32,7 @@ services:
       - 8.8.4.4
     build:
       args:
-        - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-        - DOCKER_TLS_CERTDIR=/certs
-        - DOCKER_HOST=unix:///var/run/docker.sock
+        - DOCKER_HOST=${DOCKER_HOST}
         - AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
       dockerfile:
         Dockerfile-ubuntu
@@ -44,8 +42,7 @@ services:
     env_file:
       - .env
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - jar:/jar
+      - ${DOCKER_SOCK}:${DOCKER_SOCK}
       - output:/output
 
 
