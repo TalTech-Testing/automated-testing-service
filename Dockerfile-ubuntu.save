@@ -1,10 +1,11 @@
-FROM unafraid/openjdk:11-git-ssh-docker
+FROM openjdk:11-jdk
 
 MAINTAINER Agonaudid
 ADD . /arete
 WORKDIR /arete
 
-# Set variables for testing
+RUN ls -l
+
 ARG PATH
 ARG DOCKER_TLS_CERTDIR
 ARG DOCKER_HOST
@@ -17,12 +18,7 @@ ENV AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=$AUTOMATED_TESTING_SERVER_SECRET_PA
 ENV JAVA_OPTS=""
 
 # Run Maven build
-RUN chmod +x mvnw && ./mvnw clean install
-
-# Run cleanup
-RUN if [ -d "/students" ]; then rm -Rf /students; fi
-RUN if [ -d "/tests" ]; then rm -Rf /tests; fi
-RUN unset AUTOMATED_TESTING_SERVER_SECRET_PASSWORD
+RUN chmod +x mvnw && ./mvnw clean install  -e -X
 
 # Fire up our Spring Boot app by default
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar target/arete-0.0.1-SNAPSHOT.jar" ]
