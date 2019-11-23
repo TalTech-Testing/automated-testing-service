@@ -27,9 +27,6 @@ services:
     privileged: true
     depends_on:
       - db
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
     build:
       args:
         - GITLAB_PASSWORD=${GITLAB_PASSWORD}

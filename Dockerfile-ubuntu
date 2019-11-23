@@ -13,7 +13,7 @@ ENV DOCKER_PASSWORD=$DOCKER_PASSWORD
 ENV JAVA_OPTS=""
 
 # Run Maven build
-RUN chmod +x mvnw && ./mvnw test -T 8 -s .mvn/wrapper/settings.xml -U
+RUN chmod +x mvnw && ./mvnw install -s .mvn/wrapper/settings.xml -U 
 
 # Run cleanup
 RUN if [ -d "/students" ]; then rm -Rf /students; fi
