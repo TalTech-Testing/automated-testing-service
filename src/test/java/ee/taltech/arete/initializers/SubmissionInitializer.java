@@ -100,7 +100,6 @@ public class SubmissionInitializer {
 				deleteDirectory(file);
 			}
 		}
-		System.out.println(directoryToBeDeleted.delete());
 	}
 }
 

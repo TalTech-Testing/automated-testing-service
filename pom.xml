@@ -36,11 +36,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -50,7 +45,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
         </dependency>
 
 
@@ -62,7 +56,6 @@
 
 
         <!-- In-Memory database used for local development & testing -->
-
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -75,27 +68,10 @@
         </dependency>
 
         <!-- PostgreSQL used in Staging and Production environment, e.g. on Heroku -->
-
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
-        </dependency>
-
-        <!--Flyaway for database migration, latest 5.x.x because of Spring Boot < 2.2.x-->
-
-        <!--        <dependency>-->
-        <!--            <groupId>org.flywaydb</groupId>-->
-        <!--            <artifactId>flyway-core</artifactId>-->
-        <!--            <version>5.2.4</version>-->
-        <!--        </dependency>-->
-
-        <!-- Testing -->
-
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.0</version>
         </dependency>
 
         <dependency>
@@ -111,7 +87,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Tutorial https://www.baeldung.com/docker-java-api-->
         <dependency>
             <groupId>com.github.docker-java</groupId>
             <artifactId>docker-java</artifactId>
@@ -120,9 +95,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.glassfish.jersey.inject</groupId>
-            <artifactId>jersey-hk2</artifactId>
-            <version>2.28</version>
+            <groupId>com.github.tpiecora</groupId>
+            <artifactId>dockerclient_2.11</artifactId>
+            <version>0.4.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.kohlschutter.junixsocket/junixsocket-native-common -->
@@ -132,15 +107,6 @@
             <version>2.0.4</version>
         </dependency>
 
-
-        <!-- Student code testing -->
-
-        <dependency>
-            <groupId>com.github.tpiecora</groupId>
-            <artifactId>dockerclient_2.11</artifactId>
-            <version>0.4.0</version>
-        </dependency>
-
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
@@ -148,7 +114,6 @@
         </dependency>
 
         <!-- Secure backend API -->
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -161,7 +126,6 @@
         </dependency>
 
         <!-- Annotation -->
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -169,15 +133,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.vaadin.external.google</groupId>
-            <artifactId>android-json</artifactId>
-            <version>0.0.20131108.vaadin1</version>
-            <scope>compile</scope>
-        </dependency>
-
         <!-- logging -->
-
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -186,12 +142,12 @@
 
 
         <!--Jackson-->
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <version>2.10.1</version>
         </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -210,27 +166,6 @@
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
             </plugin>
-
-<!--            <plugin>-->
-<!--                <groupId>org.jacoco</groupId>-->
-<!--                <artifactId>jacoco-maven-plugin</artifactId>-->
-<!--                <version>0.8.2</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>prepare-agent</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                    &lt;!&ndash; attached to Maven test phase &ndash;&gt;-->
-<!--                    <execution>-->
-<!--                        <id>report</id>-->
-<!--                        <phase>test</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>report</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
