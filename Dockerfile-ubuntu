@@ -1,4 +1,4 @@
-FROM unafraid/openjdk:11-git-ssh-docker
+FROM openjdk:11
 
 MAINTAINER Agonaudid
 ADD . /arete
