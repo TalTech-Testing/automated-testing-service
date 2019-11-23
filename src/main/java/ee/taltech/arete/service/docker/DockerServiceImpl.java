@@ -4,6 +4,7 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.BuildImageResultCallback;
 import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import ee.taltech.arete.domain.Submission;
@@ -43,7 +44,17 @@ public class DockerServiceImpl implements DockerService {
 
 		try {
 
-			dockerClient = DockerClientBuilder.getInstance().build();
+			DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+					.withDockerHost("unix:///var/run/docker.sock")
+					.withDockerTlsVerify(false)
+					.withDockerConfig("/home/user/.docker")
+					.withRegistryUrl("https://registry.hub.docker.com/library/automatedtestingservice")
+					.withRegistryUsername("automatedtestingservice")
+					.withRegistryPassword(System.getenv().get("DOCKER_PASSWORD"))
+					.withRegistryEmail("automated.testing.service@gmail.com")
+					.build();
+
+			dockerClient = DockerClientBuilder.getInstance(config).build();
 
 			imageId =
 					dockerClient.buildImageCmd()

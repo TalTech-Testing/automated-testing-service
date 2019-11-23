@@ -5,14 +5,10 @@ ADD . /arete
 WORKDIR /arete
 
 # Set variables for testing
-ARG PATH
-ARG DOCKER_TLS_CERTDIR
-ARG DOCKER_HOST
-ARG AUTOMATED_TESTING_SERVER_SECRET_PASSWORD
-ENV PATH=$PATH
-ENV DOCKER_TLS_CERTDIR=$DOCKER_TLS_CERTDIR
-ENV DOCKER_HOST=$DOCKER_HOST
-ENV AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=$AUTOMATED_TESTING_SERVER_SECRET_PASSWORD
+ARG GITLAB_PASSWORD
+ENV GITLAB_PASSWORD=$GITLAB_PASSWORD
+ARG DOCKER_PASSWORD
+ENV DOCKER_PASSWORD=$DOCKER_PASSWORD
 
 ENV JAVA_OPTS=""
 
@@ -22,7 +18,9 @@ RUN chmod +x mvnw && ./mvnw test -T 8 -s .mvn/wrapper/settings.xml -U
 # Run cleanup
 RUN if [ -d "/students" ]; then rm -Rf /students; fi
 RUN if [ -d "/tests" ]; then rm -Rf /tests; fi
-RUN unset AUTOMATED_TESTING_SERVER_SECRET_PASSWORD
+RUN unset GITLAB_PASSWORD
+RUN unset DOCKER_PASSWORD
+
 
 # Fire up our Spring Boot app by default
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar target/arete-0.0.1-SNAPSHOT.jar" ]

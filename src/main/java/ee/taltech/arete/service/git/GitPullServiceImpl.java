@@ -55,7 +55,7 @@ public class GitPullServiceImpl implements GitPullService {
 
 				PullResult result = Git.open(new File(pathToStudentFolder)).pull()
 						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
-								"envomp", System.getenv().get("AUTOMATED_TESTING_SERVER_SECRET_PASSWORD")))
+								"envomp", System.getenv().get("GITLAB_PASSWORD")))
 						.call();
 
 				assert result.isSuccessful();

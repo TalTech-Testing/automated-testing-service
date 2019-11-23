@@ -32,8 +32,8 @@ services:
       - 8.8.4.4
     build:
       args:
-        - DOCKER_HOST=${DOCKER_HOST}
-        - AUTOMATED_TESTING_SERVER_SECRET_PASSWORD=${AUTOMATED_TESTING_SERVER_SECRET_PASSWORD}
+        - GITLAB_PASSWORD=${GITLAB_PASSWORD}
+        - DOCKER_PASSWORD=${DOCKER_PASSWORD}
       dockerfile:
         Dockerfile-ubuntu
       context: .
