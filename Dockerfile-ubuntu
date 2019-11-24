@@ -4,23 +4,14 @@ MAINTAINER Agonaudid
 ADD . /arete
 WORKDIR /arete
 
-# Set variables for testing
-ARG GITLAB_PASSWORD
-ENV GITLAB_PASSWORD=$GITLAB_PASSWORD
-ARG DOCKER_PASSWORD
-ENV DOCKER_PASSWORD=$DOCKER_PASSWORD
-
 ENV JAVA_OPTS=""
 
 # Run Maven build
-RUN chmod +x mvnw && ./mvnw install -s .mvn/wrapper/settings.xml -U 
+RUN chmod +x mvnw && ./mvnw install -DskipTests
 
 # Run cleanup
 RUN if [ -d "/students" ]; then rm -Rf /students; fi
 RUN if [ -d "/tests" ]; then rm -Rf /tests; fi
-RUN unset GITLAB_PASSWORD
-RUN unset DOCKER_PASSWORD
-
 
 # Fire up our Spring Boot app by default
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar target/arete-0.0.1-SNAPSHOT.jar" ]

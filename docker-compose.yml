@@ -28,9 +28,6 @@ services:
     depends_on:
       - db
     build:
-      args:
-        - GITLAB_PASSWORD=${GITLAB_PASSWORD}
-        - DOCKER_PASSWORD=${DOCKER_PASSWORD}
       dockerfile:
         Dockerfile-ubuntu
       context: .

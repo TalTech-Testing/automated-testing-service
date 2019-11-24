@@ -2,8 +2,17 @@ variables:
   DOCKER_DRIVER: overlay
 
 stages:
+  - test
   - build
   - deploy
+
+test:
+  image: docker:latest
+  stage: test
+  services:
+    - name: docker:dind
+  script:
+    docker build -f Dockerfile-ubuntu-test .
 
 
 build:
@@ -16,6 +25,7 @@ build:
     - docker system prune -f
     - docker-compose down -v --remove-orphans
     - docker rmi -f arete
+    - docker images
   script:
     - docker-compose up --no-start --force-recreate
     - docker images

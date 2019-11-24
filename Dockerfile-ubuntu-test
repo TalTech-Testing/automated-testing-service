@@ -1,0 +1,10 @@
+FROM openjdk:11
+
+MAINTAINER Agonaudid
+ADD . /arete
+WORKDIR /arete
+
+ENV JAVA_OPTS=""
+
+# Run Maven build
+RUN chmod +x mvnw && ./mvnw test
