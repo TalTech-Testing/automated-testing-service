@@ -13,11 +13,9 @@ build:
     - name: docker:dind
   before_script:
     - whoami
-    - docker system prune
+    - docker system prune -y
     - docker-compose down --rmi all -v --remove-orphans
-    - docker stop $(docker ps -a -q)
     - docker rm $(docker ps -a -q)
-    - docker rmi $(docker images -aq --filter dangling=true)
     - docker rmi -f arete
   script:
     - docker-compose up --no-start --force-recreate
