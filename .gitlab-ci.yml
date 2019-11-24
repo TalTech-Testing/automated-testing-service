@@ -31,8 +31,9 @@ build_and_deploy:
     - name: docker:dind
   before_script:
     - whoami
-    - docker-compose down -v --remove-orphans
-    - docker system prune -f
+    - docker rm -vf $(docker ps -aq) &&
+      docker rmi -f $(docker images -aq) &&
+      docker volume prune -f
     - docker images
   script:
     - docker-compose up --force-recreate
@@ -57,12 +58,14 @@ build:
     - whoami
     - docker container ls
     - docker images
-    - docker-compose down -v --remove-orphans
-    - docker system prune -f
+    - docker rm -vf $(docker ps -aq) &&
+      docker rmi -f $(docker images -aq) &&
+      docker volume prune -f
   script:
     - docker-compose up --no-start --force-recreate
   after_script:
     - docker images
+    - docker container ls
   only:
     - master
 
@@ -81,7 +84,7 @@ deploy:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker tag arete $DOCKER_USER/arete:latest
     - docker push $DOCKER_USER/arete:latest
-    - docker-compose up -d
+    - docker-compose start
   after_script:
     - docker container ls
     - docker images
