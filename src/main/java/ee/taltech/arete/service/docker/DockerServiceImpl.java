@@ -42,7 +42,7 @@ public class DockerServiceImpl implements DockerService {
 		String hostFile = String.format("output/%s_%s_%s.json", submission.getUniid().toLowerCase(), slug.toLowerCase(), containerName);
 
 		String[] array1 = submission.getResultFileNames();
-		String[] array2 = new String[]{"three"};
+		String[] array2 = new String[]{hostFile};
 		String[] array = new String[array1.length + array2.length];
 		System.arraycopy(array1, 0, array, 0, array1.length);
 		System.arraycopy(array2, 0, array, array1.length, array2.length);

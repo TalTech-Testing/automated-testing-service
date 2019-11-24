@@ -45,11 +45,12 @@ build_and_deploy:
     - docker images
   only:
     - dev
+    - master
 
 
 build:
   tags:
-    - master
+    - prod
   image: docker:latest
   stage: build
   services:
@@ -67,12 +68,12 @@ build:
     - docker images
     - docker container ls
   only:
-    - master
+    - prod
 
 
 deploy:
   tags:
-    - master
+    - prod
   image: docker:latest
   stage: deploy
   services:
@@ -89,4 +90,4 @@ deploy:
     - docker container ls
     - docker images
   only:
-    - master
+    - prod
