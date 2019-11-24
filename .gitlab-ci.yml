@@ -13,11 +13,14 @@ build:
     - name: docker:dind
   before_script:
     - whoami
-  script:
-    - docker rm -vf $(docker ps -aq) &&
-      docker rmi -f $(docker images -aq) &&
-      docker volume prune -f
+    - docker system prune
     - docker-compose down --rmi all -v --remove-orphans
+    - docker stop $(docker ps -a -q)
+    - docker rm $(docker ps -a -q)
+    - docker image prune -a --force --filter "label!=image_name"
+    - docker rmi $(docker images -aq --filter dangling=true)
+    - docker rmi -f arete
+  script:
     - docker-compose up --no-start --force-recreate
     - docker images
   only:
@@ -33,5 +36,8 @@ deploy:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker tag arete $DOCKER_USER/arete:latest
     - docker push $DOCKER_USER/arete:latest
+    - docker-compose up
+  after_script:
+    - docker container ls
   only:
     - master
