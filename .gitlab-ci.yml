@@ -14,8 +14,7 @@ build:
   before_script:
     - whoami
     - docker system prune -f
-    - docker-compose down --rmi all -v --remove-orphans
-    - docker rm $(docker ps -a -q)
+    - docker-compose down -v --remove-orphans
     - docker rmi -f arete
   script:
     - docker-compose up --no-start --force-recreate
