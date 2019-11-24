@@ -38,8 +38,9 @@ deploy:
   stage: deploy
   services:
     - name: docker:dind
-  script:
+  before_script:
     - docker images
+  script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker tag arete $DOCKER_USER/arete:latest
     - docker push $DOCKER_USER/arete:latest
