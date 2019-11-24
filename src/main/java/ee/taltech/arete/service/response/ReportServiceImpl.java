@@ -28,36 +28,41 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public void sendMail(Submission submission) {
-		try {
-			JSONObject json = new JSONObject(Files.readString(Paths.get(submission.getResultFileName())));
-			String mail = "Your last commit/push did not include any project folders (e.g. EX01, HW01 etc.)\n" +
-					"You can try to change something in the code and commit/push again.";
+		for (String resultPath : submission.getResultFileNames()) {
+			try {
 
-			JSONArray jsonArray = json.getJSONArray("results");
+				JSONObject json = new JSONObject(Files.readString(Paths.get(resultPath)));
+				String mail = "Your last commit/push did not include any project folders (e.g. EX01, HW01 etc.)\n" +
+						"You can try to change something in the code and commit/push again.";
 
-			for (int i = 0; i < jsonArray.length(); i++) {
-				if (jsonArray.getJSONObject(i).get("identifier").equals("REPORT")) {
-					mail = jsonArray.getJSONObject(i).get("output").toString();
+				JSONArray jsonArray = json.getJSONArray("results");
+
+				for (int i = 0; i < jsonArray.length(); i++) {
+					if (jsonArray.getJSONObject(i).get("identifier").equals("REPORT")) {
+						mail = jsonArray.getJSONObject(i).get("output").toString();
+					}
 				}
+
+				SimpleMailMessage message = new SimpleMailMessage();
+				message.setTo(String.format("%s@taltech.ee", submission.getUniid()));
+				message.setSubject("Test results");
+				message.setText(mail);
+				javaMailSender.send(message);
+
+			} catch (IOException | JSONException e) {
+				e.printStackTrace();
 			}
-
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setTo(String.format("%s@taltech.ee", submission.getUniid()));
-			message.setSubject("Test results");
-			message.setText(mail);
-			javaMailSender.send(message);
-
-		} catch (IOException | JSONException e) {
-			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void sendToReturnUrl(Submission submission) {
-		try {
-			post(submission.getReturnUrl(), Files.readString(Paths.get(submission.getResultFileName())));
-		} catch (IOException e) {
-			throw new RequestFormatException("Malformed returnUrl");
+		for (String resultPath : submission.getResultFileNames()) {
+			try {
+				post(submission.getReturnUrl(), Files.readString(Paths.get(resultPath)));
+			} catch (IOException e) {
+				throw new RequestFormatException("Malformed returnUrl");
+			}
 		}
 	}
 

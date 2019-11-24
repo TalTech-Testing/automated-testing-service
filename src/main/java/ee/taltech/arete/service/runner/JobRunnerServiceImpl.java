@@ -40,11 +40,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		for (String slug : submission.getSlugs()) {
 
-			Thread thread = new Thread(() -> {
-				dockerService.runDocker(submission, slug);
-			});
-
-			thread.start();
+			dockerService.runDocker(submission, slug);
 
 		}
 		LOGGER.info("Job {} has been ran", submission);

@@ -40,7 +40,13 @@ public class DockerServiceImpl implements DockerService {
 		String containerName = submission.getHash().substring(0, 8).toLowerCase();
 		String containerFile = "/output/output.json";
 		String hostFile = String.format("output/%s_%s_%s.json", submission.getUniid().toLowerCase(), slug.toLowerCase(), containerName);
-		submission.setResultFileName(hostFile);
+
+		String[] array1 = submission.getResultFileNames();
+		String[] array2 = new String[]{"three"};
+		String[] array = new String[array1.length + array2.length];
+		System.arraycopy(array1, 0, array, 0, array1.length);
+		System.arraycopy(array2, 0, array, array1.length, array2.length);
+		submission.setResultFileNames(array);
 
 		try {
 
@@ -105,7 +111,7 @@ public class DockerServiceImpl implements DockerService {
 				try {
 					dockerClient.stopContainerCmd(container.getId()).withTimeout(20).exec();
 				} catch (Exception stop) {
-					LOGGER.error("Container {} has already been stopped", container.getId());
+					LOGGER.info("Container {} has already been stopped", container.getId());
 				}
 
 				LOGGER.info("Removing container: {}", container.getId());

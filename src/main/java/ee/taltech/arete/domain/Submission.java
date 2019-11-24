@@ -36,12 +36,12 @@ public class Submission {
 	private String[] extra;
 	private Long timestamp;
 	private Integer priority;
-	private String resultFileName;
+	private String[] resultFileNames;
 
 	public Submission() {
 	}
 
-	public Submission(long id, String uniid, String project, String projectBase, String testingPlatform, String returnUrl, String hash, String[] slugs, String[] extra, Long timestamp, Integer priority, String resultFileName) {
+	public Submission(long id, String uniid, String project, String projectBase, String testingPlatform, String returnUrl, String hash, String[] slugs, String[] extra, Long timestamp, Integer priority, String[] resultFileNames) {
 		this.uniid = uniid;
 		this.project = project;
 		this.projectBase = projectBase;
@@ -52,6 +52,6 @@ public class Submission {
 		this.extra = extra;
 		this.timestamp = timestamp;
 		this.priority = priority;
-		this.resultFileName = resultFileName;
+		this.resultFileNames = resultFileNames;
 	}
 }
