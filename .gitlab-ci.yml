@@ -36,6 +36,8 @@ build_and_deploy:
     - docker rmi -f $DOCKER_USER/arete
     - docker images
   script:
+    - docker-compose up --no-start --force-recreate
+    - docker images
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker tag arete $DOCKER_USER/arete:latest
     - docker push $DOCKER_USER/arete:latest
@@ -55,12 +57,14 @@ build:
     - name: docker:dind
   before_script:
     - whoami
+    - docker container ls
     - docker system prune -f
     - docker-compose down -v --remove-orphans
     - docker rmi -f $DOCKER_USER/arete
     - docker images
   script:
     - docker-compose up --no-start --force-recreate
+  after_script:
     - docker images
   only:
     - master
