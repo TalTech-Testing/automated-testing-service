@@ -53,11 +53,6 @@ public class DockerServiceImpl implements DockerService {
 			DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
 					.withDockerHost("unix:///var/run/docker.sock")
 					.withDockerTlsVerify(false)
-					.withDockerConfig("/home/user/.docker")
-					.withRegistryUrl("https://registry.hub.docker.com/library/automatedtestingservice")
-					.withRegistryUsername("automatedtestingservice")
-					.withRegistryPassword(System.getenv().get("DOCKER_PASSWORD"))
-					.withRegistryEmail("automated.testing.service@gmail.com")
 					.build();
 
 			dockerClient = DockerClientBuilder.getInstance(config).build();
