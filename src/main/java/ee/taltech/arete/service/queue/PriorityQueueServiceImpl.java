@@ -22,7 +22,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	@Lazy
 	private JobRunnerService jobRunnerService;
 
-	private static final Integer MAX_JOBS = 5;
+	private static final Integer MAX_JOBS = 8;
 	private Integer runningJobs = 0;
 	private Integer successfulJobsRan = 0;
 
