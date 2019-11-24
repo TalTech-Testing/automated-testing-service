@@ -1,3 +1,4 @@
 target/*
-#tests/*
-#students/*
+tests/*
+students/*
+.env

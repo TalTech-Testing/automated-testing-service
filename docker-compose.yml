@@ -37,14 +37,11 @@ services:
     ports:
       - "8098:8098"
     env_file:
-      - .env
+      - ..env #Change to .env to run locally
     volumes:
       - ${DOCKER_SOCK}:${DOCKER_SOCK}
-      - output:/output
 
 
 volumes:
-  jar:
-    driver: local
   output:
     driver: local
