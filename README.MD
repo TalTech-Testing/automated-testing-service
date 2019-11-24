@@ -99,4 +99,5 @@ run in terminal:
 ```
 ./arete_local_install.sh
 ```
+
 Scripts have been tested on Ubuntu 18.04 and 19.04
