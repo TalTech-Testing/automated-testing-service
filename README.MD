@@ -25,8 +25,7 @@ docker-compose up -d
 ```
 
 ##### Local host machine with H2 ####
-You need latest of: Java13, Docker
-
+You need latest of: Java11, Docker
 ___
 ##### for Linux
 ```
@@ -43,8 +42,8 @@ java -jar -Dspring.config.location=src/main/resources/application-dev.properties
 ```
 
 #### Server
-
-##### Debian docker config
+___
+##### Shell config for dind
 
 ___
 /etc/gitlab-runner/config.toml
@@ -56,11 +55,41 @@ check_interval = 0
   session_timeout = 1800
 
 [[runners]]
-  name = "XXX"
-  url = "XXX"
+  name = "Shell"
+  url = "https://gitlab.cs.ttu.ee/"
   token = "XXX"
   executor = "shell"
   [runners.custom_build_dir]
+  [runners.cache]
+    [runners.cache.s3]
+    [runners.cache.gcs]
+```
+___
+##### Virtualbox config
+
+___
+C:/gitlab-runner/config.toml
+```
+concurrent = 1
+check_interval = 0
+
+[session_server]
+  session_timeout = 1800
+
+[[runners]]
+  name = "VM-runner"
+  url = "https://gitlab.cs.ttu.ee/"
+  token = "XXX"
+  executor = "virtualbox"
+  [runners.custom_build_dir]
+  [runners.ssh]
+    host = "192.168.56.101"
+    user = "envomp"
+    password = "XXX"
+    port = "22"
+  [runners.virtualbox]
+    base_name = "Server"
+    disable_snapshots = false
   [runners.cache]
     [runners.cache.s3]
     [runners.cache.gcs]
@@ -70,4 +99,4 @@ run in terminal:
 ```
 ./arete_local_install.sh
 ```
-This script has been tested on Ubuntu 18.04 and 19.04
+Scripts have been tested on Ubuntu 18.04 and 19.04

@@ -39,9 +39,4 @@ services:
     env_file:
       - ..env #Change to .env to run locally
     volumes:
-      - ${DOCKER_SOCK}:${DOCKER_SOCK}
-
-
-volumes:
-  output:
-    driver: local
+      - /var/run/docker.sock:/var/run/docker.sock
