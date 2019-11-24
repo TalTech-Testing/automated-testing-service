@@ -13,7 +13,7 @@ build:
     - name: docker:dind
   before_script:
     - whoami
-    - docker system prune -y
+    - docker system prune -f
     - docker-compose down --rmi all -v --remove-orphans
     - docker rm $(docker ps -a -q)
     - docker rmi -f arete
