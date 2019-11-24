@@ -24,7 +24,7 @@ build:
     - whoami
     - docker system prune -f
     - docker-compose down -v --remove-orphans
-    - docker rmi -f arete
+    - docker rmi -f $DOCKER_USER/arete
     - docker images
   script:
     - docker-compose up --no-start --force-recreate
