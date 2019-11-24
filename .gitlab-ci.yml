@@ -12,7 +12,7 @@ test:
   services:
     - name: docker:dind
   script:
-    docker build -f Dockerfile-ubuntu-test .
+    docker build -t tests -f Dockerfile-ubuntu-test .
 
 
 build:
