@@ -34,15 +34,15 @@ build_and_deploy:
     - docker system prune -f
     - docker-compose down -v --remove-orphans
     - docker rmi -f $DOCKER_USER/arete
+    - docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
     - docker images
   script:
-    - docker-compose up --no-start --force-recreate
-    - docker images
+    - docker-compose up --force-recreate
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker tag arete $DOCKER_USER/arete:latest
     - docker push $DOCKER_USER/arete:latest
-    - docker-compose up -d
   after_script:
+    - docker container ls
     - docker images
   only:
     - dev
@@ -61,6 +61,7 @@ build:
     - docker system prune -f
     - docker-compose down -v --remove-orphans
     - docker rmi -f $DOCKER_USER/arete
+    - docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
     - docker images
   script:
     - docker-compose up --no-start --force-recreate
@@ -86,5 +87,6 @@ deploy:
     - docker-compose up -d
   after_script:
     - docker container ls
+    - docker images
   only:
     - master
