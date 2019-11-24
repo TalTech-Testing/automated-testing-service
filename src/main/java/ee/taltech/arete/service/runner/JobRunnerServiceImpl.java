@@ -40,23 +40,23 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		for (String slug : submission.getSlugs()) {
 
-			dockerService.runDocker(submission, slug);
+			String output = dockerService.runDocker(submission, slug);
+			LOGGER.info("Job {} has been ran for user {}", slug, submission.getUniid());
 
-		}
-		LOGGER.info("Job {} has been ran", submission);
+			try {
+				reportService.sendToReturnUrl(submission, output);
+				LOGGER.error("Reported to return url");
+			} catch (Exception e) {
+				LOGGER.error("Malformed returnUrl");
+			}
 
-		try {
-			reportService.sendToReturnUrl(submission);
-			LOGGER.error("Reported to return url");
-		} catch (Exception e) {
-			LOGGER.error("Malformed returnUrl");
-		}
+			try {
+				reportService.sendMail(submission, output);
+				LOGGER.error("Reported to student mailbox");
+			} catch (Exception e) {
+				LOGGER.error("Malformed mail");
+			}
 
-		try {
-			reportService.sendMail(submission);
-			LOGGER.error("Reported to student  mailbox");
-		} catch (Exception e) {
-			LOGGER.error("Malformed mail");
 		}
 
 		priorityQueueService.killThread();

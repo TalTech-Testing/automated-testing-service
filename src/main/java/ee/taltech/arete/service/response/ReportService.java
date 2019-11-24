@@ -7,8 +7,8 @@ import java.io.IOException;
 
 public interface ReportService {
 
-	void sendMail(Submission submission);
+	void sendMail(Submission submission, String resultPath);
 
-	void sendToReturnUrl(Submission submission);
+	void sendToReturnUrl(Submission submission, String resultPath);
 
 }

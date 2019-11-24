@@ -28,25 +28,19 @@ public class DockerServiceImpl implements DockerService {
 
 	/**
 	 * @param submission : test job to be tested.
-	 *                   submission.getHash().substring(0, 8).lower() : image name and container name
-	 *                   <p>
-	 *                   input(submission) > create image > create docker > start docker > read tester output to file
+	 *
+	 * @return test job result path
 	 */
-	public void runDocker(Submission submission, String slug) {
+	public String runDocker(Submission submission, String slug) {
+
 		DockerClient dockerClient = null;
 		CreateContainerResponse container = null;
 		String imageId = null;
 
-		String containerName = submission.getHash().substring(0, 8).toLowerCase();
+		String containerName = submission.getHash().substring(0, 16).toLowerCase();
 		String containerFile = "/output/output.json";
 		String hostFile = String.format("output/%s_%s_%s.json", submission.getUniid().toLowerCase(), slug.toLowerCase(), containerName);
 
-		String[] array1 = submission.getResultFileNames();
-		String[] array2 = new String[]{hostFile};
-		String[] array = new String[array1.length + array2.length];
-		System.arraycopy(array1, 0, array, 0, array1.length);
-		System.arraycopy(array2, 0, array, array1.length, array2.length);
-		submission.setResultFileNames(array);
 
 		try {
 
@@ -87,6 +81,7 @@ public class DockerServiceImpl implements DockerService {
 				InputStream inputStream = dockerClient.copyArchiveFromContainerCmd(containerName, containerFile).exec();
 				TarArchiveInputStream tarStream = new TarArchiveInputStream(inputStream);
 				unTar(tarStream, new File(hostFile));
+
 			} catch (Exception tar) {
 				tar.printStackTrace();
 			}
@@ -94,40 +89,38 @@ public class DockerServiceImpl implements DockerService {
 
 
 		} catch (Exception e) {
+
 			e.printStackTrace();
 			LOGGER.error("Job failed with exception: {}", e.getMessage());
 		}
 
-		try {
+		if (dockerClient != null && container != null) {
 
-			if (dockerClient != null && container != null) {
-
-				LOGGER.info("Stopping container: {}", container.getId());
-				try {
-					dockerClient.stopContainerCmd(container.getId()).withTimeout(20).exec();
-				} catch (Exception stop) {
-					LOGGER.info("Container {} has already been stopped", container.getId());
-				}
-
-				LOGGER.info("Removing container: {}", container.getId());
-				try {
-					dockerClient.removeContainerCmd(container.getId()).exec();
-				} catch (Exception remove) {
-					LOGGER.error("Container {} has already been removed", submission.getHash());
-				}
-
-				LOGGER.info("Removing image: {}", imageId);
-				try {
-					dockerClient.removeImageCmd(imageId).exec();
-				} catch (Exception image) {
-					LOGGER.error("Image {} has already been removed", imageId);
-				}
-
+			LOGGER.info("Stopping container: {}", container.getId());
+			try {
+				dockerClient.stopContainerCmd(container.getId()).withTimeout(20).exec();
+			} catch (Exception stop) {
+				LOGGER.info("Container {} has already been stopped", container.getId());
 			}
 
-		} catch (Exception finish) {
-			LOGGER.error("Container {} failed to start", container.getId());
+			LOGGER.info("Removing container: {}", container.getId());
+			try {
+				dockerClient.removeContainerCmd(container.getId()).exec();
+			} catch (Exception remove) {
+				LOGGER.error("Container {} has already been removed", submission.getHash());
+			}
+
+			LOGGER.info("Removing image: {}", imageId);
+			try {
+				dockerClient.removeImageCmd(imageId).exec();
+			} catch (Exception image) {
+				LOGGER.error("Image {} has already been removed", imageId);
+			}
+
 		}
+
+
+		return hostFile;
 	}
 
 	private static void unTar(TarArchiveInputStream tis, File destFile) throws IOException {

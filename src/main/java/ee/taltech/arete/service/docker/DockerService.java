@@ -4,6 +4,6 @@ import ee.taltech.arete.domain.Submission;
 
 public interface DockerService {
 
-	void runDocker(Submission submission, String slug);
+	String runDocker(Submission submission, String slug);
 
 }

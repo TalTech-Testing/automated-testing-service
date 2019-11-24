@@ -45,10 +45,6 @@ public class SubmissionServiceImpl implements SubmissionService {
 			submission.setHash(RandomStringUtils.random(64, true, true).toLowerCase());
 		}
 
-		if (submission.getResultFileNames() == null) {
-			submission.setResultFileNames(new String[]{});
-		}
-
 	}
 
 	@Override
