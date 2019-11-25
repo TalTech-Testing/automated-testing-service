@@ -28,7 +28,6 @@ public class DockerServiceImpl implements DockerService {
 
 	/**
 	 * @param submission : test job to be tested.
-	 *
 	 * @return test job result path
 	 */
 	public String runDocker(Submission submission, String slug) {
@@ -39,13 +38,16 @@ public class DockerServiceImpl implements DockerService {
 
 		String containerName = submission.getHash().substring(0, 16).toLowerCase();
 		String containerFile = "/output/output.json";
-		String hostFile = String.format("output/%s_%s_%s.json", submission.getUniid().toLowerCase(), slug.toLowerCase(), containerName);
+		String hostFile = String.format("output/%s_%s_%s_%s.json", submission.getUniid().toLowerCase(), submission.getProject(), slug.toLowerCase(), containerName);
 
+		String dockerfile = TestingPlatforms.BY_LABEL.get(submission.getTestingPlatform()).dockerfileLocation;
 
 		try {
 
+			String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
+
 			DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-					.withDockerHost("unix:///var/run/docker.sock")
+					.withDockerHost(dockerHost)
 					.withDockerTlsVerify(false)
 					.build();
 
@@ -57,7 +59,7 @@ public class DockerServiceImpl implements DockerService {
 							.withBuildArg("slug", slug)
 							.withBuildArg("project", submission.getProject())
 							.withBaseDirectory(new File("./"))
-							.withDockerfile(new File("Dockerfile-java-test-job"))
+							.withDockerfile(new File(dockerfile))
 							.withPull(true)
 							.withTag(containerName)
 							.withNoCache(false)

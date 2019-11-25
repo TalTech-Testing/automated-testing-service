@@ -1,0 +1,7 @@
+2016-12-02:
+    - show the execution time of tests
+    - "minimal" feedback for exams (only "received")
+2016-12-15:
+    - sort tests by run_index
+2017-01-05:
+    - remove json output file before running tests (otherwise in case of timeout previous file can be used)

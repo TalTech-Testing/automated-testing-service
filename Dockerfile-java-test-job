@@ -10,7 +10,7 @@ MAINTAINER Agonaudid
 
 WORKDIR /
 
-COPY jars/studenttester-core-2.0.jar JavaTester.jar
+COPY testers/studenttester-core-2.0.jar JavaTester.jar
 COPY students/${uniid}/${project}/${slug} student
 COPY tests/${project}/${slug} tester
 
