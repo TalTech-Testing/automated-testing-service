@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum TestingPlatforms {
-	JAVA("java", "Dockerfile-java-test-job"),
-	PYTHON("python", "Dockerfile-prolog-test-job"),
-	PROLOG("prolog", "Dockerfile-python-test-job"),
+	JAVA("java", "automatedtestingservice/java-tester"),
+	PYTHON("python", "automatedtestingservice/python-tester"),
+	PROLOG("prolog", "automatedtestingservice/prolog-tester"),
 	FSHARP("f#", "");
 
 	public static final Map<String, TestingPlatforms> BY_LABEL = new HashMap<>();
@@ -17,11 +17,11 @@ public enum TestingPlatforms {
 		}
 	}
 
-	public final String dockerfileLocation;
 	public final String language;
+	public final String image;
 
-	TestingPlatforms(String languge, String dockerfileLocation) {
+	TestingPlatforms(String languge, String image) {
 		this.language = languge;
-		this.dockerfileLocation = dockerfileLocation;
+		this.image = image;
 	}
 }

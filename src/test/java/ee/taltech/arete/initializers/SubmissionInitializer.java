@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class SubmissionInitializer {
 	private final static String UNIID_DOCKER = "uniid";
@@ -19,9 +18,10 @@ public class SubmissionInitializer {
 	private final static String TESTING_PLATFORM = "java";
 	private static final String PROJECT_DOCKER = "iti69-420";
 	private static final String PROJECT_GIT = "iti0202-2019";
+	private static final String PROJECT_GIT_PYTHON = "iti0202-2019";
 	private static final String PROJECT_BASE = "ex";
 	private final static String RETURN_URL = "http://localhost:8080/answer";
-	private final static String[] EXTRA = new String[]{"style"};
+	private final static String[] EXTRA = new String[]{"-r CHECKSTYLE"};
 
 	public static Submission getFullSubmission() {
 		return Submission.builder()
@@ -31,7 +31,7 @@ public class SubmissionInitializer {
 				.returnUrl(RETURN_URL)
 				.extra(EXTRA)
 				.slugs(new String[]{ACCEPTED_TEST_SLUGS[new Random().nextInt(3)]})
-				.project(PROJECT_GIT)
+				.project(Math.random() < 0.5 ? PROJECT_GIT : PROJECT_GIT_PYTHON)
 				.projectBase(PROJECT_BASE)
 				.timestamp(System.currentTimeMillis())
 				.priority(new Random().nextInt(10) + 1)

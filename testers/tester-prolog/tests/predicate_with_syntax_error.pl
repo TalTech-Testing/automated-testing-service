@@ -1,5 +1,0 @@
-correct :-
-  true.
-
-invalid :-
-    sadas,

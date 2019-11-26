@@ -25,6 +25,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	private static final Integer MAX_JOBS = 8;
 	private Integer runningJobs = 0;
 	private Integer successfulJobsRan = 0;
+	private Integer counter = 0;
 
 	private static Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
 
@@ -36,7 +37,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	@Override
 	public void enqueue(Submission submission) {
 		submissionPriorityQueue.add(submission);
-		runJob();
 	}
 
 	@Override
@@ -57,15 +57,17 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 	@Override
 	@Async
-	@Scheduled(fixedRate = 1000)
+	@Scheduled(fixedRate = 100)
 	public void runJob() {
 		if (getQueueSize() != 0) {
 			if (runningJobs < MAX_JOBS) {
 				runningJobs++;
+				counter++;
 
 				Thread thread = new Thread(() -> {
 					Submission job = submissionPriorityQueue.remove();
 					LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
+					job.setThread(counter % MAX_JOBS);
 					jobRunnerService.runJob(job);
 				});
 				thread.start();
