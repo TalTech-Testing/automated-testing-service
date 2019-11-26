@@ -3,11 +3,16 @@ package ee.taltech.arete.service.docker;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Image;
 import com.github.dockerjava.core.command.PullImageResultCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 class ImageCheck {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(ImageCheck.class);
+
 	private boolean myResult;
 	private DockerClient dockerClient;
 	private String image;
@@ -23,9 +28,10 @@ class ImageCheck {
 	}
 
 	boolean pull() throws InterruptedException {
+		LOGGER.info("Pulling new image: {}", image);
 		return dockerClient.pullImageCmd(image)
 				.exec(new PullImageResultCallback())
-				.awaitCompletion(60, TimeUnit.SECONDS);
+				.awaitCompletion(300, TimeUnit.SECONDS);
 	}
 
 	Image getTester() {

@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
 import static com.github.dockerjava.api.model.AccessMode.rw;
@@ -46,7 +45,7 @@ public class DockerServiceImpl implements DockerService {
 		CreateContainerResponse container = null;
 		String imageId;
 
-		String containerName = String.format("%s_%s",submission.getHash().substring(0, 8).toLowerCase(), submission.getThread());
+		String containerName = String.format("%s_%s", submission.getHash().substring(0, 8).toLowerCase(), submission.getThread());
 		String hostFile = String.format("input_and_output/%s/host/output.json", submission.getThread());
 		TestingPlatforms testingPlatforms = TestingPlatforms.BY_LABEL.get(submission.getTestingPlatform());
 		String image = testingPlatforms.image;
