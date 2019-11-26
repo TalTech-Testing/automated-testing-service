@@ -11,8 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.*;
 
 @Service
 @EnableAsync
@@ -23,9 +22,10 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	private JobRunnerService jobRunnerService;
 
 	private static final Integer MAX_JOBS = 8;
-	private Integer runningJobs = 0;
 	private Integer successfulJobsRan = 0;
+	private Integer activeRunningJobs = 0;
 	private Integer counter = 0;
+	private List<Submission> activeSubmissions = new ArrayList<>();
 
 	private static Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
 
@@ -40,9 +40,10 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	}
 
 	@Override
-	public void killThread() {
-		runningJobs--;
+	public void killThread(Submission submission) {
+		activeSubmissions.remove(submission);
 		successfulJobsRan++;
+		activeRunningJobs--;
 	}
 
 	@Override
@@ -60,16 +61,30 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	@Scheduled(fixedRate = 100)
 	public void runJob() {
 		if (getQueueSize() != 0) {
-			if (runningJobs < MAX_JOBS) {
-				runningJobs++;
+			if (activeRunningJobs < MAX_JOBS) {
+
+				Submission job = submissionPriorityQueue.poll();
+				assert job != null;
+
+				if (activeSubmissions.stream().anyMatch(o -> o.getUniid().equals(job.getUniid()))) {
+					job.setPriority(6); // Mild punish for spam pushers.
+					submissionPriorityQueue.add(job);
+					return;
+				}
+
 				counter++;
+				activeRunningJobs++;
+				activeSubmissions.add(job);
+
+				LOGGER.info("active: {}, queue: {}, successful: {}", activeRunningJobs, getQueueSize(), successfulJobsRan);
+
+				LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
+				job.setThread(counter % MAX_JOBS);
 
 				Thread thread = new Thread(() -> {
-					Submission job = submissionPriorityQueue.remove();
-					LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
-					job.setThread(counter % MAX_JOBS);
 					jobRunnerService.runJob(job);
 				});
+
 				thread.start();
 
 			}

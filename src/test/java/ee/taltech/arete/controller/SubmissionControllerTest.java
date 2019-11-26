@@ -13,6 +13,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static ee.taltech.arete.initializers.SubmissionInitializer.*;
 import static io.restassured.RestAssured.given;
@@ -38,7 +39,7 @@ public class SubmissionControllerTest {
 	}
 
 	@Test
-	public void addNewSubmission() throws IOException, JSONException {
+	public void addNewSubmission() throws IOException, JSONException, InterruptedException {
 
 		String payload = getFullSubmissionString();
 		Submission submission = given()
@@ -53,5 +54,17 @@ public class SubmissionControllerTest {
 
 		assertFullSubmission(submission);
 
+//		TimeUnit.SECONDS.sleep(100);  // To actually check if it tests
+
 	}
+
+//	@Test
+//	public void updateImage() {
+//		given()
+//				.when()
+//				.post("/tester/update/java-tester")
+////				.post("/tester/update/python-tester")
+//				.then()
+//				.statusCode(is(HttpStatus.SC_ACCEPTED));
+//	}
 }

@@ -75,6 +75,6 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		}
 
-		priorityQueueService.killThread();
+		priorityQueueService.killThread(submission);
 	}
 }

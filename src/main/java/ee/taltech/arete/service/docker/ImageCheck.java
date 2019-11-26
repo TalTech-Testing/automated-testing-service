@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-class ImageCheck {
+public class ImageCheck {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(ImageCheck.class);
 
@@ -18,7 +18,7 @@ class ImageCheck {
 	private String image;
 	private Image tester;
 
-	ImageCheck(DockerClient dockerClient, String image) {
+	public ImageCheck(DockerClient dockerClient, String image) {
 		this.dockerClient = dockerClient;
 		this.image = image;
 	}
@@ -27,7 +27,7 @@ class ImageCheck {
 		return myResult;
 	}
 
-	boolean pull() throws InterruptedException {
+	public boolean pull() throws InterruptedException {
 		LOGGER.info("Pulling new image: {}", image);
 		return dockerClient.pullImageCmd(image)
 				.exec(new PullImageResultCallback())
@@ -38,7 +38,7 @@ class ImageCheck {
 		return tester;
 	}
 
-	void invoke() {
+	public void invoke() {
 		List<Image> images = dockerClient.listImagesCmd().withShowAll(true).exec();
 
 		for (Image tester : images) {

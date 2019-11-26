@@ -8,7 +8,7 @@ public interface PriorityQueueService {
 
 	void runJob();
 
-	void killThread();
+	void killThread(Submission submission);
 
 	Integer getSuccessfulJobsRan();
 

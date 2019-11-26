@@ -47,6 +47,8 @@ public class ReportServiceImpl implements ReportService {
 			message.setText(mail);
 			javaMailSender.send(message);
 
+			new PrintWriter(resultPath).close();
+
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}

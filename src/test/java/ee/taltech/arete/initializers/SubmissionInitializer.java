@@ -16,23 +16,25 @@ public class SubmissionInitializer {
 	private final static String[] ACCEPTED_TEST_SLUGS = new String[]{"EX01IdCode", "EX02Cpu", "EX03SocialNetwork"};
 	private final static String[] SLUGS = new String[]{"EX01IdCode"}; //, "EX02Cpu", "EX03SocialNetwork"
 	private final static String TESTING_PLATFORM = "java";
+	private final static String TESTING_PLATFORM_PYTHON = "python";
 	private static final String PROJECT_DOCKER = "iti69-420";
 	private static final String PROJECT_GIT = "iti0202-2019";
-	private static final String PROJECT_GIT_PYTHON = "iti0202-2019";
+	private static final String PROJECT_GIT_PYTHON = "iti0102-2019";
 	private static final String PROJECT_BASE = "ex";
 	private final static String RETURN_URL = "https://jsonplaceholder.typicode.com/posts";
-	private final static String[] EXTRA = new String[]{"-r CHECKSTYLE"};
+	private final static String[] EXTRA = new String[]{"stylecheck"};
 
 	public static Submission getFullSubmission() {
+		boolean a = true;
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.hash(getRandomHash())
-				.testingPlatform(TESTING_PLATFORM)
+				.testingPlatform(a ? TESTING_PLATFORM : TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.extra(EXTRA)
-				.slugs(new String[]{ACCEPTED_TEST_SLUGS[new Random().nextInt(3)]})
-				.project(Math.random() < 0.5 ? PROJECT_GIT : PROJECT_GIT_PYTHON)
+				.project(a ? PROJECT_GIT : PROJECT_GIT_PYTHON)
 				.projectBase(PROJECT_BASE)
+				.thread(0)
 				.timestamp(System.currentTimeMillis())
 				.priority(new Random().nextInt(10) + 1)
 				.build();

@@ -28,7 +28,7 @@
 //	@Test
 //	void runJob() throws InterruptedException {
 //
-//		int jobSets = 40;
+//		int jobSets = 1;
 //
 //		for (int i = 0; i < jobSets; i++) {
 //			priorityQueueService.enqueue(getFullSubmission());
@@ -55,10 +55,8 @@
 ////			}
 ////		}
 //
-//		while (priorityQueueService.getSuccessfulJobsRan() < 1080) {
+//		while (priorityQueueService.getSuccessfulJobsRan() < 720) {
 //			TimeUnit.SECONDS.sleep(1);
 //		}
-//
-//		assert priorityQueueService.getSuccessfulJobsRan() != 0;
 //	}
 //}

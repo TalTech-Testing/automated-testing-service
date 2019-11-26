@@ -1,5 +1,7 @@
 package ee.taltech.arete.service.docker;
 
+import ee.taltech.arete.domain.Submission;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +17,20 @@ public enum TestingPlatforms {
 		for (TestingPlatforms e : values()) {
 			BY_LABEL.put(e.language, e);
 		}
+	}
+
+	public static void correctTesterInput(Submission submission) {
+		String[] output = new String[submission.getExtra().length];
+		int i = 0;
+		for (String elem : submission.getExtra()) {
+			if (submission.getProject().equals("java") && elem.equals("stylecheck")) {
+				output[i] = "-r CHECKSTYLE";
+			} else {
+				output[i] = elem;
+			}
+			i++;
+		}
+		submission.setExtra(output);
 	}
 
 	public final String language;

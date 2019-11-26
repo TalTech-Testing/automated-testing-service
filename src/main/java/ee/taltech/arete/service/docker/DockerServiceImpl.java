@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
 import static com.github.dockerjava.api.model.AccessMode.rw;
@@ -48,6 +49,7 @@ public class DockerServiceImpl implements DockerService {
 		String containerName = String.format("%s_%s", submission.getHash().substring(0, 8).toLowerCase(), submission.getThread());
 		String hostFile = String.format("input_and_output/%s/host/output.json", submission.getThread());
 		TestingPlatforms testingPlatforms = TestingPlatforms.BY_LABEL.get(submission.getTestingPlatform());
+		TestingPlatforms.correctTesterInput(submission);
 		String image = testingPlatforms.image;
 
 		try {
@@ -87,6 +89,7 @@ public class DockerServiceImpl implements DockerService {
 
 			LOGGER.info("Created container with id: {}", container.getId());
 
+			TimeUnit.SECONDS.sleep(1000);
 			dockerClient.startContainerCmd(container.getId()).exec();
 			LOGGER.info("Started container with id: {}", container.getId());
 
@@ -94,8 +97,6 @@ public class DockerServiceImpl implements DockerService {
 					.exec(new WaitContainerResultCallback())
 					.awaitStatusCode();
 			LOGGER.info("Docker finished with status code: {}", statusCode);
-
-			LOGGER.info("Copying output from container: {}", container.getId());
 
 		} catch (Exception e) {
 
@@ -126,14 +127,6 @@ public class DockerServiceImpl implements DockerService {
 	private String getImage(DockerClient dockerClient, String image) throws InterruptedException {
 
 		ImageCheck imageCheck = new ImageCheck(dockerClient, image);
-		if (imageCheck.is()) return imageCheck.getTester().getId();
-
-		boolean success = imageCheck.pull();
-
-		if (!success) {
-			throw new RequestFormatException("Requested tester does not exist");
-		}
-
 		imageCheck.invoke();
 		return imageCheck.getTester().getId();
 
