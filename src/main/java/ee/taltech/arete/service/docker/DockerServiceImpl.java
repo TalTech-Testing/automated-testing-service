@@ -11,7 +11,6 @@ import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.WaitContainerResultCallback;
 import ee.taltech.arete.domain.InputWriter;
 import ee.taltech.arete.domain.Submission;
-import ee.taltech.arete.exception.RequestFormatException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
 import static com.github.dockerjava.api.model.AccessMode.rw;
@@ -35,6 +33,21 @@ public class DockerServiceImpl implements DockerService {
 
 	private ObjectMapper mapper = new ObjectMapper();
 
+	private static void unTar(TarArchiveInputStream tis, File destFile) throws IOException {
+		TarArchiveEntry tarEntry = null;
+		while ((tarEntry = tis.getNextTarEntry()) != null) {
+			if (tarEntry.isDirectory()) {
+				if (!destFile.exists()) {
+					boolean a = destFile.mkdirs();
+				}
+			} else {
+				FileOutputStream fos = new FileOutputStream(destFile);
+				IOUtils.copy(tis, fos);
+				fos.close();
+			}
+		}
+		tis.close();
+	}
 
 	/**
 	 * @param submission : test job to be tested.
@@ -89,7 +102,6 @@ public class DockerServiceImpl implements DockerService {
 
 			LOGGER.info("Created container with id: {}", container.getId());
 
-			TimeUnit.SECONDS.sleep(1000);
 			dockerClient.startContainerCmd(container.getId()).exec();
 			LOGGER.info("Started container with id: {}", container.getId());
 
@@ -130,22 +142,6 @@ public class DockerServiceImpl implements DockerService {
 		imageCheck.invoke();
 		return imageCheck.getTester().getId();
 
-	}
-
-	private static void unTar(TarArchiveInputStream tis, File destFile) throws IOException {
-		TarArchiveEntry tarEntry = null;
-		while ((tarEntry = tis.getNextTarEntry()) != null) {
-			if (tarEntry.isDirectory()) {
-				if (!destFile.exists()) {
-					boolean a = destFile.mkdirs();
-				}
-			} else {
-				FileOutputStream fos = new FileOutputStream(destFile);
-				IOUtils.copy(tis, fos);
-				fos.close();
-			}
-		}
-		tis.close();
 	}
 
 }

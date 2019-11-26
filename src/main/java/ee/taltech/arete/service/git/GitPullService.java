@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public interface GitPullService {
 
-	 void repositoryMaintenance(Submission submission);
+	void repositoryMaintenance(Submission submission);
 
 	void resetHead(Submission submission);
 

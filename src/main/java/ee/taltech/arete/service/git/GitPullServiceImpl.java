@@ -33,8 +33,8 @@ import java.util.List;
 @Service
 public class GitPullServiceImpl implements GitPullService {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(GitPullService.class);
 	private static final List<String> TESTABLES = List.of("ADD", "MODIFY");
+	private static Logger LOGGER = LoggerFactory.getLogger(GitPullService.class);
 
 	@Override
 	public void repositoryMaintenance(Submission submission) {

@@ -21,10 +21,9 @@ import java.nio.file.Paths;
 @Service
 public class ReportServiceImpl implements ReportService {
 
+	private static Logger LOGGER = LoggerFactory.getLogger(ReportService.class);
 	@Autowired
 	private JavaMailSender javaMailSender;
-
-	private static Logger LOGGER = LoggerFactory.getLogger(ReportService.class);
 
 	@Override
 	public void sendMail(Submission submission, String resultPath) {

@@ -1,1 +1,5 @@
-{"contentRoot":"/student","testRoot":"/tester","extra":"stylecheck"}
+{
+  "contentRoot": "/student",
+  "testRoot": "/tester",
+  "extra": "stylecheck"
+}

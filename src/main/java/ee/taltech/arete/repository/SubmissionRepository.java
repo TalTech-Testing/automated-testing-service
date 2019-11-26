@@ -6,12 +6,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
 
-    ArrayList<Submission> findByHash(@Param("hash") String hash);
+	ArrayList<Submission> findByHash(@Param("hash") String hash);
 
 }

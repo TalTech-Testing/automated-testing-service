@@ -4,6 +4,6 @@ import ee.taltech.arete.domain.Submission;
 
 public interface JobRunnerService {
 
-    void runJob(Submission submission);
+	void runJob(Submission submission);
 
 }

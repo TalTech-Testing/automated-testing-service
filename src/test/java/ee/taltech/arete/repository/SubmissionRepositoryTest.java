@@ -12,7 +12,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static ee.taltech.arete.initializers.SubmissionInitializer.*;
+import static ee.taltech.arete.initializers.SubmissionInitializer.endTest;
+import static ee.taltech.arete.initializers.SubmissionInitializer.getControllerEndpointSubmission;
 
 
 @RunWith(SpringRunner.class)

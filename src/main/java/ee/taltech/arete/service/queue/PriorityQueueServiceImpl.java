@@ -11,24 +11,24 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
 
 @Service
 @EnableAsync
 public class PriorityQueueServiceImpl implements PriorityQueueService {
 
+	private static final Integer MAX_JOBS = 8;
+	private static Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
 	@Autowired
 	@Lazy
 	private JobRunnerService jobRunnerService;
-
-	private static final Integer MAX_JOBS = 8;
 	private Integer successfulJobsRan = 0;
 	private Integer activeRunningJobs = 0;
 	private Integer counter = 0;
 	private List<Submission> activeSubmissions = new ArrayList<>();
-
-	private static Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
-
 	private PriorityQueue<Submission> submissionPriorityQueue = new PriorityQueue<>(Comparator
 			.comparingInt(Submission::getPriority)
 			.reversed()

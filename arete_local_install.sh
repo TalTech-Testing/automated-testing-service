@@ -10,8 +10,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' #  No Color
 
 #INSTALL GIT
-if [ $(dpkg-query -W -f='${Status}' git 2>/dev/null | grep -c "ok installed") -eq 0 ];
-then
+if [ $(dpkg-query -W -f='${Status}' git 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
   printf "${YELLOW}No git. Setting up git.${NC}\n"
   sudo apt --force-yes --yes install git
 else
@@ -29,11 +28,10 @@ elif [ ! -d "iti0203-2019-back" ]; then
 else
   printf "${GREEN}git repo already cloned${NC}\n"
   cd automated-testing-service
-fi;
+fi
 
 #INSTALL DOCKER
-if [ $(dpkg-query -W -f='${Status}' docker 2>/dev/null | grep -c "ok installed") -eq 0 ];
-then
+if [ $(dpkg-query -W -f='${Status}' docker 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
   printf "${YELLOW}No docker. Setting up docker.${NC}\n"
   sudo apt --force-yes --yes install docker
 else
@@ -41,8 +39,7 @@ else
 fi
 
 #INSTALL DOCKER-COMPOSE
-if [ $(dpkg-query -W -f='${Status}' docker-compose 2>/dev/null | grep -c "ok installed") -eq 0 ];
-then
+if [ $(dpkg-query -W -f='${Status}' docker-compose 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
   printf "${YELLOW}No docker-compose. Setting up docker-compose.${NC}\n"
   sudo apt --force-yes --yes install docker-compose
 else

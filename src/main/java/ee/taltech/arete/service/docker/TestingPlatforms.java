@@ -19,6 +19,14 @@ public enum TestingPlatforms {
 		}
 	}
 
+	public final String language;
+	public final String image;
+
+	TestingPlatforms(String languge, String image) {
+		this.language = languge;
+		this.image = image;
+	}
+
 	public static void correctTesterInput(Submission submission) {
 		String[] output = new String[submission.getExtra().length];
 		int i = 0;
@@ -31,13 +39,5 @@ public enum TestingPlatforms {
 			i++;
 		}
 		submission.setExtra(output);
-	}
-
-	public final String language;
-	public final String image;
-
-	TestingPlatforms(String languge, String image) {
-		this.language = languge;
-		this.image = image;
 	}
 }

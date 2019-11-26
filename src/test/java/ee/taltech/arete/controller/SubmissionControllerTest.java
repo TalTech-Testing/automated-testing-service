@@ -13,7 +13,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import static ee.taltech.arete.initializers.SubmissionInitializer.*;
 import static io.restassured.RestAssured.given;
