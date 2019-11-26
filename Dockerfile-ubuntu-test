@@ -6,5 +6,8 @@ WORKDIR /arete
 
 ENV JAVA_OPTS=""
 
+ARG GITLAB_PASSWORD
+ENV GITLAB_PASSWORD=$GITLAB_PASSWORD
+
 # Run Maven build
 RUN chmod +x mvnw && ./mvnw test
