@@ -20,7 +20,7 @@ public class SubmissionInitializer {
 	private static final String PROJECT_GIT = "iti0202-2019";
 	private static final String PROJECT_GIT_PYTHON = "iti0202-2019";
 	private static final String PROJECT_BASE = "ex";
-	private final static String RETURN_URL = "http://localhost:8080/answer";
+	private final static String RETURN_URL = "https://jsonplaceholder.typicode.com/posts";
 	private final static String[] EXTRA = new String[]{"-r CHECKSTYLE"};
 
 	public static Submission getFullSubmission() {
@@ -61,6 +61,7 @@ public class SubmissionInitializer {
 		jsonObject.put("testingPlatform", TESTING_PLATFORM);
 		jsonObject.put("returnUrl", RETURN_URL);
 		jsonObject.put("extra", jsonArray);
+		jsonObject.put("project", PROJECT_GIT);
 
 		return jsonObject.toString();
 	}
