@@ -5,8 +5,8 @@ import java.util.Map;
 
 public enum TestingPlatforms {
 	JAVA("java", "Dockerfile-java-test-job"),
-	PYTHON("python", "testers/tester-python-old/Dockerfile"),
-	PROLOG("prolog", "testers/tester-prolog/Dockerfile"),
+	PYTHON("python", "Dockerfile-prolog-test-job"),
+	PROLOG("prolog", "Dockerfile-python-test-job"),
 	FSHARP("f#", "");
 
 	public static final Map<String, TestingPlatforms> BY_LABEL = new HashMap<>();

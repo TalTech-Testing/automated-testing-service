@@ -43,10 +43,24 @@ RUN python3.7 -m pip install torchvision
 # tensorflow
 RUN python3.7 -m pip install tensorflow
 
-#RUN mkdir /deps
-ADD . /py_tester
+
+########################################## DONT EDIT FROM THIS POINT ON ##########################################
+
+ARG uniid
+ARG slug
+ARG project
+
+RUN mkdir /host
+RUN touch host/output.json
+RUN echo '{"contentRoot":"student", "testRoot":"tester", "extra":["stylecheck"]}' > host/input.json
+
+COPY /testers/tester-python-old /py_tester
+COPY students/${uniid}/${project}/${slug} /py_tester/student
+COPY tests/${project}/${slug} /py_tester/tester
 
 # install package
 RUN cd /py_tester && python3.7 -m pip install .
 
 CMD /bin/bash -c "cd /py_tester && timeout 100 python3.7 pytester.py < /host/input.json > /host/output.json"
+
+# docker build -t my-python-app --build-arg uniid=envomp --build-arg project=iti0201-2019 --build-arg slug=ex04_cipher -f Dockerfile-python-test-job .

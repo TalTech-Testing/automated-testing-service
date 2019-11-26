@@ -37,7 +37,7 @@ public class DockerServiceImpl implements DockerService {
 		String imageId = null;
 
 		String containerName = submission.getHash().substring(0, 16).toLowerCase();
-		String containerFile = "/output/output.json";
+		String containerFile = "/host/output.json";
 		String hostFile = String.format("output/%s_%s_%s_%s.json", submission.getUniid().toLowerCase(), submission.getProject(), slug.toLowerCase(), containerName);
 
 		String dockerfile = TestingPlatforms.BY_LABEL.get(submission.getTestingPlatform()).dockerfileLocation;

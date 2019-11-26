@@ -14,7 +14,7 @@ COPY testers/studenttester-core-2.0.jar JavaTester.jar
 COPY students/${uniid}/${project}/${slug} student
 COPY tests/${project}/${slug} tester
 
-RUN mkdir output
-RUN echo '{}' > output/output.json
+RUN mkdir host
+RUN echo '{}' > host/output.json
 
-CMD ["java", "-jar", "JavaTester.jar", "-c", "student/", "-t", "tester/", "-jsontxt", "-r", "REPORT,CHECKSTYLE,COMPILER,TESTNG", "-o", "/output/output.json"]
+CMD ["java", "-jar", "JavaTester.jar", "-c", "student/", "-t", "tester/", "-jsontxt", "-r", "REPORT,CHECKSTYLE,COMPILER,TESTNG", "-o", "/host/output.json"]

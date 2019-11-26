@@ -75,7 +75,9 @@ public class GitPullServiceImpl implements GitPullService {
 
 			try {
 				Git git = Git.cloneRepository()
-						.setCredentialsProvider(new UsernamePasswordCredentialsProvider("envomp", "P4x2t4a5a1"))
+						.setCredentialsProvider(
+								new UsernamePasswordCredentialsProvider(
+										"envomp", System.getenv().get("GITLAB_PASSWORD")))
 						.setURI(pathToStudentRepo)
 						.setDirectory(new File(pathToStudentFolder))
 						.call();
@@ -114,7 +116,9 @@ public class GitPullServiceImpl implements GitPullService {
 
 			try {
 				Git git = Git.cloneRepository()
-						.setCredentialsProvider(new UsernamePasswordCredentialsProvider("envomp", "P4x2t4a5a1"))
+						.setCredentialsProvider(
+								new UsernamePasswordCredentialsProvider(
+										"envomp", System.getenv().get("GITLAB_PASSWORD")))
 						.setURI(pathToStudentRepo)
 						.setDirectory(new File(pathToStudentFolder))
 						.call();
