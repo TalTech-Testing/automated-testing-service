@@ -31,8 +31,7 @@ public class ReportServiceImpl implements ReportService {
 		try {
 
 			JSONObject json = new JSONObject(Files.readString(Paths.get(resultPath)));
-			String mail = "Your last commit/push did not include any project folders (e.g. EX01, HW01 etc.)\n" +
-					"You can try to change something in the code and commit/push again.";
+			String mail = "Your submission received no results from tester.";
 
 			JSONArray jsonArray = json.getJSONArray("results");
 
@@ -52,6 +51,15 @@ public class ReportServiceImpl implements ReportService {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Override
+	public void sendTextMail(Submission submission, String text) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(String.format("%s@taltech.ee", submission.getUniid()));
+		message.setSubject("Test results");
+		message.setText(text);
+		javaMailSender.send(message);
 	}
 
 	@Override

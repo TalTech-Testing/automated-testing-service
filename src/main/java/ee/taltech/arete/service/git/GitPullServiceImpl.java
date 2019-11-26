@@ -1,8 +1,11 @@
 package ee.taltech.arete.service.git;
 
 import ee.taltech.arete.domain.Submission;
+import ee.taltech.arete.exception.NoChangedFilesException;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RawTextComparator;
@@ -23,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 
@@ -42,6 +46,18 @@ public class GitPullServiceImpl implements GitPullService {
 		String pathToTesterFolder = String.format("tests/%s/", submission.getProject());
 		String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getProject(), submission.getProjectBase());
 		pullOrCloneTesterCode(submission, pathToTesterFolder, pathToTesterRepo);
+	}
+
+	@Override
+	public void resetHead(Submission submission) {
+		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
+		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
+		try {
+			Git.open(new File(pathToStudentFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
+		} catch (Exception e) {
+			LOGGER.error("Failed to reset HEAD. Defaulting to reset hard: {}", e.getMessage());
+			resetHard(submission, pathToStudentFolder, pathToStudentRepo);
+		}
 	}
 
 	@Override
@@ -66,29 +82,51 @@ public class GitPullServiceImpl implements GitPullService {
 				LOGGER.info("Pulled a repository for student with uniid: {} and added slugs: {}", submission.getUniid(), submission.getSlugs());
 
 			} catch (Exception e) {
-				e.printStackTrace();
-				LOGGER.error("Pull failed for user: {} with message: {}", submission.getUniid(), e.getMessage());
+				LOGGER.error("Pull failed for user: {} with message: {}. Cloning repository again.", submission.getUniid(), e.getMessage());
+
+				resetHard(submission, pathToStudentFolder, pathToStudentRepo);
 			}
 
 		} else {
-			LOGGER.info("Cloning a repository for student with uniid: {}", submission.getUniid());
+			cloneRepository(submission, pathToStudentFolder, pathToStudentRepo);
+		}
 
-			try {
-				Git git = Git.cloneRepository()
-						.setCredentialsProvider(
-								new UsernamePasswordCredentialsProvider(
-										"envomp", System.getenv().get("GITLAB_PASSWORD")))
-						.setURI(pathToStudentRepo)
-						.setDirectory(new File(pathToStudentFolder))
-						.call();
+		if (submission.getSlugs().length == 0) {
+			throw new NoChangedFilesException("Check your folder names.");
+		}
 
-				String[] slugs = getChangedFolders(pathToStudentFolder);
-				submission.setSlugs(slugs);
-				LOGGER.info("Cloned a repository for student with uniid: {} and added slugs: {}", submission.getUniid(), submission.getSlugs());
+	}
 
-			} catch (Exception e) {
-				LOGGER.error("Clone failed for user: {} with message: {}", submission.getUniid(), e.getMessage());
-			}
+	@Override
+	public void resetHard(Submission submission, String pathToStudentFolder, String pathToStudentRepo) {
+		try {
+			FileUtils.deleteDirectory(new File(pathToStudentFolder));
+		} catch (Exception e1) {
+			throw new ConcurrentModificationException("Folder is already in use and is corrupted at the same time. Try pushing less often there, buddy. :)"); //Never actually gets here.
+		}
+
+		cloneRepository(submission, pathToStudentFolder, pathToStudentRepo);
+	}
+
+	@Override
+	public void cloneRepository(Submission submission, String pathToStudentFolder, String pathToStudentRepo) {
+		LOGGER.info("Cloning a repository for student with uniid: {}", submission.getUniid());
+
+		try {
+			Git git = Git.cloneRepository()
+					.setCredentialsProvider(
+							new UsernamePasswordCredentialsProvider(
+									"envomp", System.getenv().get("GITLAB_PASSWORD")))
+					.setURI(pathToStudentRepo)
+					.setDirectory(new File(pathToStudentFolder))
+					.call();
+
+			String[] slugs = getChangedFolders(pathToStudentFolder);
+			submission.setSlugs(slugs);
+			LOGGER.info("Cloned a repository for student with uniid: {} and added slugs: {}", submission.getUniid(), submission.getSlugs());
+
+		} catch (Exception e) {
+			LOGGER.error("Clone failed for user: {} with message: {}", submission.getUniid(), e.getMessage());
 		}
 	}
 
@@ -129,7 +167,8 @@ public class GitPullServiceImpl implements GitPullService {
 		}
 	}
 
-	private String[] getChangedFolders(String pathToStudentFolder) throws IOException {
+	@Override
+	public String[] getChangedFolders(String pathToStudentFolder) throws IOException {
 		HashSet<String> repoMainFolders = new HashSet<>();
 		Repository repository = new FileRepository(pathToStudentFolder + ".git");
 		RevWalk rw = new RevWalk(repository);
@@ -144,7 +183,7 @@ public class GitPullServiceImpl implements GitPullService {
 		for (DiffEntry diff : diffs) {
 			if (TESTABLES.contains(diff.getChangeType().name())) {
 				String potentialSlug = diff.getNewPath().split("/")[0];
-				if (potentialSlug.matches("[a-zA-Z0-9]*")) {
+				if (potentialSlug.matches("[a-zA-Z0-9_]*")) {
 					repoMainFolders.add(potentialSlug);
 				}
 			}

@@ -30,13 +30,22 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 	@Override
 	public void runJob(Submission submission) {
-		gitPullService.repositoryMaintenance(submission);
 
-		LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
+		try {
+			gitPullService.repositoryMaintenance(submission);
+		} catch (Exception e) {
+			LOGGER.error("Student didn't have new submissions.");
 
-		if (submission.getSlugs() == null) {
+			try {
+				reportService.sendTextMail(submission, e.getMessage());
+				LOGGER.error("Reported to student mailbox");
+			} catch (Exception e1) {
+				LOGGER.error("Malformed mail");
+			}
 			return;
 		}
+
+		LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
 
 		for (String slug : submission.getSlugs()) {
 
@@ -45,16 +54,23 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 			try {
 				reportService.sendToReturnUrl(submission, output);
-				LOGGER.error("Reported to return url");
+				LOGGER.info("Reported to return url");
 			} catch (Exception e) {
-				LOGGER.error("Malformed returnUrl");
+				LOGGER.error("Malformed returnUrl: {}", e.getMessage());
 			}
 
 			try {
 				reportService.sendMail(submission, output);
-				LOGGER.error("Reported to student mailbox");
+				LOGGER.info("Reported to student mailbox");
 			} catch (Exception e) {
-				LOGGER.error("Malformed mail");
+				LOGGER.error("Malformed mail: {}", e.getMessage());
+			}
+
+			try {
+				gitPullService.resetHead(submission);
+				LOGGER.info("Reset student repository head");
+			} catch (Exception e) {
+				LOGGER.error("Failed to reset HEAD: {}", e.getMessage());
 			}
 
 		}
