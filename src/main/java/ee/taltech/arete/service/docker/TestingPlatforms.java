@@ -31,8 +31,8 @@ public enum TestingPlatforms {
 		String[] output = new String[submission.getExtra().length];
 		int i = 0;
 		for (String elem : submission.getExtra()) {
-			if (submission.getProject().equals("java") && elem.equals("stylecheck")) {
-				output[i] = "-r CHECKSTYLE";
+			if (submission.getTestingPlatform().equals("java") && elem.equals("stylecheck")) {
+				output[i] = "-r FILEWRITER,COMPILER,TESTNG,REPORT,CHECKSTYLE";
 			} else {
 				output[i] = elem;
 			}
