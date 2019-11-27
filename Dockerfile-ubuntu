@@ -5,15 +5,15 @@ ADD . /arete
 WORKDIR /arete
 
 # Install OpenJDK-11
-RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk && \
-    apt-get install -y ant && \
-    apt-get clean;
+RUN apk update && \
+    apk install -y openjdk-11-jdk && \
+    apk install -y ant && \
+    apk clean;
 
 # Fix certificate issues
-RUN apt-get update && \
-    apt-get install ca-certificates-java && \
-    apt-get clean && \
+RUN apk update && \
+    apk install ca-certificates-java && \
+    apk clean && \
     update-ca-certificates -f;
 
 # Setup JAVA_HOME -- useful for docker commandline
