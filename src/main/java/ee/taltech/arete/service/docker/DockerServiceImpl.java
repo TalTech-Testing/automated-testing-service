@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
 import static com.github.dockerjava.api.model.AccessMode.rw;
@@ -101,6 +102,8 @@ public class DockerServiceImpl implements DockerService {
 					.exec();
 
 			LOGGER.info("Created container with id: {}", container.getId());
+
+			TimeUnit.MINUTES.sleep(10);
 
 			dockerClient.startContainerCmd(container.getId()).exec();
 			LOGGER.info("Started container with id: {}", container.getId());
