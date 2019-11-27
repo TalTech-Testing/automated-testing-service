@@ -91,9 +91,9 @@ public class DockerServiceImpl implements DockerService {
 
 			mapper.writeValue(new File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
 
-			container = dockerClient.createContainerCmd(image + ":latest")
+			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
-					.withVolumes(volumeStudent, volumeTester)
+					.withVolumes(volumeStudent, volumeTester, volumeOutput)
 					.withHostConfig(newHostConfig()
 							.withBinds(
 									new Bind(new File(output).getAbsolutePath(), volumeOutput, rw),
@@ -103,7 +103,7 @@ public class DockerServiceImpl implements DockerService {
 
 			LOGGER.info("Created container with id: {}", container.getId());
 
-			TimeUnit.MINUTES.sleep(10);
+			TimeUnit.MINUTES.sleep(1);
 
 			dockerClient.startContainerCmd(container.getId()).exec();
 			LOGGER.info("Started container with id: {}", container.getId());
