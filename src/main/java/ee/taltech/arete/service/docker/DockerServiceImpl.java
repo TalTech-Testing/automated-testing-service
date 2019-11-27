@@ -91,7 +91,7 @@ public class DockerServiceImpl implements DockerService {
 			Volume volumeTester = new Volume("/tester");
 			Volume volumeOutput = new Volume("/host");
 
-			mapper.writeValue(new File(String.format("/input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
+			mapper.writeValue(new File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
 
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
