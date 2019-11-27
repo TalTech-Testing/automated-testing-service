@@ -83,15 +83,15 @@ public class DockerServiceImpl implements DockerService {
 
 			LOGGER.info("Got image with id: {}", imageId);
 
-			String student = String.format("/students/%s/%s/%s", submission.getUniid(), submission.getProject(), slug);
-			String tester = String.format("/tests/%s/%s", submission.getProject(), slug);
-			String output = String.format("/input_and_output/%s/host", submission.getThread());
+			String student = String.format("/home/tester/arete/students/%s/%s/%s", submission.getUniid(), submission.getProject(), slug);
+			String tester = String.format("/home/tester/arete/tests/%s/%s", submission.getProject(), slug);
+			String output = String.format("/home/tester/arete/input_and_output/%s/host", submission.getThread());
 
 			Volume volumeStudent = new Volume("/student");
 			Volume volumeTester = new Volume("/tester");
 			Volume volumeOutput = new Volume("/host");
 
-			mapper.writeValue(new File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
+			mapper.writeValue(new File(String.format("/home/tester/arete/input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
 
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
