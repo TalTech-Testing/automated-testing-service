@@ -25,7 +25,7 @@ public class SubmissionInitializer {
 	private final static String[] EXTRA = new String[]{"stylecheck"};
 
 	public static Submission getFullSubmission() {
-		boolean a = true;
+		boolean a = false;
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.hash(getRandomHash())
