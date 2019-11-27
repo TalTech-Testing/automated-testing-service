@@ -44,7 +44,7 @@ public class ImageCheck {
 		for (Image tester : images) {
 			ImageCheck.this.tester = tester;
 			for (String tag : tester.getRepoTags()) {
-				if (tag.equals(image)) {
+				if (tag.contains(image)) {
 					myResult = true;
 					return;
 				}
