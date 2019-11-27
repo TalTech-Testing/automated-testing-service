@@ -96,6 +96,8 @@ public class DockerServiceImpl implements DockerService {
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
 					.withVolumes(volumeStudent, volumeTester, volumeOutput)
+					.withAttachStdout(true)
+					.withAttachStderr(true)
 					.withHostConfig(newHostConfig()
 							.withBinds(
 									new Bind(new File(output).getAbsolutePath(), volumeOutput, rw),
