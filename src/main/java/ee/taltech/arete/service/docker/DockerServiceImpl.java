@@ -68,6 +68,9 @@ public class DockerServiceImpl implements DockerService {
 		try {
 
 			String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
+			String certPath = System.getenv().getOrDefault("DOCKER_CERT_PATH", "/home/user/.docker/certs");
+			String tlsVerify = System.getenv().getOrDefault("DOCKER_TLS_VERIFY", "1");
+			String dockerConfig = System.getenv().getOrDefault("DOCKER_CONFIG", "/home/user/.docker");
 
 			DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
 					.withDockerHost(dockerHost)
@@ -80,15 +83,15 @@ public class DockerServiceImpl implements DockerService {
 
 			LOGGER.info("Got image with id: {}", imageId);
 
-			String student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getProject(), slug);
-			String tester = String.format("tests/%s/%s", submission.getProject(), slug);
-			String output = String.format("input_and_output/%s/host", submission.getThread());
+			String student = String.format("/students/%s/%s/%s", submission.getUniid(), submission.getProject(), slug);
+			String tester = String.format("/tests/%s/%s", submission.getProject(), slug);
+			String output = String.format("/input_and_output/%s/host", submission.getThread());
 
 			Volume volumeStudent = new Volume("/student");
 			Volume volumeTester = new Volume("/tester");
 			Volume volumeOutput = new Volume("/host");
 
-			mapper.writeValue(new File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
+			mapper.writeValue(new File(String.format("/input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
 
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
