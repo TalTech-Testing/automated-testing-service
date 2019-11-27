@@ -1,26 +1,31 @@
-FROM docker:dind
+FROM ubuntu:18.04
 
 MAINTAINER enrico.vompa@gmail.com
 ADD . /arete
 WORKDIR /arete
 
 # Install OpenJDK-11
-RUN apk update && \
-    apk install -y openjdk-11-jdk && \
-    apk install -y ant && \
-    apk clean;
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk && \
+    apt-get install -y ant && \
+    apt-get clean;
 
 # Fix certificate issues
-RUN apk update && \
-    apk install ca-certificates-java && \
-    apk clean && \
+RUN apt-get update && \
+    apt-get install ca-certificates-java && \
+    apt-get clean && \
     update-ca-certificates -f;
 
 # Setup JAVA_HOME -- useful for docker commandline
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
 RUN export JAVA_HOME
-
 ENV JAVA_OPTS=""
+
+RUN apt install -y apt-transport-https ca-certificates curl software-properties-common
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+RUN apt update
+RUN apt install -y docker-ce docker.io docker-compose
 
 # Run Maven build
 RUN chmod +x mvnw && ./mvnw install -DskipTests
