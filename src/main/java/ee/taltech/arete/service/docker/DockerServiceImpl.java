@@ -2,13 +2,15 @@ package ee.taltech.arete.service.docker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.async.ResultCallbackTemplate;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Bind;
+import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.api.model.Volume;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
-import com.github.dockerjava.core.command.WaitContainerResultCallback;
+import com.github.dockerjava.core.command.LogContainerResultCallback;
 import ee.taltech.arete.domain.InputWriter;
 import ee.taltech.arete.domain.Submission;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -110,10 +112,22 @@ public class DockerServiceImpl implements DockerService {
 			dockerClient.startContainerCmd(container.getId()).exec();
 			LOGGER.info("Started container with id: {}", container.getId());
 
-			Integer statusCode = dockerClient.waitContainerCmd(container.getId())
-					.exec(new WaitContainerResultCallback())
-					.awaitStatusCode();
-			LOGGER.info("Docker finished with status code: {}", statusCode);
+//			dockerClient.waitContainerCmd(container.getId())
+//					.exec(new WaitContainerResultCallback());
+
+			dockerClient
+					.logContainerCmd(containerName)
+					.withStdErr(true)
+					.withStdOut(true)
+					.withFollowStream(true)
+					.withSince(0)
+					.exec(new ResultCallbackTemplate<LogContainerResultCallback, Frame>() {
+						@Override
+						public void onNext(Frame frame) {
+							System.out.print(new String(frame.getPayload()));
+						}
+					});
+			LOGGER.info("Docker finished with status code: ");
 
 		} catch (Exception e) {
 
