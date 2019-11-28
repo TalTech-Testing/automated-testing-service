@@ -10,7 +10,7 @@ public interface GitPullService {
 
 	void resetHeadAndPull(Submission submission);
 
-	/// Try not to use the following folders.
+	/// Try not to use the following methods.
 
 	void resetHard(Submission submission, String pathToFolder, String pathToRepo);
 

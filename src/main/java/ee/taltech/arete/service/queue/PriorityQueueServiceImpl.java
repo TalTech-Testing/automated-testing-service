@@ -25,7 +25,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	@Autowired
 	@Lazy
 	private JobRunnerService jobRunnerService;
-	private Integer successfulJobsRan = 0;
+	private Integer jobsRan = 0;
 	private Integer activeRunningJobs = 0;
 	private Integer counter = 0;
 	private List<Submission> activeSubmissions = new ArrayList<>();
@@ -41,14 +41,15 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 	@Override
 	public void killThread(Submission submission) {
+		LOGGER.info("All done for submission on thread: {}", submission.getThread());
 		activeSubmissions.remove(submission);
-		successfulJobsRan++;
+		jobsRan++;
 		activeRunningJobs--;
 	}
 
 	@Override
-	public Integer getSuccessfulJobsRan() {
-		return successfulJobsRan;
+	public Integer getJobsRan() {
+		return jobsRan;
 	}
 
 	@Override
@@ -66,8 +67,8 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 				Submission job = submissionPriorityQueue.poll();
 				assert job != null;
 
-				if (activeSubmissions.stream().anyMatch(o -> o.getUniid().equals(job.getUniid()))) {
-					job.setPriority(6); // Mild punish for spam pushers.
+				if (job.getPriority() < 8 && activeSubmissions.stream().anyMatch(o -> o.getUniid().equals(job.getUniid()))) {
+					job.setPriority(4); // Mild punish for spam pushers.
 					submissionPriorityQueue.add(job);
 					return;
 				}
@@ -76,13 +77,18 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 				activeRunningJobs++;
 				activeSubmissions.add(job);
 
-				LOGGER.info("active: {}, queue: {}, successful: {}", activeRunningJobs, getQueueSize(), successfulJobsRan);
+				LOGGER.info("active: {}, queue: {}, ran: {}", activeRunningJobs, getQueueSize(), jobsRan);
 
 				LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
 				job.setThread(counter % MAX_JOBS);
 
 				Thread thread = new Thread(() -> {
-					jobRunnerService.runJob(job);
+					try {
+						jobRunnerService.runJob(job);
+					} catch (Exception e) {
+						LOGGER.error(e.getMessage());
+						killThread(job);
+					}
 				});
 
 				thread.start();

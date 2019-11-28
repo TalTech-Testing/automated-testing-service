@@ -10,7 +10,7 @@ public interface PriorityQueueService {
 
 	void killThread(Submission submission);
 
-	Integer getSuccessfulJobsRan();
+	Integer getJobsRan();
 
 	Integer getQueueSize();
 

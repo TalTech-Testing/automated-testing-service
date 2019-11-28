@@ -42,15 +42,23 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			} catch (Exception e1) {
 				LOGGER.error("Malformed mail");
 			}
+			priorityQueueService.killThread(submission);
 			return;
 		}
 
 		LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
 
 		for (String slug : submission.getSlugs()) {
-
-			String output = dockerService.runDocker(submission, slug);
-			LOGGER.info("Job {} has been ran for user {}", slug, submission.getUniid());
+			String output;
+			try {
+				output = dockerService.runDocker(submission, slug);
+				LOGGER.info("Job {} has been ran for user {}", slug, submission.getUniid());
+			} catch (Exception e) {
+				LOGGER.error("job {} has failed for user {} with exception: {}", slug, submission.getUniid(), e.getMessage());
+				reportService.sendTextMail(submission, e.getMessage());
+				LOGGER.error("Reported to student mailbox");
+				continue;
+			}
 
 			try {
 				reportService.sendToReturnUrl(submission, output);

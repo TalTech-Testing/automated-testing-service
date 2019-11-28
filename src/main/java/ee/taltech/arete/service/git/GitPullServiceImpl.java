@@ -29,15 +29,26 @@ import java.nio.file.Paths;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class GitPullServiceImpl implements GitPullService {
 
 	private static final List<String> TESTABLES = List.of("ADD", "MODIFY");
 	private static Logger LOGGER = LoggerFactory.getLogger(GitPullService.class);
+	private boolean CONCURRENT = false;
 
 	@Override
 	public void repositoryMaintenance(Submission submission) {
+
+		while (CONCURRENT) {
+			try {
+				TimeUnit.SECONDS.sleep(1);
+			} catch (Exception ignored) {
+			}
+		}
+
+		CONCURRENT = true;
 
 		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
 		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
@@ -46,11 +57,21 @@ public class GitPullServiceImpl implements GitPullService {
 		String pathToTesterFolder = String.format("tests/%s/", submission.getProject());
 		String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getProject(), submission.getProjectBase());
 		pullOrCloneTesterCode(submission, pathToTesterFolder, pathToTesterRepo);
-	}
 
+		CONCURRENT = false;
+	}
 
 	@Override
 	public void resetHeadAndPull(Submission submission) {
+
+		while (CONCURRENT) {
+			try {
+				TimeUnit.SECONDS.sleep(1);
+			} catch (Exception ignored) {
+			}
+		}
+		CONCURRENT = true;
+
 		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
 		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
 		try {
@@ -70,6 +91,8 @@ public class GitPullServiceImpl implements GitPullService {
 			resetHard(submission, pathToTesterFolder, pathToTesterRepo);
 		}
 		pullOrCloneTesterCode(submission, pathToTesterFolder, pathToTesterRepo);
+
+		CONCURRENT = false;
 	}
 
 	@Override
