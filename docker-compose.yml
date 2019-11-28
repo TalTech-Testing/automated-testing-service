@@ -37,6 +37,6 @@ services:
       - ..env #Change to .env to run locally
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/tester/arete/input_and_output:/arete/input_and_output
-      - /home/tester/arete/students:/arete/students
-      - /home/tester/arete/tests:/arete/tests
+      - ${ARETE_HOME}/input_and_output:/arete/input_and_output
+      - ${ARETE_HOME}/students:/arete/students
+      - ${ARETE_HOME}/tests:/arete/tests
