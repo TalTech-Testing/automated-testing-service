@@ -83,9 +83,9 @@ public class DockerServiceImpl implements DockerService {
 
 			LOGGER.info("Got image with id: {}", imageId);
 
-			String student = String.format("/students/%s/%s/%s", submission.getUniid(), submission.getProject(), slug);
-			String tester = String.format("/tests/%s/%s", submission.getProject(), slug);
-			String output = String.format("/input_and_output/%s", submission.getThread());
+			String student = String.format("%s/students/%s/%s/%s", System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete"), submission.getUniid(), submission.getProject(), slug);
+			String tester = String.format("%s/tests/%s/%s", System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete"), submission.getProject(), slug);
+			String output = String.format("%s/input_and_output/%s/host", System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete"), submission.getThread());
 
 			Volume volumeStudent = new Volume("/student");
 			Volume volumeTester = new Volume("/tester");
@@ -100,9 +100,9 @@ public class DockerServiceImpl implements DockerService {
 					.withAttachStderr(true)
 					.withHostConfig(newHostConfig()
 							.withBinds(
-									new Bind(new File(output).getAbsolutePath(), volumeOutput, rw),
-									new Bind(new File(student).getAbsolutePath(), volumeStudent, rw),
-									new Bind(new File(tester).getAbsolutePath(), volumeTester, ro)))
+									new Bind(output, volumeOutput, rw),
+									new Bind(student, volumeStudent, rw),
+									new Bind(tester, volumeTester, ro)))
 					.exec();
 
 			LOGGER.info("Created container with id: {}", container.getId());
