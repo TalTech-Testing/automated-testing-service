@@ -49,14 +49,44 @@ public class GitPullServiceImpl implements GitPullService {
 	}
 
 	@Override
+	public void revert(Submission submission) {
+		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
+		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
+		try {
+			Git.open(new File(pathToStudentFolder)).revert().call();
+		} catch (Exception e) {
+			LOGGER.error("Failed to revert student. Defaulting to reset hard: {}", e.getMessage());
+			resetHard(submission, pathToStudentFolder, pathToStudentRepo);
+		}
+
+		String pathToTesterFolder = String.format("tests/%s/", submission.getProject());
+		String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getProject(), submission.getProjectBase());
+		try {
+			Git.open(new File(pathToTesterFolder)).revert().call();
+		} catch (Exception e) {
+			LOGGER.error("Failed to reset reset tester. Defaulting to reset hard: {}", e.getMessage());
+			resetHard(submission, pathToTesterFolder, pathToTesterRepo);
+		}
+	}
+
+	@Override
 	public void resetHead(Submission submission) {
 		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
 		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
 		try {
 			Git.open(new File(pathToStudentFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
 		} catch (Exception e) {
-			LOGGER.error("Failed to reset HEAD. Defaulting to reset hard: {}", e.getMessage());
+			LOGGER.error("Failed to reset HEAD for student. Defaulting to reset hard: {}", e.getMessage());
 			resetHard(submission, pathToStudentFolder, pathToStudentRepo);
+		}
+
+		String pathToTesterFolder = String.format("tests/%s/", submission.getProject());
+		String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getProject(), submission.getProjectBase());
+		try {
+			Git.open(new File(pathToTesterFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
+		} catch (Exception e) {
+			LOGGER.error("Failed to reset HEAD for tester. Defaulting to reset hard: {}", e.getMessage());
+			resetHard(submission, pathToTesterFolder, pathToTesterRepo);
 		}
 	}
 
@@ -68,7 +98,6 @@ public class GitPullServiceImpl implements GitPullService {
 			LOGGER.info("Pulling a repository for student with uniid: {}", submission.getUniid());
 
 			try {
-
 				PullResult result = Git.open(new File(pathToStudentFolder)).pull()
 						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
 								"envomp", System.getenv().get("GITLAB_PASSWORD")))
@@ -98,14 +127,14 @@ public class GitPullServiceImpl implements GitPullService {
 	}
 
 	@Override
-	public void resetHard(Submission submission, String pathToStudentFolder, String pathToStudentRepo) {
+	public void resetHard(Submission submission, String pathToFolder, String pathToRepo) {
 		try {
-			FileUtils.deleteDirectory(new File(pathToStudentFolder));
+			FileUtils.deleteDirectory(new File(pathToFolder));
 		} catch (Exception e1) {
 			throw new ConcurrentModificationException("Folder is already in use and is corrupted at the same time. Try pushing less often there, buddy. :)"); //Never actually gets here.
 		}
 
-		cloneRepository(submission, pathToStudentFolder, pathToStudentRepo);
+		cloneRepository(submission, pathToFolder, pathToRepo);
 	}
 
 	@Override

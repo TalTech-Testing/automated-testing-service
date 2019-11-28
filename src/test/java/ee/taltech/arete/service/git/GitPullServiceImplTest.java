@@ -1,5 +1,6 @@
 package ee.taltech.arete.service.git;
 
+import ee.taltech.arete.domain.Submission;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,12 @@ class GitPullServiceImplTest {
 
 	@Test
 	void pullJob() {
-		gitPullService.repositoryMaintenance(getControllerEndpointSubmission());
-		gitPullService.repositoryMaintenance(getControllerEndpointSubmission());
+		Submission submission = getControllerEndpointSubmission();
+		gitPullService.repositoryMaintenance(submission);
+		gitPullService.repositoryMaintenance(submission);
+		gitPullService.resetHead(submission);
+		gitPullService.revert(submission);
+
 	}
 
 }
