@@ -50,11 +50,13 @@ public class GitPullServiceImpl implements GitPullService {
 
 		CONCURRENT = true;
 
-		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
+		String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
+
+		String pathToStudentFolder = String.format("%s/students/%s/%s/", home, submission.getUniid(), submission.getProject());
 		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
 		pullOrCloneStudentCode(submission, pathToStudentFolder, pathToStudentRepo);
 
-		String pathToTesterFolder = String.format("tests/%s/", submission.getProject());
+		String pathToTesterFolder = String.format("%s/tests/%s/", home, submission.getProject());
 		String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getProject(), submission.getProjectBase());
 		pullOrCloneTesterCode(submission, pathToTesterFolder, pathToTesterRepo);
 
@@ -72,7 +74,9 @@ public class GitPullServiceImpl implements GitPullService {
 		}
 		CONCURRENT = true;
 
-		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
+		String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
+
+		String pathToStudentFolder = String.format("%s/students/%s/%s/", home, submission.getUniid(), submission.getProject());
 		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
 		try {
 			Git.open(new File(pathToStudentFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
@@ -82,7 +86,7 @@ public class GitPullServiceImpl implements GitPullService {
 		}
 		pullOrCloneStudentCode(submission, pathToStudentFolder, pathToStudentRepo);
 
-		String pathToTesterFolder = String.format("tests/%s/", submission.getProject());
+		String pathToTesterFolder = String.format("%s/tests/%s/", home, submission.getProject());
 		String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getProject(), submission.getProjectBase());
 		try {
 			Git.open(new File(pathToTesterFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();

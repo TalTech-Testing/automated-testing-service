@@ -86,15 +86,16 @@ public class DockerServiceImpl implements DockerService {
 
 			LOGGER.info("Got image with id: {}", imageId);
 
-			String student = String.format("%s/students/%s/%s/%s", System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete"), submission.getUniid(), submission.getProject(), slug);
-			String tester = String.format("%s/tests/%s/%s", System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete"), submission.getProject(), slug);
-			String output = String.format("%s/input_and_output/%s/host", System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete"), submission.getThread());
+			String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
+			String student = String.format("%s/students/%s/%s/%s", home, submission.getUniid(), submission.getProject(), slug);
+			String tester = String.format("%s/tests/%s/%s", home, submission.getProject(), slug);
+			String output = String.format("%s/input_and_output/%s/host", home, submission.getThread());
 
 			Volume volumeStudent = new Volume("/student");
 			Volume volumeTester = new Volume("/tester");
 			Volume volumeOutput = new Volume("/host");
 
-			mapper.writeValue(new File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
+			mapper.writeValue(new File(String.format("%s/input_and_output/%s/host/input.json", home, submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
 
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
