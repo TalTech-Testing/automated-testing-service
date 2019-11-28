@@ -8,9 +8,7 @@ public interface GitPullService {
 
 	void repositoryMaintenance(Submission submission);
 
-	void revert(Submission submission);
-
-	void resetHead(Submission submission);
+	void resetHeadAndPull(Submission submission);
 
 	/// Try not to use the following folders.
 

@@ -67,17 +67,10 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			}
 
 			try {
-				gitPullService.resetHead(submission);
+				gitPullService.resetHeadAndPull(submission);
 				LOGGER.info("Reset student and tester repository head");
 			} catch (Exception e) {
 				LOGGER.error("Failed to reset HEAD: {}", e.getMessage());
-			}
-
-			try {
-				gitPullService.revert(submission);
-				LOGGER.info("Reverted student and tester repository");
-			} catch (Exception e) {
-				LOGGER.error("Failed to revert: {}", e.getMessage());
 			}
 
 		}

@@ -48,29 +48,9 @@ public class GitPullServiceImpl implements GitPullService {
 		pullOrCloneTesterCode(submission, pathToTesterFolder, pathToTesterRepo);
 	}
 
-	@Override
-	public void revert(Submission submission) {
-		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
-		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
-		try {
-			Git.open(new File(pathToStudentFolder)).revert().call();
-		} catch (Exception e) {
-			LOGGER.error("Failed to revert student. Defaulting to reset hard: {}", e.getMessage());
-			resetHard(submission, pathToStudentFolder, pathToStudentRepo);
-		}
-
-		String pathToTesterFolder = String.format("tests/%s/", submission.getProject());
-		String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getProject(), submission.getProjectBase());
-		try {
-			Git.open(new File(pathToTesterFolder)).revert().call();
-		} catch (Exception e) {
-			LOGGER.error("Failed to reset reset tester. Defaulting to reset hard: {}", e.getMessage());
-			resetHard(submission, pathToTesterFolder, pathToTesterRepo);
-		}
-	}
 
 	@Override
-	public void resetHead(Submission submission) {
+	public void resetHeadAndPull(Submission submission) {
 		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
 		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
 		try {
@@ -79,6 +59,7 @@ public class GitPullServiceImpl implements GitPullService {
 			LOGGER.error("Failed to reset HEAD for student. Defaulting to reset hard: {}", e.getMessage());
 			resetHard(submission, pathToStudentFolder, pathToStudentRepo);
 		}
+		pullOrCloneStudentCode(submission, pathToStudentFolder, pathToStudentRepo);
 
 		String pathToTesterFolder = String.format("tests/%s/", submission.getProject());
 		String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getProject(), submission.getProjectBase());
@@ -88,6 +69,7 @@ public class GitPullServiceImpl implements GitPullService {
 			LOGGER.error("Failed to reset HEAD for tester. Defaulting to reset hard: {}", e.getMessage());
 			resetHard(submission, pathToTesterFolder, pathToTesterRepo);
 		}
+		pullOrCloneTesterCode(submission, pathToTesterFolder, pathToTesterRepo);
 	}
 
 	@Override

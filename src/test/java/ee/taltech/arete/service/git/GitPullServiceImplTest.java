@@ -21,8 +21,7 @@ class GitPullServiceImplTest {
 		Submission submission = getControllerEndpointSubmission();
 		gitPullService.repositoryMaintenance(submission);
 		gitPullService.repositoryMaintenance(submission);
-		gitPullService.resetHead(submission);
-		gitPullService.revert(submission);
+		gitPullService.resetHeadAndPull(submission);
 
 	}
 
