@@ -34,7 +34,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getExtra() == null) {
-			submission.setExtra(new String[]{"style"});
+			submission.setExtra(new String[]{"stylecheck"});
 		}
 
 		if (submission.getProjectBase() == null) {
