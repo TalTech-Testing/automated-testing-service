@@ -7,7 +7,6 @@
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.test.context.junit4.SpringRunner;
 //
-//import java.util.Optional;
 //import java.util.concurrent.TimeUnit;
 //
 //import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmission;
@@ -28,10 +27,11 @@
 //	@Test
 //	void runJob() throws InterruptedException {
 //
-//		int jobSets = 1;
+//		int jobSets = 32;
 //
 //		for (int i = 0; i < jobSets; i++) {
-//			priorityQueueService.enqueue(getFullSubmission());
+//			Submission submission = getFullSubmission();
+//			priorityQueueService.enqueue(submission);
 //		}
 //
 ////		Optional<Submission> submission = priorityQueueService.runJob();
@@ -55,7 +55,7 @@
 ////			}
 ////		}
 //
-//		while (priorityQueueService.getSuccessfulJobsRan() < 720) {
+//		while (priorityQueueService.getJobsRan() < 720) {
 //			TimeUnit.SECONDS.sleep(1);
 //		}
 //	}

@@ -36,7 +36,7 @@ public class SubmissionInitializer {
 				.projectBase(PROJECT_BASE)
 				.thread(0)
 				.timestamp(System.currentTimeMillis())
-				.priority(new Random().nextInt(10) + 1)
+				.priority(new Random().nextInt(5) + 5)
 				.build();
 	}
 

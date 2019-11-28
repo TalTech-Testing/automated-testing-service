@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallbackTemplate;
 import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.api.model.Volume;
@@ -130,11 +131,17 @@ public class DockerServiceImpl implements DockerService {
 			LOGGER.info("Docker finished with status code: ");
 
 		} catch (Exception e) {
-
-			e.printStackTrace();
 			LOGGER.error("Job failed with exception: {}", e.getMessage());
+			cleanup(submission, dockerClient, container);
+			throw new DockerException("Cant't launch docker, message: " + e.getMessage(), 1);
 		}
 
+		cleanup(submission, dockerClient, container);
+
+		return hostFile;
+	}
+
+	private void cleanup(Submission submission, DockerClient dockerClient, CreateContainerResponse container) {
 		if (dockerClient != null && container != null) {
 
 			LOGGER.info("Stopping container: {}", container.getId());
@@ -151,8 +158,6 @@ public class DockerServiceImpl implements DockerService {
 				LOGGER.error("Container {} has already been removed", submission.getHash());
 			}
 		}
-
-		return hostFile;
 	}
 
 	private String getImage(DockerClient dockerClient, String image) throws InterruptedException {

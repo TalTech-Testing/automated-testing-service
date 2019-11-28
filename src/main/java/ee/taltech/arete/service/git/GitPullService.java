@@ -8,16 +8,18 @@ public interface GitPullService {
 
 	void repositoryMaintenance(Submission submission);
 
-	void resetHead(Submission submission);
+	void resetHeadAndPull(Submission submission);
 
-	void resetHard(Submission submission, String pathToStudentFolder, String pathToStudentRepo);
+	/// Try not to use the following methods.
 
-	void cloneRepository(Submission submission, String pathToStudentFolder, String pathToStudentRepo);
+	void resetHard(Submission submission, String pathToFolder, String pathToRepo);
 
-	void pullOrCloneStudentCode(Submission submission, String pathToStudentFolder, String pathToStudentRepo);
+	void cloneRepository(Submission submission, String pathToFolder, String pathToRepo);
 
-	void pullOrCloneTesterCode(Submission submission, String pathToTesterFolder, String pathToTesterRepo);
+	void pullOrCloneStudentCode(Submission submission, String pathToFolder, String pathToRepo);
 
-	String[] getChangedFolders(String pathToStudentFolder) throws IOException;
+	void pullOrCloneTesterCode(Submission submission, String pathToFolder, String pathToRepo);
+
+	String[] getChangedFolders(String pathToFolder) throws IOException;
 
 }
