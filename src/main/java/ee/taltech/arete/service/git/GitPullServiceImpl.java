@@ -57,12 +57,13 @@ public class GitPullServiceImpl implements GitPullService {
 		}
 
 		CONCURRENT = true;
-
-		String pathToTesterFolder = String.format("%s/tests/%s/", home, submission.getProject());
-		String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getProject(), submission.getProjectBase());
-		pullOrCloneTesterCode(submission, pathToTesterFolder, pathToTesterRepo);
-
-		CONCURRENT = false;
+		try {
+			String pathToTesterFolder = String.format("%s/tests/%s/", home, submission.getProject());
+			String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getProject(), submission.getProjectBase());
+			pullOrCloneTesterCode(submission, pathToTesterFolder, pathToTesterRepo);
+		} finally {
+			CONCURRENT = false;
+		}
 	}
 
 	@Override
@@ -78,8 +79,6 @@ public class GitPullServiceImpl implements GitPullService {
 			LOGGER.error("Failed to reset HEAD for student. Defaulting to hard reset: {}", e.getMessage());
 			resetHard(submission, pathToStudentFolder, pathToStudentRepo);
 		}
-		pullOrCloneStudentCode(submission, pathToStudentFolder, pathToStudentRepo);
-
 	}
 
 	@Override

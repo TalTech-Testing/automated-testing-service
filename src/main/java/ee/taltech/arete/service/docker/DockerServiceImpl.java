@@ -89,12 +89,19 @@ public class DockerServiceImpl implements DockerService {
 
 			LOGGER.info("Got image with id: {}", imageId);
 
-			///  MODIFY WITH CAUTION   ///
+			///  ABSOLUTE PATH > MODIFIED ON HOST > PROCEED TO MODIFY WITH CAUTION  ///
 
 			String student = String.format("%s/students/%s/%s/%s", home, submission.getUniid(), submission.getProject(), slug);
-			String tester = String.format("%s/tests/%s/%s", home, submission.getProject(), slug);
 			String tempTester = String.format("%s/input_and_output/%s/tester", home, submission.getThread());
+			String output = String.format("%s/input_and_output/%s/host", home, submission.getThread());
 
+			Volume volumeStudent = new Volume("/student");
+			Volume volumeTester = new Volume("/tester");
+			Volume volumeOutput = new Volume("/host");
+
+			///  RELATIVE PATH > MODIFIED INSIDE DOCKER   ///
+
+			String tester = String.format("tests/%s/%s", submission.getProject(), slug);
 			try {
 				FileUtils.copyDirectory(new File(tester), new File(tempTester));
 			} catch (IOException e) {
@@ -102,13 +109,9 @@ public class DockerServiceImpl implements DockerService {
 				throw new IOException(e.getMessage());
 			}
 
-			String output = String.format("%s/input_and_output/%s/host", home, submission.getThread());
-
-			Volume volumeStudent = new Volume("/student");
-			Volume volumeTester = new Volume("/tester");
-			Volume volumeOutput = new Volume("/host");
-
 			mapper.writeValue(new File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
+
+			///   END OF PATH   ///
 
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
