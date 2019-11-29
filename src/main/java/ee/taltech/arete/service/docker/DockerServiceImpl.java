@@ -89,9 +89,11 @@ public class DockerServiceImpl implements DockerService {
 
 			LOGGER.info("Got image with id: {}", imageId);
 
+			///  MODIFY WITH CAUTION   ///
+
 			String student = String.format("%s/students/%s/%s/%s", home, submission.getUniid(), submission.getProject(), slug);
 			String tester = String.format("%s/tests/%s/%s", home, submission.getProject(), slug);
-			String tempTester = String.format("%s/input_and_output/%s/tester", home, submission.getThread()); // Slug into temp folder
+			String tempTester = String.format("%s/input_and_output/%s/tester", home, submission.getThread());
 
 			try {
 				FileUtils.copyDirectory(new File(tester), new File(tempTester));
@@ -106,7 +108,7 @@ public class DockerServiceImpl implements DockerService {
 			Volume volumeTester = new Volume("/tester");
 			Volume volumeOutput = new Volume("/host");
 
-			mapper.writeValue(new File(String.format("%s/input_and_output/%s/host/input.json", home, submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
+			mapper.writeValue(new File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
 
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)

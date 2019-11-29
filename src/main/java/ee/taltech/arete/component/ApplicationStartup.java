@@ -1,5 +1,9 @@
 package ee.taltech.arete.component;
 
+import com.github.dockerjava.core.DefaultDockerClientConfig;
+import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.DockerClientConfig;
+import ee.taltech.arete.service.docker.ImageCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -40,6 +44,17 @@ public class ApplicationStartup implements ApplicationRunner {
 			}
 
 		}
+
+		String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
+
+		DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+				.withDockerHost(dockerHost)
+				.withDockerTlsVerify(false)
+				.build();
+
+		new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/java-tester:latest").pull();
+		new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/python-tester:latest").pull();
+
 	}
 
 	private void createDirectory(String home) {
