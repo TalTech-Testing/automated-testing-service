@@ -8,7 +8,7 @@ public interface GitPullService {
 
 	void repositoryMaintenance(Submission submission);
 
-	void resetHeadAndPull(Submission submission);
+	void resetHead(Submission submission);
 
 	/// Try not to use the following methods.
 
