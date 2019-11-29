@@ -20,9 +20,6 @@ class GitPullServiceImplTest {
 	void pullJob() throws InterruptedException {
 		Submission submission = getControllerEndpointSubmission();
 		gitPullService.repositoryMaintenance(submission);
-		gitPullService.repositoryMaintenance(submission);
-		gitPullService.resetHead(submission);
-		gitPullService.repositoryMaintenance(submission);
 
 //		String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
 //		String tester = String.format("%s/tests/%s/%s", home, "iti0102-2019", "ex02_binary");

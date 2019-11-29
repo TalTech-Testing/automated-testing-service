@@ -14,4 +14,6 @@ public interface PriorityQueueService {
 
 	Integer getQueueSize();
 
+	void timer();
+
 }

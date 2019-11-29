@@ -89,18 +89,20 @@ public class DockerServiceImpl implements DockerService {
 
 			LOGGER.info("Got image with id: {}", imageId);
 
-			///  ABSOLUTE PATH > MODIFIED ON HOST > PROCEED TO MODIFY WITH CAUTION  ///
+			///  PROCEED TO MODIFY WITH CAUTION  ///
 
 			String student = String.format("%s/students/%s/%s/%s", home, submission.getUniid(), submission.getProject(), slug);
-			String tester = String.format("%s/tests/%s/%s", home, submission.getProject(), slug);
-			String tempTester = String.format("%s/input_and_output/%s/tester", home, submission.getThread());
 			String output = String.format("%s/input_and_output/%s/host", home, submission.getThread());
+			String testerHost = String.format("%s/input_and_output/%s/tester", home, submission.getThread());
+
+			String tester = String.format("tests/%s/%s", submission.getProject(), slug);
+			String tempTester = String.format("input_and_output/%s/tester", submission.getThread());
+
 
 			Volume volumeStudent = new Volume("/student");
 			Volume volumeTester = new Volume("/tester");
 			Volume volumeOutput = new Volume("/host");
 
-			///  RELATIVE PATH > MODIFIED INSIDE DOCKER   ///
 
 			try {
 				FileUtils.copyDirectory(new File(tester), new File(tempTester));
@@ -111,8 +113,6 @@ public class DockerServiceImpl implements DockerService {
 
 			mapper.writeValue(new File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
 
-			///   END OF PATH   ///
-
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
 					.withVolumes(volumeStudent, volumeTester, volumeOutput)
@@ -120,10 +120,12 @@ public class DockerServiceImpl implements DockerService {
 					.withAttachStderr(true)
 					.withHostConfig(newHostConfig()
 							.withBinds(
-									new Bind(output, volumeOutput, rw),
-									new Bind(student, volumeStudent, rw),
-									new Bind(tempTester, volumeTester, ro)))
+									new Bind(new File(output).getAbsolutePath(), volumeOutput, rw),
+									new Bind(new File(student).getAbsolutePath(), volumeStudent, rw),
+									new Bind(new File(testerHost).getAbsolutePath(), volumeTester, ro)))
 					.exec();
+
+			///   END OF WARNING   ///
 
 			LOGGER.info("Created container with id: {}", container.getId());
 
@@ -177,10 +179,10 @@ public class DockerServiceImpl implements DockerService {
 		}
 
 		try {
-			String tempTester = String.format("%s/input_and_output/%s/tester", home, submission.getThread());
+			String tempTester = String.format("input_and_output/%s/tester", submission.getThread());
 			FileUtils.cleanDirectory(new File(tempTester));
 		} catch (IOException e) {
-			LOGGER.error("Temp folder already empty.");
+			LOGGER.error("Temp folder already empty. {}", e.getMessage());
 		}
 	}
 

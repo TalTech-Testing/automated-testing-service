@@ -41,12 +41,16 @@ public class GitPullServiceImpl implements GitPullService {
 	@Override
 	public void repositoryMaintenance(Submission submission) {
 
-		String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
-//		home = "C:\\Users\\envomp\\Documents\\TalTech\\automated-testing-service";
-
-		String pathToStudentFolder = String.format("%s/students/%s/%s/", home, submission.getUniid(), submission.getProject());
+		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
 		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
-		pullOrClone(submission, pathToStudentFolder, pathToStudentRepo);
+
+		try {
+			LOGGER.info("Checking for update for student:");
+			pullOrClone(submission, pathToStudentFolder, pathToStudentRepo);
+			submission.setSlugs(getChangedFolders(pathToStudentFolder));
+		} catch (IOException e) {
+			LOGGER.error("Failed to read student repository.");
+		}
 
 		while (CONCURRENT) {
 			try {
@@ -57,8 +61,9 @@ public class GitPullServiceImpl implements GitPullService {
 
 		CONCURRENT = true;
 		try {
-			String pathToTesterFolder = String.format("%s/tests/%s/", home, submission.getProject());
+			String pathToTesterFolder = String.format("tests/%s/", submission.getProject());
 			String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getProject(), submission.getProjectBase());
+			LOGGER.info("Checking for update for tester:");
 			pullOrClone(submission, pathToTesterFolder, pathToTesterRepo);
 		} finally {
 			CONCURRENT = false;
@@ -68,9 +73,7 @@ public class GitPullServiceImpl implements GitPullService {
 	@Override
 	public void resetHead(Submission submission) {
 
-		String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
-
-		String pathToStudentFolder = String.format("%s/students/%s/%s/", home, submission.getUniid(), submission.getProject());
+		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
 		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
 		try {
 			Git.open(new File(pathToStudentFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
@@ -106,8 +109,6 @@ public class GitPullServiceImpl implements GitPullService {
 					.setDirectory(new File(pathToStudentFolder))
 					.call();
 
-			String[] slugs = getChangedFolders(pathToStudentFolder);
-			submission.setSlugs(slugs);
 			LOGGER.info("Cloned a repository for student with uniid: {} and added slugs: {}", submission.getUniid(), submission.getSlugs());
 
 		} catch (Exception e) {
@@ -141,7 +142,7 @@ public class GitPullServiceImpl implements GitPullService {
 		Path path = Paths.get(pathToFolder);
 
 		if (Files.exists(path)) {
-			LOGGER.info("Checking for tester update for project: {}", submission.getProject());
+			LOGGER.info("Checking for update for project: {}", pathToFolder);
 
 			try {
 				PullResult result = Git.open(new File(pathToFolder)).pull()
@@ -164,7 +165,7 @@ public class GitPullServiceImpl implements GitPullService {
 			}
 
 		} else {
-			LOGGER.info("Cloning tester with name: {}", submission.getProject());
+			LOGGER.info("Cloning with name: {}", submission.getProject());
 
 			try {
 				Git git = Git.cloneRepository()
