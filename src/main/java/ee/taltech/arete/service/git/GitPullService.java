@@ -16,9 +16,7 @@ public interface GitPullService {
 
 	void cloneRepository(Submission submission, String pathToFolder, String pathToRepo);
 
-	void pullOrCloneStudentCode(Submission submission, String pathToFolder, String pathToRepo);
-
-	void pullOrCloneTesterCode(Submission submission, String pathToFolder, String pathToRepo);
+	void pullOrClone(Submission submission, String pathToFolder, String pathToRepo);
 
 	String[] getChangedFolders(String pathToFolder) throws IOException;
 

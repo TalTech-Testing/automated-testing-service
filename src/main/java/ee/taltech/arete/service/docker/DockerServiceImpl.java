@@ -92,6 +92,7 @@ public class DockerServiceImpl implements DockerService {
 			///  ABSOLUTE PATH > MODIFIED ON HOST > PROCEED TO MODIFY WITH CAUTION  ///
 
 			String student = String.format("%s/students/%s/%s/%s", home, submission.getUniid(), submission.getProject(), slug);
+			String tester = String.format("%s/tests/%s/%s", home, submission.getProject(), slug);
 			String tempTester = String.format("%s/input_and_output/%s/tester", home, submission.getThread());
 			String output = String.format("%s/input_and_output/%s/host", home, submission.getThread());
 
@@ -101,7 +102,6 @@ public class DockerServiceImpl implements DockerService {
 
 			///  RELATIVE PATH > MODIFIED INSIDE DOCKER   ///
 
-			String tester = String.format("tests/%s/%s", submission.getProject(), slug);
 			try {
 				FileUtils.copyDirectory(new File(tester), new File(tempTester));
 			} catch (IOException e) {
@@ -184,7 +184,7 @@ public class DockerServiceImpl implements DockerService {
 		}
 	}
 
-	private String getImage(DockerClient dockerClient, String image) {
+	private String getImage(DockerClient dockerClient, String image) throws InterruptedException {
 
 		ImageCheck imageCheck = new ImageCheck(dockerClient, image);
 		imageCheck.invoke();

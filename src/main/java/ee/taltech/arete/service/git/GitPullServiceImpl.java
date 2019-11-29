@@ -1,7 +1,6 @@
 package ee.taltech.arete.service.git;
 
 import ee.taltech.arete.domain.Submission;
-import ee.taltech.arete.exception.NoChangedFilesException;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
@@ -47,7 +46,7 @@ public class GitPullServiceImpl implements GitPullService {
 
 		String pathToStudentFolder = String.format("%s/students/%s/%s/", home, submission.getUniid(), submission.getProject());
 		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
-		pullOrCloneStudentCode(submission, pathToStudentFolder, pathToStudentRepo);
+		pullOrClone(submission, pathToStudentFolder, pathToStudentRepo);
 
 		while (CONCURRENT) {
 			try {
@@ -60,7 +59,7 @@ public class GitPullServiceImpl implements GitPullService {
 		try {
 			String pathToTesterFolder = String.format("%s/tests/%s/", home, submission.getProject());
 			String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getProject(), submission.getProjectBase());
-			pullOrCloneTesterCode(submission, pathToTesterFolder, pathToTesterRepo);
+			pullOrClone(submission, pathToTesterFolder, pathToTesterRepo);
 		} finally {
 			CONCURRENT = false;
 		}
@@ -81,41 +80,6 @@ public class GitPullServiceImpl implements GitPullService {
 		}
 	}
 
-	@Override
-	public void pullOrCloneStudentCode(Submission submission, String pathToStudentFolder, String pathToStudentRepo) {
-		Path path = Paths.get(pathToStudentFolder);
-
-		if (Files.exists(path)) {
-			LOGGER.info("Pulling a repository for student with uniid: {}", submission.getUniid());
-
-			try {
-				PullResult result = Git.open(new File(pathToStudentFolder)).pull()
-						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
-								"envomp", System.getenv().get("GITLAB_PASSWORD")))
-						.call();
-
-				assert result.isSuccessful();
-
-				String[] slugs = getChangedFolders(pathToStudentFolder);
-				submission.setSlugs(slugs);
-
-				LOGGER.info("Pulled a repository for student with uniid: {} and added slugs: {}", submission.getUniid(), submission.getSlugs());
-
-			} catch (Exception e) {
-				LOGGER.error("Pull failed for user: {} with message: {}. Cloning repository again.", submission.getUniid(), e.getMessage());
-
-				resetHard(submission, pathToStudentFolder, pathToStudentRepo);
-			}
-
-		} else {
-			cloneRepository(submission, pathToStudentFolder, pathToStudentRepo);
-		}
-
-		if (submission.getSlugs().length == 0) {
-			throw new NoChangedFilesException("Check your folder names.");
-		}
-
-	}
 
 	@Override
 	public void resetHard(Submission submission, String pathToFolder, String pathToRepo) {
@@ -152,12 +116,11 @@ public class GitPullServiceImpl implements GitPullService {
 	}
 
 	@Override
-	public void pullOrCloneTesterCode(Submission submission, String pathToTesterFolder, String pathToTesterRepo) {
-		Path path = Paths.get(pathToTesterFolder);
+	public void pullOrClone(Submission submission, String pathToTesterFolder, String pathToTesterRepo) {
 
 		try {
 
-			SafePullAndClone(submission, pathToTesterFolder, pathToTesterRepo, path);
+			SafePullAndClone(submission, pathToTesterFolder, pathToTesterRepo);
 
 		} catch (Exception e) {
 
@@ -165,7 +128,7 @@ public class GitPullServiceImpl implements GitPullService {
 			resetHard(submission, pathToTesterFolder, pathToTesterRepo);
 
 			try {
-				SafePullAndClone(submission, pathToTesterFolder, pathToTesterRepo, path);
+				SafePullAndClone(submission, pathToTesterFolder, pathToTesterRepo);
 			} catch (Exception e2) {
 				LOGGER.error("Completely failed to pull tester.");
 			}
@@ -173,12 +136,15 @@ public class GitPullServiceImpl implements GitPullService {
 
 	}
 
-	private void SafePullAndClone(Submission submission, String pathToTesterFolder, String pathToTesterRepo, Path path) throws GitAPIException, IOException {
+	private void SafePullAndClone(Submission submission, String pathToFolder, String pathToRepo) throws GitAPIException, IOException {
+
+		Path path = Paths.get(pathToFolder);
+
 		if (Files.exists(path)) {
 			LOGGER.info("Checking for tester update for project: {}", submission.getProject());
 
 			try {
-				PullResult result = Git.open(new File(pathToTesterFolder)).pull()
+				PullResult result = Git.open(new File(pathToFolder)).pull()
 						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
 								"envomp", System.getenv().get("GITLAB_PASSWORD")))
 						.call();
@@ -188,8 +154,8 @@ public class GitPullServiceImpl implements GitPullService {
 			} catch (Exception e) {
 
 				LOGGER.error("Checking failed for tester update. Trying to reset head and pull again: {}", e.getMessage());
-				Git.open(new File(pathToTesterFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
-				PullResult result = Git.open(new File(pathToTesterFolder)).pull()
+				Git.open(new File(pathToFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
+				PullResult result = Git.open(new File(pathToFolder)).pull()
 						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
 								"envomp", System.getenv().get("GITLAB_PASSWORD")))
 						.call();
@@ -205,8 +171,8 @@ public class GitPullServiceImpl implements GitPullService {
 						.setCredentialsProvider(
 								new UsernamePasswordCredentialsProvider(
 										"envomp", System.getenv().get("GITLAB_PASSWORD")))
-						.setURI(pathToTesterRepo)
-						.setDirectory(new File(pathToTesterFolder))
+						.setURI(pathToRepo)
+						.setDirectory(new File(pathToFolder))
 						.call();
 
 			} catch (Exception e) {
