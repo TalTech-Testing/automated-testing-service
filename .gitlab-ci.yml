@@ -3,22 +3,22 @@ variables:
 
 
 stages:
-  - test
+  #  - test
   - build_and_deploy
   - build
   - deploy
 
 
-test:
-  tags:
-    - dev
-    - master
-  image: docker:latest
-  stage: test
-  services:
-    - name: docker:dind
-  script:
-    docker build -t tests -f Dockerfile-ubuntu-test --build-arg GITLAB_PASSWORD=XD6l7pNzH20ymbRf .
+#test:
+#  tags:
+#    - dev
+#    - master
+#  image: docker:latest
+#  stage: test
+#  services:
+#    - name: docker:dind
+#  script:
+#    docker build -t tests -f Dockerfile-ubuntu-test --build-arg GITLAB_PASSWORD=XD6l7pNzH20ymbRf .
 
 
 #used for virtual environment where state is loaded in from a snapshot
