@@ -17,6 +17,7 @@ import ee.taltech.arete.domain.Submission;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,8 @@ import static com.github.dockerjava.api.model.HostConfig.newHostConfig;
 public class DockerServiceImpl implements DockerService {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(DockerService.class);
+
+	private static final String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
 
 	private ObjectMapper mapper = new ObjectMapper();
 
@@ -71,9 +74,9 @@ public class DockerServiceImpl implements DockerService {
 		try {
 
 			String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
-			String certPath = System.getenv().getOrDefault("DOCKER_CERT_PATH", "/home/user/.docker/certs");
-			String tlsVerify = System.getenv().getOrDefault("DOCKER_TLS_VERIFY", "1");
-			String dockerConfig = System.getenv().getOrDefault("DOCKER_CONFIG", "/home/user/.docker");
+//			String certPath = System.getenv().getOrDefault("DOCKER_CERT_PATH", "/home/user/.docker/certs");
+//			String tlsVerify = System.getenv().getOrDefault("DOCKER_TLS_VERIFY", "1");
+//			String dockerConfig = System.getenv().getOrDefault("DOCKER_CONFIG", "/home/user/.docker");
 
 			DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
 					.withDockerHost(dockerHost)
@@ -86,9 +89,17 @@ public class DockerServiceImpl implements DockerService {
 
 			LOGGER.info("Got image with id: {}", imageId);
 
-			String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
 			String student = String.format("%s/students/%s/%s/%s", home, submission.getUniid(), submission.getProject(), slug);
 			String tester = String.format("%s/tests/%s/%s", home, submission.getProject(), slug);
+			String tempTester = String.format("%s/input_and_output/%s/tester", home, submission.getThread()); // Slug into temp folder
+
+			try {
+				FileUtils.copyDirectory(new File(tester), new File(tempTester));
+			} catch (IOException e) {
+				LOGGER.error("Failed to copy files from tester folder to temp folder.");
+				throw new IOException(e.getMessage());
+			}
+
 			String output = String.format("%s/input_and_output/%s/host", home, submission.getThread());
 
 			Volume volumeStudent = new Volume("/student");
@@ -106,7 +117,7 @@ public class DockerServiceImpl implements DockerService {
 							.withBinds(
 									new Bind(output, volumeOutput, rw),
 									new Bind(student, volumeStudent, rw),
-									new Bind(tester, volumeTester, ro)))
+									new Bind(tempTester, volumeTester, ro)))
 					.exec();
 
 			LOGGER.info("Created container with id: {}", container.getId());
@@ -159,9 +170,16 @@ public class DockerServiceImpl implements DockerService {
 				LOGGER.error("Container {} has already been removed", submission.getHash());
 			}
 		}
+
+		try {
+			String tempTester = String.format("%s/input_and_output/%s/tester", home, submission.getThread());
+			FileUtils.cleanDirectory(new File(tempTester));
+		} catch (IOException e) {
+			LOGGER.error("Temp folder already empty.");
+		}
 	}
 
-	private String getImage(DockerClient dockerClient, String image) throws InterruptedException {
+	private String getImage(DockerClient dockerClient, String image) {
 
 		ImageCheck imageCheck = new ImageCheck(dockerClient, image);
 		imageCheck.invoke();

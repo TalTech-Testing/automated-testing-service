@@ -44,11 +44,11 @@ public class SubmissionInitializer {
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.hash(getRandomHash())
-				.testingPlatform(TESTING_PLATFORM)
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.extra(EXTRA)
 				.projectBase(PROJECT_BASE)
-				.project(PROJECT_GIT)
+				.project(PROJECT_GIT_PYTHON)
 				.build();
 	}
 
