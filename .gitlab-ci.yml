@@ -17,7 +17,7 @@ test:
   services:
     - name: docker:dind
   script:
-    - docker-compose up -f docker-compose-test.yml --no-start --force-recreate
+    - docker-compose up -f docker-compose-test.yml
   only:
     - dev
     - master
