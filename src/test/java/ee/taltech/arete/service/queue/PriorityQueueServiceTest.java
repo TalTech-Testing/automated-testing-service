@@ -27,7 +27,7 @@ class PriorityQueueServiceTest {
 	@Test
 	void runJob() throws InterruptedException {
 
-		int jobSets = 1000;
+		int jobSets = 2;
 
 		for (int i = 0; i < jobSets; i++) {
 			Submission submission = getFullSubmission();
@@ -55,8 +55,10 @@ class PriorityQueueServiceTest {
 //			}
 //		}
 
-		while (priorityQueueService.getJobsRan() < 1000) {
+		while (priorityQueueService.getJobsRan() < 3) {
 			TimeUnit.SECONDS.sleep(1);
 		}
+
+		//TODO Check something
 	}
 }

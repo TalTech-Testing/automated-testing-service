@@ -21,6 +21,8 @@ class GitPullServiceImplTest {
 		Submission submission = getControllerEndpointSubmission();
 		gitPullService.repositoryMaintenance(submission);
 
+		//TODO actually check if folder was created
+
 //		String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
 //		String tester = String.format("%s/tests/%s/%s", home, "iti0102-2019", "ex02_binary");
 //		String tempTester = String.format("%s/input_and_output/%s/tester", home, 0); // Slug into temp folder

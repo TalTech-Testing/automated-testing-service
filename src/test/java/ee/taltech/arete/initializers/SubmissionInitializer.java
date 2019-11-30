@@ -23,14 +23,14 @@ public class SubmissionInitializer {
 	private final static String[] EXTRA = new String[]{"stylecheck"};
 
 	public static Submission getFullSubmission() {
-		boolean a = true;
+
 		return Submission.builder()
-				.uniid(UNIID_GIT + new Random().nextInt(100))
+				.uniid(UNIID_GIT)
 				.hash("d3f5510928bb8dacc20d29110e9268756418bef9")
-				.testingPlatform(a ? TESTING_PLATFORM : TESTING_PLATFORM_PYTHON)
+				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
 				.extra(EXTRA)
-				.project(a ? PROJECT_GIT : PROJECT_GIT_PYTHON)
+				.project(PROJECT_GIT)
 				.projectBase(PROJECT_BASE)
 				.timestamp(System.currentTimeMillis())
 				.priority(new Random().nextInt(5) + 5)

@@ -1,13 +1,19 @@
 FROM openjdk:11
 
-MAINTAINER Agonaudid
-ADD . /arete
-WORKDIR /arete
+MAINTAINER enrico.vompa@gmail.com
 
-ENV JAVA_OPTS=""
+ARG ARETE_HOME
+ENV ARETE_HOME=$ARETE_HOME
 
 ARG GITLAB_PASSWORD
 ENV GITLAB_PASSWORD=$GITLAB_PASSWORD
 
-# Run Maven build
-RUN chmod +x mvnw && ./mvnw test
+RUN echo $ARETE_HOME
+
+ADD . $ARETE_HOME
+WORKDIR $ARETE_HOME
+
+# Fire up our Spring Boot app by default
+ENTRYPOINT [ "sh", "-c", "chmod +x mvnw && ./mvnw test" ]
+
+EXPOSE 8098:8098
