@@ -10,7 +10,6 @@ services:
     build:
       args:
         - ARETE_HOME=${ARETE_HOME}
-        - GITLAB_PASSWORD=${GITLAB_PASSWORD}
       dockerfile:
         Dockerfile-ubuntu-test
       context: .
@@ -20,6 +19,6 @@ services:
       - ..env #Change to .env to run locally
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${ARETE_HOME}/input_and_output:/arete/input_and_output
-      - ${ARETE_HOME}/students:/arete/students
-      - ${ARETE_HOME}/tests:/arete/tests
+      - ${ARETE_HOME}/input_and_output:/${ARETE_HOME}/input_and_output
+      - ${ARETE_HOME}/students:/${ARETE_HOME}/students
+      - ${ARETE_HOME}/tests:/${ARETE_HOME}/tests
