@@ -16,38 +16,15 @@ test:
   stage: test
   services:
     - name: docker:dind
+  before_script:
+    - whoami
   script:
-    - docker-compose -f docker-compose-test.yml up
+    - docker-compose -f docker-compose-test.yml up -d
+  after_script:
+    - docker-compose down
   only:
     - dev
     - master
-
-
-#used for virtual environment where state is loaded in from a snapshot
-#build_and_deploy:
-#  tags:
-#    - dev
-#  image: docker:latest
-#  stage: build_and_deploy
-#  services:
-#    - name: docker:dind
-#  before_script:
-#    - whoami
-#    - docker rm -vf $(docker ps -aq) &&
-#      docker rmi -f $(docker images -aq) &&
-#      docker volume prune -f
-#    - docker images
-#  script:
-#    - docker-compose up --force-recreate -d
-#    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-#    - docker tag arete $DOCKER_USER/arete:latest
-#    - docker push $DOCKER_USER/arete:latest
-#  after_script:
-#    - docker container ls
-#    - docker images
-#  only:
-#    - dev
-#    - master
 
 
 build:
@@ -59,7 +36,6 @@ build:
   services:
     - name: docker:dind
   before_script:
-    - whoami
     - docker container ls
     - docker images
     - docker rm -vf $(docker ps -aq) &&

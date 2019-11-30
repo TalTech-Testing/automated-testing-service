@@ -55,7 +55,7 @@ class PriorityQueueServiceTest {
 //			}
 //		}
 
-		while (priorityQueueService.getJobsRan() < 2) {
+		while (priorityQueueService.getJobsRan() < 3) {
 			TimeUnit.SECONDS.sleep(1);
 		}
 
