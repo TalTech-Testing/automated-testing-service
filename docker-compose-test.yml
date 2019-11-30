@@ -10,6 +10,7 @@ services:
     build:
       args:
         - ARETE_HOME=${ARETE_HOME}
+        - GITLAB_PASSWORD=${GITLAB_PASSWORD}
       dockerfile:
         Dockerfile-ubuntu-test
       context: .
