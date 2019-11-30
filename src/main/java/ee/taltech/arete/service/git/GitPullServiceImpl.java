@@ -139,7 +139,7 @@ public class GitPullServiceImpl implements GitPullService {
 
 				LOGGER.info("Cloned to folder: {}", pathToFolder);
 
-				if (submission.isPresent() && submission.get().getHash() != null) {
+				if (submission.isPresent()) {
 					pull(pathToFolder, submission);
 				}
 
