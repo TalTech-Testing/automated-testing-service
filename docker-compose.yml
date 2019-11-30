@@ -28,6 +28,9 @@ services:
     depends_on:
       - db
     build:
+      args:
+        - ARETE_HOME=${ARETE_HOME}
+        - GITLAB_PASSWORD=${GITLAB_PASSWORD}
       dockerfile:
         Dockerfile-ubuntu
       context: .

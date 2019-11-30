@@ -27,7 +27,7 @@ class PriorityQueueServiceTest {
 	@Test
 	void runJob() throws InterruptedException {
 
-		int jobSets = 1000; // Kappa
+		int jobSets = 2;
 
 		for (int i = 0; i < jobSets; i++) {
 			Submission submission = getFullSubmission();
