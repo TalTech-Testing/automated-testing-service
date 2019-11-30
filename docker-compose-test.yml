@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+
+  back:
+    container_name: arete-test
+    image: arete-test:latest
+    restart: unless-stopped
+    privileged: true
+    build:
+      dockerfile:
+        Dockerfile-ubuntu-test
+      context: .
+    ports:
+      - "8098:8098"
+    env_file:
+      - ..env #Change to .env to run locally
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${ARETE_HOME}/input_and_output:/arete/input_and_output
+      - ${ARETE_HOME}/students:/arete/students
+      - ${ARETE_HOME}/tests:/arete/tests

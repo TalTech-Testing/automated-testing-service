@@ -17,7 +17,7 @@ test:
   services:
     - name: docker:dind
   script:
-    docker build -v /var/run/docker.sock:/var/run/docker.sock -t arete_tests -f Dockerfile-ubuntu-test --build-arg GITLAB_PASSWORD=$GITLAB_PASSWORD --build-arg ARETE_HOME=$ARETE_HOME .
+    - docker-compose up --no-start --force-recreate -f docker-compose-test.yml
   only:
     - dev
     - master
