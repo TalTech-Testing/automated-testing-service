@@ -40,10 +40,6 @@ public class SubmissionServiceImpl implements SubmissionService {
 			submission.setProjectBase("ex");
 		}
 
-//		if (submission.getHash() == null) {
-//			submission.setHash(RandomStringUtils.random(64, true, true).toLowerCase());
-//		}
-
 	}
 
 	@Override

@@ -44,7 +44,7 @@ public class GitPullServiceImpl implements GitPullService {
 	public void repositoryMaintenance(Submission submission) {
 
 		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
-		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/envomp/%s.git", submission.getProject());
+		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
 
 		try {
 			pullOrClone(pathToStudentFolder, pathToStudentRepo, Optional.of(submission));
@@ -62,7 +62,7 @@ public class GitPullServiceImpl implements GitPullService {
 		try {
 			FileUtils.deleteDirectory(new File(pathToFolder));
 		} catch (Exception e1) {
-			throw new ConcurrentModificationException("Folder is already in use and is corrupted at the same time. Try pushing less often there, buddy. :)"); //Never actually gets here.
+			throw new ConcurrentModificationException("Folder is already in use and is corrupted at the same time. Try pushing less often there, buddy. :)"); //Never actually gets here. Unless it does.
 		}
 
 		cloneRepository(pathToFolder, pathToRepo);

@@ -1,8 +1,9 @@
 FROM ubuntu:18.04
 
 MAINTAINER enrico.vompa@gmail.com
-ADD . /arete
-WORKDIR /arete
+
+ADD . $ARETE_HOME
+WORKDIR $ARETE_HOME
 
 # Install OpenJDK-11
 RUN apt-get update && \

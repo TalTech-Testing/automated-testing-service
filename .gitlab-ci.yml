@@ -3,54 +3,57 @@ variables:
 
 
 stages:
-  #  - test
-  - build_and_deploy
+  - test
   - build
   - deploy
 
 
-#test:
-#  tags:
-#    - dev
-#    - master
-#  image: docker:latest
-#  stage: test
-#  services:
-#    - name: docker:dind
-#  script:
-#    docker build -t tests -f Dockerfile-ubuntu-test --build-arg GITLAB_PASSWORD=XD6l7pNzH20ymbRf .
-
-
-#used for virtual environment where state is loaded in from a snapshot
-build_and_deploy:
+test:
   tags:
     - dev
+    - master
   image: docker:latest
-  stage: build_and_deploy
+  stage: test
   services:
     - name: docker:dind
-  before_script:
-    - whoami
-    - docker rm -vf $(docker ps -aq) &&
-      docker rmi -f $(docker images -aq) &&
-      docker volume prune -f
-    - docker images
   script:
-    - docker-compose up --force-recreate -d
-    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-    - docker tag arete $DOCKER_USER/arete:latest
-    - docker push $DOCKER_USER/arete:latest
-  after_script:
-    - docker container ls
-    - docker images
+    docker build -t tests -f Dockerfile-ubuntu-test --build-arg GITLAB_PASSWORD=$GITLAB_PASSWORD --build-arg ARETE_HOME=$ARETE_HOME .
   only:
     - dev
     - master
 
 
+#used for virtual environment where state is loaded in from a snapshot
+#build_and_deploy:
+#  tags:
+#    - dev
+#  image: docker:latest
+#  stage: build_and_deploy
+#  services:
+#    - name: docker:dind
+#  before_script:
+#    - whoami
+#    - docker rm -vf $(docker ps -aq) &&
+#      docker rmi -f $(docker images -aq) &&
+#      docker volume prune -f
+#    - docker images
+#  script:
+#    - docker-compose up --force-recreate -d
+#    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+#    - docker tag arete $DOCKER_USER/arete:latest
+#    - docker push $DOCKER_USER/arete:latest
+#  after_script:
+#    - docker container ls
+#    - docker images
+#  only:
+#    - dev
+#    - master
+
+
 build:
   tags:
-    - prod
+    - dev
+    - master
   image: docker:latest
   stage: build
   services:
@@ -68,12 +71,14 @@ build:
     - docker images
     - docker container ls
   only:
-    - prod
+    - dev
+    - master
 
 
 deploy:
   tags:
-    - prod
+    - dev
+    - master
   image: docker:latest
   stage: deploy
   services:
@@ -90,4 +95,5 @@ deploy:
     - docker container ls
     - docker images
   only:
-    - prod
+    - dev
+    - master
