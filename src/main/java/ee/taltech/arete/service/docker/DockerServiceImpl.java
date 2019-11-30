@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Random;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
 import static com.github.dockerjava.api.model.AccessMode.rw;
@@ -65,7 +66,7 @@ public class DockerServiceImpl implements DockerService {
 		CreateContainerResponse container = null;
 		String imageId;
 
-		String containerName = String.format("%s_%s", submission.getHash().substring(0, 8).toLowerCase(), submission.getThread());
+		String containerName = String.format("%s_%s_%s", submission.getHash().substring(0, 16).toLowerCase(), submission.getThread(), 100000 + new Random().nextInt() * 900000);
 		String hostFile = String.format("input_and_output/%s/host/output.json", submission.getThread());
 		TestingPlatforms testingPlatforms = TestingPlatforms.BY_LABEL.get(submission.getTestingPlatform());
 		TestingPlatforms.correctTesterInput(submission);
@@ -144,10 +145,10 @@ public class DockerServiceImpl implements DockerService {
 					.exec(new ResultCallbackTemplate<LogContainerResultCallback, Frame>() {
 						@Override
 						public void onNext(Frame frame) {
-							System.out.print(new String(frame.getPayload()));
+//							System.out.print(new String(frame.getPayload()));
 						}
 					});
-			LOGGER.info("Docker finished with status code: ");
+			LOGGER.info("Docker for user {} with slug {} finished", submission.getUniid(), slug);
 
 		} catch (Exception e) {
 			LOGGER.error("Job failed with exception: {}", e.getMessage());

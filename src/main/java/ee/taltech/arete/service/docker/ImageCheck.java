@@ -37,10 +37,12 @@ public class ImageCheck {
 		List<Image> images = dockerClient.listImagesCmd().withShowAll(true).exec();
 
 		for (Image tester : images) {
-			ImageCheck.this.tester = tester;
-			for (String tag : tester.getRepoTags()) {
-				if (tag.contains(image)) {
-					return;
+			if (tester.getRepoTags() != null) {
+				for (String tag : tester.getRepoTags()) {
+					if (tag.contains(image)) {
+						ImageCheck.this.tester = tester;
+						return;
+					}
 				}
 			}
 		}

@@ -34,7 +34,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 		try {
 			gitPullService.repositoryMaintenance(submission);
 		} catch (Exception e) {
-			LOGGER.error("Student didn't have new submissions.");
+			LOGGER.error("Student didn't have new submissions: {}", e.getMessage());
 
 			try {
 				reportService.sendTextMail(submission, e.getMessage());

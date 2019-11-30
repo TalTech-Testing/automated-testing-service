@@ -58,11 +58,11 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 	@Async
 	@Override
-	@Scheduled(fixedRate = 100)
+	@Scheduled(fixedRate = 1000)
 	public void timer() {
 		List<Submission> done = new ArrayList<>();
 		for (Submission job : lowPriority) {
-			coolDown.put(job, coolDown.get(job) - 100);
+			coolDown.put(job, coolDown.get(job) - 1000);
 			if (coolDown.get(job) == 0) {
 				coolDown.remove(job);
 				done.add(job);

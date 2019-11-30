@@ -13,8 +13,6 @@ import java.util.Random;
 public class SubmissionInitializer {
 	private final static String UNIID_DOCKER = "uniid";
 	private final static String UNIID_GIT = "envomp";
-	private final static String[] ACCEPTED_TEST_SLUGS = new String[]{"EX01IdCode", "EX02Cpu", "EX03SocialNetwork"};
-	private final static String[] SLUGS = new String[]{"EX01IdCode"}; //, "EX02Cpu", "EX03SocialNetwork"
 	private final static String TESTING_PLATFORM = "java";
 	private final static String TESTING_PLATFORM_PYTHON = "python";
 	private static final String PROJECT_DOCKER = "iti69-420";
@@ -25,16 +23,15 @@ public class SubmissionInitializer {
 	private final static String[] EXTRA = new String[]{"stylecheck"};
 
 	public static Submission getFullSubmission() {
-		boolean a = false;
+		boolean a = true;
 		return Submission.builder()
-				.uniid(UNIID_GIT)
-				.hash(getRandomHash())
+				.uniid(UNIID_GIT + new Random().nextInt(100))
+				.hash("d3f5510928bb8dacc20d29110e9268756418bef9")
 				.testingPlatform(a ? TESTING_PLATFORM : TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.extra(EXTRA)
 				.project(a ? PROJECT_GIT : PROJECT_GIT_PYTHON)
 				.projectBase(PROJECT_BASE)
-				.thread(0)
 				.timestamp(System.currentTimeMillis())
 				.priority(new Random().nextInt(5) + 5)
 				.build();
@@ -43,9 +40,9 @@ public class SubmissionInitializer {
 	public static Submission getControllerEndpointSubmission() {
 		return Submission.builder()
 				.uniid(UNIID_GIT)
-				.hash(getRandomHash())
 				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
+				.hash("d3f5510928bb8dacc20d29110e9268756418bef9")
 				.extra(EXTRA)
 				.projectBase(PROJECT_BASE)
 				.project(PROJECT_GIT)
@@ -59,7 +56,7 @@ public class SubmissionInitializer {
 			jsonArray.put(extra);
 		}
 		jsonObject.put("uniid", UNIID_GIT);
-		jsonObject.put("hash", getRandomHash());
+		jsonObject.put("hash", "d3f5510928bb8dacc20d29110e9268756418bef9");
 		jsonObject.put("testingPlatform", TESTING_PLATFORM);
 		jsonObject.put("returnUrl", RETURN_URL);
 		jsonObject.put("extra", jsonArray);
@@ -75,7 +72,7 @@ public class SubmissionInitializer {
 
 	public static void assertFullSubmission(Submission submission) {
 		assert submission.getUniid().equals(UNIID_GIT);
-		assert submission.getHash().length() == 64;
+//		assert submission.getHash().length() == 40;
 		assert submission.getReturnUrl().equals(RETURN_URL);
 		assert submission.getTestingPlatform().equals(TESTING_PLATFORM);
 		assert Arrays.equals(submission.getExtra(), EXTRA);
