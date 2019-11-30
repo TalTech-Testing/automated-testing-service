@@ -1,2 +1,5 @@
 target/*
 .env
+students/*
+tests/*
+input_and_output/*

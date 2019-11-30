@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Random;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
 import static com.github.dockerjava.api.model.AccessMode.rw;
@@ -65,7 +66,7 @@ public class DockerServiceImpl implements DockerService {
 		CreateContainerResponse container = null;
 		String imageId;
 
-		String containerName = String.format("%s_%s", submission.getHash().substring(0, 8).toLowerCase(), submission.getThread());
+		String containerName = String.format("%s_%s_%s", submission.getHash().substring(0, 16).toLowerCase(), submission.getThread(), 100000 + new Random().nextInt() * 900000);
 		String hostFile = String.format("input_and_output/%s/host/output.json", submission.getThread());
 		TestingPlatforms testingPlatforms = TestingPlatforms.BY_LABEL.get(submission.getTestingPlatform());
 		TestingPlatforms.correctTesterInput(submission);
@@ -89,9 +90,20 @@ public class DockerServiceImpl implements DockerService {
 
 			LOGGER.info("Got image with id: {}", imageId);
 
+			///  PROCEED TO MODIFY WITH CAUTION  ///
+
 			String student = String.format("%s/students/%s/%s/%s", home, submission.getUniid(), submission.getProject(), slug);
-			String tester = String.format("%s/tests/%s/%s", home, submission.getProject(), slug);
-			String tempTester = String.format("%s/input_and_output/%s/tester", home, submission.getThread()); // Slug into temp folder
+			String output = String.format("%s/input_and_output/%s/host", home, submission.getThread());
+			String testerHost = String.format("%s/input_and_output/%s/tester", home, submission.getThread());
+
+			String tester = String.format("tests/%s/%s", submission.getProject(), slug);
+			String tempTester = String.format("input_and_output/%s/tester", submission.getThread());
+
+
+			Volume volumeStudent = new Volume("/student");
+			Volume volumeTester = new Volume("/tester");
+			Volume volumeOutput = new Volume("/host");
+
 
 			try {
 				FileUtils.copyDirectory(new File(tester), new File(tempTester));
@@ -100,13 +112,7 @@ public class DockerServiceImpl implements DockerService {
 				throw new IOException(e.getMessage());
 			}
 
-			String output = String.format("%s/input_and_output/%s/host", home, submission.getThread());
-
-			Volume volumeStudent = new Volume("/student");
-			Volume volumeTester = new Volume("/tester");
-			Volume volumeOutput = new Volume("/host");
-
-			mapper.writeValue(new File(String.format("%s/input_and_output/%s/host/input.json", home, submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
+			mapper.writeValue(new File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getExtra())));
 
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
@@ -115,10 +121,12 @@ public class DockerServiceImpl implements DockerService {
 					.withAttachStderr(true)
 					.withHostConfig(newHostConfig()
 							.withBinds(
-									new Bind(output, volumeOutput, rw),
-									new Bind(student, volumeStudent, rw),
-									new Bind(tempTester, volumeTester, ro)))
+									new Bind(new File(output).getAbsolutePath(), volumeOutput, rw),
+									new Bind(new File(student).getAbsolutePath(), volumeStudent, rw),
+									new Bind(new File(testerHost).getAbsolutePath(), volumeTester, ro)))
 					.exec();
+
+			///   END OF WARNING   ///
 
 			LOGGER.info("Created container with id: {}", container.getId());
 
@@ -137,10 +145,10 @@ public class DockerServiceImpl implements DockerService {
 					.exec(new ResultCallbackTemplate<LogContainerResultCallback, Frame>() {
 						@Override
 						public void onNext(Frame frame) {
-							System.out.print(new String(frame.getPayload()));
+//							System.out.print(new String(frame.getPayload()));
 						}
 					});
-			LOGGER.info("Docker finished with status code: ");
+			LOGGER.info("Docker for user {} with slug {} finished", submission.getUniid(), slug);
 
 		} catch (Exception e) {
 			LOGGER.error("Job failed with exception: {}", e.getMessage());
@@ -172,14 +180,14 @@ public class DockerServiceImpl implements DockerService {
 		}
 
 		try {
-			String tempTester = String.format("%s/input_and_output/%s/tester", home, submission.getThread());
+			String tempTester = String.format("input_and_output/%s/tester", submission.getThread());
 			FileUtils.cleanDirectory(new File(tempTester));
 		} catch (IOException e) {
-			LOGGER.error("Temp folder already empty.");
+			LOGGER.error("Temp folder already empty. {}", e.getMessage());
 		}
 	}
 
-	private String getImage(DockerClient dockerClient, String image) {
+	private String getImage(DockerClient dockerClient, String image) throws InterruptedException {
 
 		ImageCheck imageCheck = new ImageCheck(dockerClient, image);
 		imageCheck.invoke();

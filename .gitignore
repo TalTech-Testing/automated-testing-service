@@ -1,9 +1,6 @@
 students/*
-!students/.gitkeep
 tests/*
-!tests/.gitkeep
-output/*
-!output/output_schema.json
+input_and_output/*
 target/*
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**

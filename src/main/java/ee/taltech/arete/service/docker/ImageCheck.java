@@ -13,7 +13,6 @@ public class ImageCheck {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(ImageCheck.class);
 
-	private boolean myResult;
 	private DockerClient dockerClient;
 	private String image;
 	private Image tester;
@@ -21,10 +20,6 @@ public class ImageCheck {
 	public ImageCheck(DockerClient dockerClient, String image) {
 		this.dockerClient = dockerClient;
 		this.image = image;
-	}
-
-	boolean is() {
-		return myResult;
 	}
 
 	public boolean pull() throws InterruptedException {
@@ -38,18 +33,19 @@ public class ImageCheck {
 		return tester;
 	}
 
-	public void invoke() {
+	void invoke() throws InterruptedException {
 		List<Image> images = dockerClient.listImagesCmd().withShowAll(true).exec();
 
 		for (Image tester : images) {
-			ImageCheck.this.tester = tester;
-			for (String tag : tester.getRepoTags()) {
-				if (tag.contains(image)) {
-					myResult = true;
-					return;
+			if (tester.getRepoTags() != null) {
+				for (String tag : tester.getRepoTags()) {
+					if (tag.contains(image)) {
+						ImageCheck.this.tester = tester;
+						return;
+					}
 				}
 			}
 		}
-		myResult = false;
+		pull();
 	}
 }
