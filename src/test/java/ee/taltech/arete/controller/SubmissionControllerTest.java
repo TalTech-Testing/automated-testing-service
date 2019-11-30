@@ -54,7 +54,7 @@ public class SubmissionControllerTest {
 
 		assertFullSubmission(submission);
 
-		TimeUnit.SECONDS.sleep(100);
+		TimeUnit.SECONDS.sleep(30);
 		//TODO To actually check if it tests
 
 	}
