@@ -2,10 +2,13 @@ FROM openjdk:11
 
 MAINTAINER enrico.vompa@gmail.com
 
+RUN echo $ARETE_HOME
+
 ADD . $ARETE_HOME
 WORKDIR $ARETE_HOME
 
 ENV JAVA_OPTS=""
+
 
 # Fire up our Spring Boot app by default
 ENTRYPOINT [ "sh", "-c", "chmod +x mvnw && ./mvnw test" ]
