@@ -8,6 +8,9 @@ services:
     restart: unless-stopped
     privileged: true
     build:
+      args:
+        - ARETE_HOME=${ARETE_HOME}
+        - GITLAB_PASSWORD=${GITLAB_PASSWORD}
       dockerfile:
         Dockerfile-ubuntu-test
       context: .
