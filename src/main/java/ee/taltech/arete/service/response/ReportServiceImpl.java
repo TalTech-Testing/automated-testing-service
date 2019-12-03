@@ -65,6 +65,7 @@ public class ReportServiceImpl implements ReportService {
 				LOGGER.error(e.getMessage());
 			}
 		});
+		thread.setPriority(10);
 		thread.start();
 	}
 
