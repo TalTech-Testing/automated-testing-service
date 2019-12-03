@@ -17,7 +17,9 @@ test:
   services:
     - name: docker:dind
   before_script:
-    - whoami
+    - docker rm -vf $(docker ps -aq)
+    - docker rmi -f $(docker images -aq)
+    - docker volume prune -f
   script:
     - docker-compose -f docker-compose-test.yml up --force-recreate
   after_script:
@@ -38,9 +40,9 @@ build:
   before_script:
     - docker container ls
     - docker images
-    - docker rm -vf $(docker ps -aq) &&
-      docker rmi -f $(docker images -aq) &&
-      docker volume prune -f
+    - docker rm -vf $(docker ps -aq)
+    - docker rmi -f $(docker images -aq)
+    - docker volume prune -f
   script:
     - docker-compose up --no-start --force-recreate
   after_script:
