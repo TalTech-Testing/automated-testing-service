@@ -93,7 +93,9 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 	}
 
 	private void reportFailedSubmission(Submission submission, Exception e) {
-		String message = e.getMessage() + "\n\n\nHere are tester logs:\n\n" + submission.getResult().toString();
+		String message = e.getMessage()
+//				+ "\n\n\nHere are tester logs:\n\n" + submission.getResult().toString()
+				;
 		try {
 			reportService.sendTextToReturnUrl(submission.getReturnUrl(), message);
 			LOGGER.info("Reported to url");

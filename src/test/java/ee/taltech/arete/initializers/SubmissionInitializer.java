@@ -29,7 +29,7 @@ public class SubmissionInitializer {
 				.hash("fb23ca3217bc9051241b56488a100e6d744201ef")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
-				.dockerTimeout(120L)
+				.dockerTimeout(120)
 				.systemExtra(new String[]{})
 				.dockerExtra(new String[]{"stylecheck"})
 				.dockerExtra(EXTRA)

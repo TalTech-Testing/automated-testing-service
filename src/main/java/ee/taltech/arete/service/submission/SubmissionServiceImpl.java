@@ -41,7 +41,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getDockerTimeout() == null) {
-			submission.setDockerTimeout(120L); // 120 sec
+			submission.setDockerTimeout(120); // 120 sec
 		}
 
 		if (submission.getSystemExtra() == null) {
