@@ -1,5 +1,6 @@
 package ee.taltech.arete.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,15 +34,20 @@ public class Submission {
 
 	private String hash;
 	private String[] slugs;
-	private String[] extra;
+	@JsonIgnore
+	private final StringBuilder result = new StringBuilder();
+	private String[] dockerExtra;
+	private String[] systemExtra;
 	private Long timestamp;
 	private Integer priority;
 	private Integer thread;
+	private Long dockerTimeout;
 
 	public Submission() {
 	}
 
-	public Submission(long id, String uniid, String project, String projectBase, String testingPlatform, String returnUrl, String hash, String[] slugs, String[] extra, Long timestamp, Integer priority, Integer thread) {
+	public Submission(long id, String uniid, String project, String projectBase, String testingPlatform, String returnUrl, String hash, String[] slugs, String[] dockerExtra, String[] systemExtra, Long dockerTimeout, Long timestamp,
+	                  Integer priority, Integer thread) {
 		this.uniid = uniid;
 		this.project = project;
 		this.projectBase = projectBase;
@@ -49,7 +55,9 @@ public class Submission {
 		this.returnUrl = returnUrl;
 		this.hash = hash;
 		this.slugs = slugs;
-		this.extra = extra;
+		this.dockerExtra = dockerExtra;
+		this.systemExtra = systemExtra;
+		this.dockerTimeout = dockerTimeout;
 		this.timestamp = timestamp;
 		this.priority = priority;
 		this.thread = thread;

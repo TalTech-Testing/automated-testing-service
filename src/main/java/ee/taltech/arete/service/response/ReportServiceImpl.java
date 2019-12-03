@@ -1,6 +1,5 @@
 package ee.taltech.arete.service.response;
 
-import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.exception.RequestFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,7 @@ public class ReportServiceImpl implements ReportService {
 	private JavaMailSender javaMailSender;
 
 	@Override
-	public void sendMail(Submission submission, String resultPath) {
+	public void sendMail(String uniid, String resultPath) { // For results
 		try {
 
 			JSONObject json = new JSONObject(Files.readString(Paths.get(resultPath)));
@@ -40,38 +39,69 @@ public class ReportServiceImpl implements ReportService {
 				}
 			}
 
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setTo(String.format("%s@taltech.ee", submission.getUniid()));
-			message.setSubject("Test results");
-			message.setText(mail);
-			javaMailSender.send(message);
-
-			new PrintWriter(resultPath).close();
+			sendMailAsync(uniid, mail);
 
 		} catch (IOException | JSONException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 
 	}
 
 	@Override
-	public void sendTextMail(Submission submission, String text) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(String.format("%s@taltech.ee", submission.getUniid()));
-		message.setSubject("Test results");
-		message.setText(text);
-		javaMailSender.send(message);
+	public void sendTextMail(String uniid, String text) { // For exceptions
+
+		sendMailAsync(uniid, text);
+	}
+
+	private void sendMailAsync(String uniid, String text) {
+		Thread thread = new Thread(() -> {
+			try {
+				SimpleMailMessage message = new SimpleMailMessage();
+				message.setTo(String.format("%s@taltech.ee", uniid));
+				message.setSubject("Test results");
+				message.setText(text);
+				javaMailSender.send(message);
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage());
+			}
+		});
+		thread.start();
 	}
 
 	@Override
-	public void sendToReturnUrl(Submission submission, String resultPath) {
+	public void sendToReturnUrl(String returnUrl, String resultPath) {
 
 		try {
-			post(submission.getReturnUrl(), Files.readString(Paths.get(resultPath)));
+			post(returnUrl, Files.readString(Paths.get(resultPath)));
 		} catch (IOException e) {
 			throw new RequestFormatException("Malformed returnUrl");
 		}
 
+	}
+
+	@Override
+	public void sendTextToReturnUrl(String returnUrl, String text) {
+
+		String genericError = "{\n" +
+				"  \"version\": \"2.0, build 20191126_122604\",\n" +
+				"  \"type\": \"hodor_studenttester\",\n" +
+				"  \"contentRoot\": \"/student\",\n" +
+				"  \"testRoot\": \"/tester\",\n" +
+				"  \"results\": [\n" +
+				"    {\n" +
+				"      \"code\": 2147483647,\n" +
+				"      \"identifier\": \"REPORT\",\n" +
+				"      \"output\": \"" + text + "\",\n" +
+				"      \"result\": \"SUCCESS\"\n" +
+				"    }\n" +
+				"  ]\n" +
+				"}";
+
+		try {
+			post(returnUrl, genericError);
+		} catch (IOException e) {
+			throw new RequestFormatException("Malformed returnUrl");
+		}
 	}
 
 	private void post(String postUrl, String data) throws IOException {

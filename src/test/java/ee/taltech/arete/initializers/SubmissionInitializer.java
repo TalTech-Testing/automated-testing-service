@@ -26,11 +26,14 @@ public class SubmissionInitializer {
 
 		return Submission.builder()
 				.uniid(UNIID_GIT)
-				.hash("d3f5510928bb8dacc20d29110e9268756418bef9")
-				.testingPlatform(TESTING_PLATFORM)
+				.hash("fb23ca3217bc9051241b56488a100e6d744201ef")
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
-				.extra(EXTRA)
-				.project(PROJECT_GIT)
+				.dockerTimeout(120L)
+				.systemExtra(new String[]{})
+				.dockerExtra(new String[]{"stylecheck"})
+				.dockerExtra(EXTRA)
+				.project(PROJECT_GIT_PYTHON)
 				.projectBase(PROJECT_BASE)
 				.timestamp(System.currentTimeMillis())
 				.priority(new Random().nextInt(5) + 5)
@@ -43,7 +46,7 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
 				.hash("d3f5510928bb8dacc20d29110e9268756418bef9")
-				.extra(EXTRA)
+				.dockerExtra(EXTRA)
 				.projectBase(PROJECT_BASE)
 				.project(PROJECT_GIT)
 				.build();
@@ -56,11 +59,11 @@ public class SubmissionInitializer {
 			jsonArray.put(extra);
 		}
 		jsonObject.put("uniid", UNIID_GIT);
-		jsonObject.put("hash", "d3f5510928bb8dacc20d29110e9268756418bef9");
-		jsonObject.put("testingPlatform", TESTING_PLATFORM);
+//		jsonObject.put("hash", "2448474b6a76ef534660817948dc8b816e40dd48");
+		jsonObject.put("testingPlatform", TESTING_PLATFORM_PYTHON);
 		jsonObject.put("returnUrl", RETURN_URL);
 		jsonObject.put("extra", jsonArray);
-		jsonObject.put("project", PROJECT_GIT);
+		jsonObject.put("project", PROJECT_GIT_PYTHON);
 
 		return jsonObject.toString();
 	}
@@ -74,8 +77,8 @@ public class SubmissionInitializer {
 		assert submission.getUniid().equals(UNIID_GIT);
 //		assert submission.getHash().length() == 40;
 		assert submission.getReturnUrl().equals(RETURN_URL);
-		assert submission.getTestingPlatform().equals(TESTING_PLATFORM);
-		assert Arrays.equals(submission.getExtra(), EXTRA);
+//		assert submission.getTestingPlatform().equals(TESTING_PLATFORM);
+		assert Arrays.equals(submission.getDockerExtra(), EXTRA);
 	}
 
 	public static void endTest() {

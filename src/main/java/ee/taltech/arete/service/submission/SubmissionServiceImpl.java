@@ -32,12 +32,20 @@ public class SubmissionServiceImpl implements SubmissionService {
 			submission.setTimestamp(System.currentTimeMillis());
 		}
 
-		if (submission.getExtra() == null) {
-			submission.setExtra(new String[]{"stylecheck"});
+		if (submission.getDockerExtra() == null) {
+			submission.setDockerExtra(new String[]{"stylecheck"});
 		}
 
 		if (submission.getProjectBase() == null) {
 			submission.setProjectBase("ex");
+		}
+
+		if (submission.getDockerTimeout() == null) {
+			submission.setDockerTimeout(120L); // 120 sec
+		}
+
+		if (submission.getSystemExtra() == null) {
+			submission.setSystemExtra(new String[]{});
 		}
 
 	}

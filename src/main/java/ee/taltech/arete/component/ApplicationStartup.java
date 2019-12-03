@@ -39,6 +39,7 @@ public class ApplicationStartup implements ApplicationRunner {
 
 			createDirectory(String.format("%s/input_and_output/%s", home, i));
 			createDirectory(String.format("%s/input_and_output/%s/tester", home, i));
+			createDirectory(String.format("%s/input_and_output/%s/student", home, i));
 			createDirectory(String.format("%s/input_and_output/%s/host", home, i));
 
 			try {
