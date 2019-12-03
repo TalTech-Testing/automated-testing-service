@@ -27,7 +27,7 @@ class SubmissionServiceTest {
 	@Test
 	void getSubmissionByHash() {
 		submissionService.saveSubmission(submission);
-		assert submissionService.getSubmissionByHash(submission.getHash()).getUniid().equals(submission.getUniid());
+		assert submissionService.getSubmissionByHash(submission.getHash()).get(0).getUniid().equals(submission.getUniid());
 	}
 
 }

@@ -16,12 +16,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 public class SubmissionController {
@@ -101,7 +102,7 @@ public class SubmissionController {
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/tests/update/{projectBase}/{project}")
-	public void UpdateTests(@PathVariable("projectBase") String projectBase, @PathVariable("project") String project) throws InterruptedException {
+	public void UpdateTests(@PathVariable("projectBase") String projectBase, @PathVariable("project") String project) {
 
 		String pathToTesterFolder = String.format("tests/%s/", project);
 		String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", project, projectBase);
@@ -109,4 +110,62 @@ public class SubmissionController {
 		gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
 
 	}
+
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@GetMapping("/submissions/{hash}")
+	public List<Submission> GetSubmissionsByHash(@PathVariable("hash") String hash) {
+
+		return submissionService.getSubmissionByHash(hash);
+
+	}
+
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@GetMapping("/submissions")
+	public List<Submission> GetSubmissions() {
+
+		return submissionService.getSubmissions();
+
+	}
+
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@GetMapping("/submissions/{hash}/logs")
+	public String GetSubmissionLogs(@PathVariable("hash") String hash) {
+
+		return "<!DOCTYPE html>\n" +
+				"<html lang=\"en\">\n" +
+				"<head>\n" +
+				"    <meta charset=\"UTF-8\">\n" +
+				"    <title>Logs</title>\n" +
+				"</head>\n" +
+				"<body>" +
+				submissionService.getSubmissionByHash(hash).stream()
+						.map(submission -> submission.getResultTest()
+								.replace("\n", "<br />\n"))
+						.collect(Collectors.joining()) +
+				"</body>\n" +
+				"</html>";
+
+	}
+
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@GetMapping("/logs")
+	public String GetLogs() {
+
+		try {
+			return "<!DOCTYPE html>\n" +
+					"<html lang=\"en\">\n" +
+					"<head>\n" +
+					"    <meta charset=\"UTF-8\">\n" +
+					"    <title>Logs</title>\n" +
+					"</head>\n" +
+					"<body>" +
+					Files.readString(Paths.get("logs/spring.log")).replace("\n", "<br />\n") +
+					"</body>\n" +
+					"</html>";
+
+		} catch (Exception e) {
+			throw new RequestFormatException(e.getMessage());
+		}
+	}
+
 }

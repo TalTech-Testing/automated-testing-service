@@ -1,0 +1,16 @@
+{
+  "uniid": "envomp",
+  "project": "iti0102-2019",
+  "projectBase": "ex",
+  "testingPlatform": "python",
+  "returnUrl": "https://jsonplaceholder.typicode.com/posts",
+  "hash": "fb23ca3217bc9051241b56488a100e6d744201ef",
+  "dockerExtra": [
+    "stylecheck"
+  ],
+  "systemExtra": [
+    "noMail"
+  ],
+  "dockerTimeout": 120,
+  "priority": 8
+}

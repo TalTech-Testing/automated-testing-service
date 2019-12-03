@@ -8,6 +8,13 @@ Schemas for post are located at ```/arete/schemas```
 
 * post
     * /test
+    * /test/sync <WIP>
+    * /tests/update/{project_base}/{project}
+    * /image/update/java-tester
+
+* get
+    * /logs
+    * /logs/{hash}
 
 Getting Started
 ----

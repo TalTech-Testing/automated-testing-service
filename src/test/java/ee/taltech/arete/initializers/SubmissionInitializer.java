@@ -30,12 +30,11 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.dockerTimeout(120)
-				.systemExtra(new String[]{})
+				.systemExtra(new String[]{"noMail"})
 				.dockerExtra(new String[]{"stylecheck"})
-				.dockerExtra(EXTRA)
 				.project(PROJECT_GIT_PYTHON)
 				.projectBase(PROJECT_BASE)
-				.timestamp(System.currentTimeMillis())
+//				.timestamp(System.currentTimeMillis())
 				.priority(new Random().nextInt(5) + 5)
 				.build();
 	}
@@ -59,11 +58,13 @@ public class SubmissionInitializer {
 			jsonArray.put(extra);
 		}
 		jsonObject.put("uniid", UNIID_GIT);
-//		jsonObject.put("hash", "2448474b6a76ef534660817948dc8b816e40dd48");
-		jsonObject.put("testingPlatform", TESTING_PLATFORM_PYTHON);
+		jsonObject.put("hash", "2448474b6a76ef534660817948dc8b816e40dd48");
+		jsonObject.put("testingPlatform", TESTING_PLATFORM);
 		jsonObject.put("returnUrl", RETURN_URL);
-		jsonObject.put("extra", jsonArray);
-		jsonObject.put("project", PROJECT_GIT_PYTHON);
+		jsonObject.put("dockerExtra", jsonArray);
+		jsonObject.put("project", PROJECT_GIT);
+
+		System.out.println(jsonObject.toString());
 
 		return jsonObject.toString();
 	}

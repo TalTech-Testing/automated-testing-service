@@ -11,7 +11,9 @@ public interface SubmissionService {
 
 	List<Submission> getSubmissions();
 
-	Submission getSubmissionByHash(String hash);
+	List<Submission> getSubmissionByHash(String hash);
 
 	void saveSubmission(Submission submission);
+
+	void deleteSubmissionsAutomatically();
 }

@@ -1,1 +1,86 @@
-{}
+{
+  "version": "2.0, build 20191126_122604",
+  "type": "hodor_studenttester",
+  "contentRoot": "/student",
+  "testRoot": "/tester",
+  "results": [
+    {
+      "code": 101,
+      "count": 0,
+      "errors": [],
+      "identifier": "CHECKSTYLE",
+      "result": "SUCCESS"
+    },
+    {
+      "code": 103,
+      "files": [
+        {
+          "path": "relative test path.",
+          "contents": "Tests",
+          "isTest": true
+        },
+        {
+          "path": "relative student code path.",
+          "contents": "Student code.",
+          "isTest": false
+        }
+      ],
+      "identifier": "FILEWRITER",
+      "result": "SUCCESS"
+    },
+    {
+      "code": 102,
+      "diagnosticList": [],
+      "identifier": "COMPILER",
+      "result": "SUCCESS"
+    },
+    {
+      "code": 500,
+      "identifier": "TESTNG",
+      "result": "SUCCESS",
+      "securityViolation": false,
+      "testContexts": [
+        {
+          "unitTests": [
+            {
+              "status": "PASSED",
+              "weight": 1,
+              "description": "",
+              "printExceptionMessage": false,
+              "printStackTrace": false,
+              "timeElapsed": 2,
+              "groupsDependedUpon": [],
+              "methodsDependedUpon": [],
+              "name": "readBirdDataFromCsvFileFileNotFoundTest",
+              "stackTrace": null,
+              "exceptionClass": null,
+              "exceptionMessage": null,
+              "stdout": [],
+              "stderr": []
+            }
+          ],
+          "name": "ee.taltech.iti0202.birdwatching.BirdwatchingTest (TestNG)",
+          "file": "ee.taltech.iti0202.birdwatching.BirdwatchingTest",
+          "startDate": 1575416902179,
+          "endDate": 1575416903822,
+          "mode": "VERBOSE",
+          "welcomeMessage": "",
+          "identifier": 1,
+          "count": 38,
+          "passedCount": 38,
+          "weight": 38,
+          "grade": 100.0
+        }
+      ],
+      "totalCount": 38,
+      "totalGrade": 100.0,
+      "totalPassedCount": 38
+    },
+    {
+      "code": 2147483647,
+      "identifier": "REPORT",
+      "output": "What student sees.",
+      "result": "SUCCESS"
+    }
+  ]
+}

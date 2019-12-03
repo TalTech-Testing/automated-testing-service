@@ -38,18 +38,25 @@ public class Submission {
 	@JsonIgnore
 	@Transient
 	private final StringBuilder result = new StringBuilder();
+
+	@JsonIgnore
+	@Column(columnDefinition = "TEXT")
+	private String resultTest;
+
 	private String[] dockerExtra;
 	private String[] systemExtra;
+	private Integer dockerTimeout;
+
 	private Long timestamp;
+
 	private Integer priority;
 	private Integer thread;
-	private Integer dockerTimeout;
 
 	public Submission() {
 	}
 
-	public Submission(long id, String uniid, String project, String projectBase, String testingPlatform, String returnUrl, String hash, String[] slugs, String[] dockerExtra, String[] systemExtra, Long timestamp, Integer priority,
-	                  Integer thread, Integer dockerTimeout) {
+	public Submission(long id, String uniid, String project, String projectBase, String testingPlatform, String returnUrl, String hash, String[] slugs, String resultTest, String[] dockerExtra, String[] systemExtra, Integer dockerTimeout,
+	                  Long timestamp, Integer priority, Integer thread) {
 		this.uniid = uniid;
 		this.project = project;
 		this.projectBase = projectBase;
@@ -57,11 +64,12 @@ public class Submission {
 		this.returnUrl = returnUrl;
 		this.hash = hash;
 		this.slugs = slugs;
+		this.resultTest = resultTest;
 		this.dockerExtra = dockerExtra;
 		this.systemExtra = systemExtra;
+		this.dockerTimeout = dockerTimeout;
 		this.timestamp = timestamp;
 		this.priority = priority;
 		this.thread = thread;
-		this.dockerTimeout = dockerTimeout;
 	}
 }
