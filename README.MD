@@ -1,6 +1,3 @@
-# Database layout
-
-TODO
 
 # Currently supported endpoints
 
