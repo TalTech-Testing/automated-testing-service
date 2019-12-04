@@ -37,7 +37,6 @@ build:
   services:
     - name: docker:dind
   before_script:
-    - docker stop $(docker ps -a -q)
     - docker container ls
     - docker images
     - docker system prune -af

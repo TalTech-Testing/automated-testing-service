@@ -54,7 +54,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	private void sendMailAsync(String uniid, String text) {
-		Thread thread = new Thread(() -> {
+//		Thread thread = new Thread(() -> {
 			try {
 				SimpleMailMessage message = new SimpleMailMessage();
 				message.setTo(String.format("%s@taltech.ee", uniid));
@@ -64,9 +64,9 @@ public class ReportServiceImpl implements ReportService {
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage());
 			}
-		});
-		thread.setPriority(10);
-		thread.start();
+//		});
+//		thread.setPriority(10);
+//		thread.start();
 	}
 
 	@Override
