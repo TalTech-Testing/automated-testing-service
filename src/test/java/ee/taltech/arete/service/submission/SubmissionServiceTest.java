@@ -21,7 +21,7 @@ class SubmissionServiceTest {
 	@Test
 	void getSubmissions() {
 		submissionService.saveSubmission(submission);
-		assert submissionService.getSubmissions().size() == 1;
+		assert submissionService.getSubmissions().size() > 0;
 	}
 
 	@Test
