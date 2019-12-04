@@ -8,7 +8,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Random;
 
 public class SubmissionInitializer {
 	private final static String UNIID_DOCKER = "uniid";
@@ -22,7 +21,7 @@ public class SubmissionInitializer {
 	private final static String RETURN_URL = "https://jsonplaceholder.typicode.com/posts";
 	private final static String[] EXTRA = new String[]{"stylecheck"};
 
-	public static Submission getFullSubmission() {
+	public static Submission getFullSubmissionPython() {
 
 		return Submission.builder()
 				.uniid(UNIID_GIT)
@@ -34,16 +33,37 @@ public class SubmissionInitializer {
 				.dockerExtra(new String[]{"stylecheck"})
 				.project(PROJECT_GIT_PYTHON)
 				.projectBase(PROJECT_BASE)
-//				.timestamp(System.currentTimeMillis())
-				.priority(new Random().nextInt(5) + 5)
+				.timestamp(System.currentTimeMillis())
+				.priority(10)
 				.build();
 	}
+
+
+	public static Submission getFullSubmissionJava() {
+
+		return Submission.builder()
+				.uniid(UNIID_GIT)
+				.hash("8133c4fb0dbcda3709d9f8ced953f5ef5af4e0ca")
+				.testingPlatform(TESTING_PLATFORM)
+				.returnUrl(RETURN_URL)
+				.dockerTimeout(120)
+				.systemExtra(new String[]{"noMail"})
+				.dockerExtra(new String[]{"stylecheck"})
+				.project(PROJECT_GIT)
+				.projectBase(PROJECT_BASE)
+				.timestamp(System.currentTimeMillis())
+				.priority(10)
+				.build();
+	}
+
 
 	public static Submission getControllerEndpointSubmission() {
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
+				.systemExtra(new String[]{"noMail"})
+				.dockerExtra(new String[]{"stylecheck"})
 				.hash("d3f5510928bb8dacc20d29110e9268756418bef9")
 				.dockerExtra(EXTRA)
 				.projectBase(PROJECT_BASE)

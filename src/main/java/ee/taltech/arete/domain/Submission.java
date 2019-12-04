@@ -33,6 +33,8 @@ public class Submission {
 	private String returnUrl;
 
 	private String hash;
+
+	@Column(columnDefinition = "TEXT")
 	private String[] slugs;
 
 	@JsonIgnore

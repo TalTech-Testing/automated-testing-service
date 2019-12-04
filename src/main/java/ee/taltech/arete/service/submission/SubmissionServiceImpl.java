@@ -77,11 +77,11 @@ public class SubmissionServiceImpl implements SubmissionService {
 	@Override
 	@Scheduled(cron = "0 4 4 * * ?")
 	public void deleteSubmissionsAutomatically() {
-		for (Submission submission : submissionRepository.findAll()) {
-			if (System.currentTimeMillis() - submission.getTimestamp() > (1000 * 60 * 60 * 24 * 7)) { // if it has been a week
-				submissionRepository.delete(submission);
-				LOG.info("Deleted old submission from DB: {}", submission);
-			}
-		}
+//		for (Submission submission : submissionRepository.findAll()) {
+//			if (System.currentTimeMillis() - submission.getTimestamp() > (1000 * 60 * 60 * 24 * 7)) { // if it has been a week
+//				submissionRepository.delete(submission);
+//				LOG.info("Deleted old submission from DB: {}", submission);
+//			}
+//		}
 	}
 }
