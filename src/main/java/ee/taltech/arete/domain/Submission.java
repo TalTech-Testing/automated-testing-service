@@ -34,7 +34,7 @@ public class Submission {
 
 	private String hash;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(length = 16383)
 	private String[] slugs;
 
 	@JsonIgnore
