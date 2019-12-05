@@ -9,7 +9,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.TimeUnit;
 
-import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmission;
+import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmissionJava;
+import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmissionPython;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -20,8 +21,9 @@ class PriorityQueueServiceTest {
 
 	@Test
 	void enqueue() {
-		priorityQueueService.enqueue(getFullSubmission());
-		assert priorityQueueService.getQueueSize() == 1;
+		priorityQueueService.enqueue(getFullSubmissionJava());
+		priorityQueueService.enqueue(getFullSubmissionJava());
+		assert priorityQueueService.getQueueSize() == 2;
 	}
 
 	@Test
@@ -30,7 +32,7 @@ class PriorityQueueServiceTest {
 		int jobSets = 2;
 
 		for (int i = 0; i < jobSets; i++) {
-			Submission submission = getFullSubmission();
+			Submission submission = getFullSubmissionPython();
 			priorityQueueService.enqueue(submission);
 		}
 
@@ -55,7 +57,7 @@ class PriorityQueueServiceTest {
 //			}
 //		}
 
-		while (priorityQueueService.getJobsRan() < 3) {
+		while (priorityQueueService.getJobsRan() < 4) {
 			TimeUnit.SECONDS.sleep(1);
 		}
 

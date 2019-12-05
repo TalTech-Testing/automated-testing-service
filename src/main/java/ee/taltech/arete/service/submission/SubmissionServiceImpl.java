@@ -7,6 +7,7 @@ import ee.taltech.arete.repository.SubmissionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,12 +33,20 @@ public class SubmissionServiceImpl implements SubmissionService {
 			submission.setTimestamp(System.currentTimeMillis());
 		}
 
-		if (submission.getExtra() == null) {
-			submission.setExtra(new String[]{"stylecheck"});
+		if (submission.getDockerExtra() == null) {
+			submission.setDockerExtra(new String[]{"stylecheck"});
 		}
 
 		if (submission.getProjectBase() == null) {
 			submission.setProjectBase("ex");
+		}
+
+		if (submission.getDockerTimeout() == null) {
+			submission.setDockerTimeout(120); // 120 sec
+		}
+
+		if (submission.getSystemExtra() == null) {
+			submission.setSystemExtra(new String[]{});
 		}
 
 	}
@@ -49,11 +58,11 @@ public class SubmissionServiceImpl implements SubmissionService {
 	}
 
 	@Override
-	public Submission getSubmissionByHash(String hash) {
+	public List<Submission> getSubmissionByHash(String hash) {
 		ArrayList<Submission> submissions = submissionRepository.findByHash(hash);
+		LOG.info("Reading Submission hash " + hash + " from database.");
 		if (submissions.size() > 0) {
-			LOG.info("Reading Submission hash " + submissions.get(0).getHash() + " from database.");
-			return submissions.get(0);
+			return submissions;
 		}
 		LOG.error(String.format("Submission with hash %s was not found.", hash));
 		throw new RequestFormatException(String.format("No Submission with hash: %s was not found", hash));
@@ -62,8 +71,17 @@ public class SubmissionServiceImpl implements SubmissionService {
 	@Override
 	public void saveSubmission(Submission submission) {
 		submissionRepository.saveAndFlush(submission);
-		LOG.info(submission.toString() + " successfully saved into DB");
+		LOG.info("Submission with hash {} successfully saved into DB", submission.getHash());
+	}
+
+	@Override
+	@Scheduled(cron = "0 4 4 * * ?")
+	public void deleteSubmissionsAutomatically() {
+//		for (Submission submission : submissionRepository.findAll()) {
+//			if (System.currentTimeMillis() - submission.getTimestamp() > (1000 * 60 * 60 * 24 * 7)) { // if it has been a week
+//				submissionRepository.delete(submission);
+//				LOG.info("Deleted old submission from DB: {}", submission);
+//			}
+//		}
 	}
 }
-
-

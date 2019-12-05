@@ -2,6 +2,7 @@ package ee.taltech.arete.service.queue;
 
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.runner.JobRunnerService;
+import ee.taltech.arete.service.submission.SubmissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,14 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 	private static final Integer MAX_JOBS = 8;
 	private static Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
+
+	@Autowired
+	private SubmissionService submissionService;
+
 	@Autowired
 	@Lazy
 	private JobRunnerService jobRunnerService;
+
 	private Integer jobsRan = 0;
 	private Integer activeRunningJobs = 0;
 	private Integer counter = 0;
@@ -40,10 +46,12 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 	@Override
 	public void killThread(Submission submission) {
-		LOGGER.info("All done for submission on thread: {}", submission.getThread());
+		submission.setResultTest(submission.getResult().toString());
+		submissionService.saveSubmission(submission);
 		activeSubmissions.remove(submission);
 		jobsRan++;
 		activeRunningJobs--;
+		LOGGER.info("All done for submission on thread: {}", submission.getThread());
 	}
 
 	@Override
@@ -107,12 +115,13 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 					try {
 						jobRunnerService.runJob(job);
 					} catch (Exception e) {
-						LOGGER.error(e.getMessage());
+						LOGGER.error("Job failed with message: {}", e.getMessage());
 						killThread(job);
 					}
-				});
 
+				});
 				thread.start();
+
 
 			}
 		}

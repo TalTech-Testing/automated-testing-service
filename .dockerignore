@@ -1,5 +1,6 @@
 target/*
 .env
 students/*
+logs/*
 tests/*
 input_and_output/*

@@ -28,9 +28,9 @@ public enum TestingPlatforms {
 	}
 
 	public static void correctTesterInput(Submission submission) {
-		String[] output = new String[submission.getExtra().length];
+		String[] output = new String[submission.getDockerExtra().length];
 		int i = 0;
-		for (String elem : submission.getExtra()) {
+		for (String elem : submission.getDockerExtra()) {
 			if (submission.getTestingPlatform().equals("java") && elem.equals("stylecheck")) {
 				output[i] = "-r FILEWRITER,COMPILER,TESTNG,REPORT,CHECKSTYLE";
 			} else {
@@ -38,6 +38,6 @@ public enum TestingPlatforms {
 			}
 			i++;
 		}
-		submission.setExtra(output);
+		submission.setDockerExtra(output);
 	}
 }

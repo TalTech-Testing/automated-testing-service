@@ -21,13 +21,13 @@ class SubmissionServiceTest {
 	@Test
 	void getSubmissions() {
 		submissionService.saveSubmission(submission);
-		assert submissionService.getSubmissions().size() == 1;
+		assert submissionService.getSubmissions().size() > 0;
 	}
 
 	@Test
 	void getSubmissionByHash() {
 		submissionService.saveSubmission(submission);
-		assert submissionService.getSubmissionByHash(submission.getHash()).getUniid().equals(submission.getUniid());
+		assert submissionService.getSubmissionByHash(submission.getHash()).get(0).getUniid().equals(submission.getUniid());
 	}
 
 }

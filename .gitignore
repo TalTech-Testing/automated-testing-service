@@ -1,5 +1,6 @@
 students/*
 tests/*
+logs/*
 input_and_output/*
 target/*
 !.mvn/wrapper/maven-wrapper.jar
@@ -20,6 +21,7 @@ target/*
 *.iws
 *.iml
 *.ipr
+*.log
 
 ### NetBeans ###
 /nbproject/private/
