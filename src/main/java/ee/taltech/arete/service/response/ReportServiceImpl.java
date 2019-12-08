@@ -9,6 +9,8 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -17,6 +19,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+@EnableAsync
 @Service
 public class ReportServiceImpl implements ReportService {
 
@@ -24,6 +27,7 @@ public class ReportServiceImpl implements ReportService {
 	@Autowired
 	private JavaMailSender javaMailSender;
 
+	@Async
 	@Override
 	public void sendMail(String uniid, String resultPath) { // For results
 		try {
@@ -39,7 +43,12 @@ public class ReportServiceImpl implements ReportService {
 				}
 			}
 
-			sendMailAsync(uniid, mail);
+			mail(uniid, mail);
+
+			try {
+				new PrintWriter(resultPath).close(); // clears output file
+			} catch (Exception ignored) {
+			}
 
 		} catch (IOException | JSONException e) {
 			LOGGER.error(e.getMessage());
@@ -47,26 +56,23 @@ public class ReportServiceImpl implements ReportService {
 
 	}
 
+	private void mail(String uniid, String mail) {
+		try {
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setTo(String.format("%s@taltech.ee", uniid));
+			message.setSubject("Test results");
+			message.setText(mail);
+			javaMailSender.send(message);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+	}
+
+	@Async
 	@Override
 	public void sendTextMail(String uniid, String text) { // For exceptions
 
-		sendMailAsync(uniid, text);
-	}
-
-	private void sendMailAsync(String uniid, String text) {
-		Thread thread = new Thread(() -> {
-			try {
-				SimpleMailMessage message = new SimpleMailMessage();
-				message.setTo(String.format("%s@taltech.ee", uniid));
-				message.setSubject("Test results");
-				message.setText(text);
-				javaMailSender.send(message);
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage());
-			}
-		});
-		thread.setPriority(10);
-		thread.start();
+		mail(uniid, text);
 	}
 
 	@Override

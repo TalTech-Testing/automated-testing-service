@@ -1,7 +1,6 @@
 package ee.taltech.arete.repository;
 
 import ee.taltech.arete.domain.Submission;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static ee.taltech.arete.initializers.SubmissionInitializer.endTest;
 import static ee.taltech.arete.initializers.SubmissionInitializer.getControllerEndpointSubmission;
 
 
@@ -39,12 +37,6 @@ public class SubmissionRepositoryTest {
 	@Test
 	public void testSubmission() {
 		assert submissionRepository.findByHash(submission.getHash()).get(0).equals(submission);
-	}
-
-	@After
-	public void afterAll() {
-		endTest();
-		LOGGER.info("Cleaning up.");
 	}
 
 }

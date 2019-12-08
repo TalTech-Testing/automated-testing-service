@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface SubmissionService {
 
-	void populateFields(Submission submission);
+	void populateAsyncFields(Submission submission);
+
+	String populateSyncFields(Submission submission);
 
 	List<Submission> getSubmissions();
 

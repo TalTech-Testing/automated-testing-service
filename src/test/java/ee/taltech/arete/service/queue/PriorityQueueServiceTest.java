@@ -22,14 +22,13 @@ class PriorityQueueServiceTest {
 	@Test
 	void enqueue() {
 		priorityQueueService.enqueue(getFullSubmissionJava());
-		priorityQueueService.enqueue(getFullSubmissionJava());
-		assert priorityQueueService.getQueueSize() == 2;
+		assert priorityQueueService.getQueueSize() == 1;
 	}
 
 	@Test
 	void runJob() throws InterruptedException {
 
-		int jobSets = 2;
+		int jobSets = 1;
 
 		for (int i = 0; i < jobSets; i++) {
 			Submission submission = getFullSubmissionPython();
@@ -57,7 +56,7 @@ class PriorityQueueServiceTest {
 //			}
 //		}
 
-		while (priorityQueueService.getJobsRan() < 4) {
+		while (priorityQueueService.getJobsRan() < 2) {
 			TimeUnit.SECONDS.sleep(1);
 		}
 

@@ -97,6 +97,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 						lowPriority.add(job);
 					}
 
+
 					coolDown.put(job, 300000);
 					submissionPriorityQueue.add(job);
 					return;
@@ -111,17 +112,12 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 				LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
 				job.setThread(counter % MAX_JOBS);
 
-				Thread thread = new Thread(() -> {
-					try {
-						jobRunnerService.runJob(job);
-					} catch (Exception e) {
-						LOGGER.error("Job failed with message: {}", e.getMessage());
-						killThread(job);
-					}
-
-				});
-				thread.start();
-
+				try {
+					jobRunnerService.runJob(job);
+				} catch (Exception e) {
+					LOGGER.error("Job failed with message: {}", e.getMessage());
+					killThread(job);
+				}
 
 			}
 		}

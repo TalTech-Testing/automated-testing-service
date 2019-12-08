@@ -12,6 +12,7 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
+import ee.taltech.arete.api.data.SourceFile;
 import ee.taltech.arete.domain.InputWriter;
 import ee.taltech.arete.domain.Submission;
 import org.apache.commons.io.FileUtils;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 
@@ -89,7 +91,17 @@ public class Docker {
 			Volume volumeOutput = new Volume("/host");
 
 			try {
-				FileUtils.copyDirectory(new File(student), new File(tempStudent));
+				if (submission.getSource() == null) {
+					FileUtils.copyDirectory(new File(student), new File(tempStudent));
+				} else {
+					for (SourceFile file : submission.getSource()) {
+						File path = new File(String.format("%s/%s", tempStudent, file.getPath().substring(file.getPath().indexOf("\\"))));
+						path.getParentFile().mkdirs();
+						FileWriter writer = new FileWriter(path);
+						writer.write(file.getContents());
+						writer.close();
+					}
+				}
 			} catch (IOException e) {
 				LOGGER.error("Failed to copy files from student folder to temp folder.");
 				throw new IOException(e.getMessage());
@@ -164,13 +176,6 @@ public class Docker {
 			} catch (Exception remove) {
 				LOGGER.error("Container {} has already been removed", submission.getHash());
 			}
-		}
-
-		try {
-			String tempTester = String.format("input_and_output/%s/tester", submission.getThread());
-			FileUtils.cleanDirectory(new File(tempTester));
-		} catch (IOException e) {
-			LOGGER.error("Temp folder already empty. {}", e.getMessage());
 		}
 
 		try {

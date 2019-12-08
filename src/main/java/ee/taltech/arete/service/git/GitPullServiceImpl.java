@@ -44,10 +44,9 @@ public class GitPullServiceImpl implements GitPullService {
 	public void repositoryMaintenance(Submission submission) {
 
 		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
-		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", submission.getUniid(), submission.getProject());
 
 		try {
-			pullOrClone(pathToStudentFolder, pathToStudentRepo, Optional.of(submission));
+			pullOrClone(pathToStudentFolder, submission.getGitStudentRepo(), Optional.of(submission));
 			submission.setSlugs(getChangedFolders(pathToStudentFolder));
 		} catch (IOException e) {
 			LOGGER.error("Failed to read student repository.");
@@ -155,12 +154,11 @@ public class GitPullServiceImpl implements GitPullService {
 	public void resetHead(Submission submission) {
 
 		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
-		String pathToStudentRepo = String.format("https://gitlab.cs.ttu.ee/envomp/%s.git", submission.getProject());
 		try {
 			Git.open(new File(pathToStudentFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
 		} catch (Exception e) {
 			LOGGER.error("Failed to reset HEAD for student. Defaulting to hard reset: {}", e.getMessage());
-			resetHard(pathToStudentFolder, pathToStudentRepo);
+			resetHard(pathToStudentFolder, submission.getGitStudentRepo());
 		}
 	}
 
