@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.exception.RequestFormatException;
 import ee.taltech.arete.repository.SubmissionRepository;
+import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,12 @@ public class SubmissionServiceImpl implements SubmissionService {
 	@Autowired
 	private SubmissionRepository submissionRepository;
 
+	private static String getRandomHash() {
+		return RandomStringUtils.random(40, true, true).toLowerCase();
+	}
+
 	@Override
-	public void populateFields(Submission submission) {
+	public void populateAsyncFields(Submission submission) {
 		if (submission.getPriority() == null) {
 			submission.setPriority(5);
 		}
@@ -37,8 +42,14 @@ public class SubmissionServiceImpl implements SubmissionService {
 			submission.setDockerExtra(new String[]{"stylecheck"});
 		}
 
-		if (submission.getProjectBase() == null) {
-			submission.setProjectBase("ex");
+		if (submission.getUniid() == null) {
+			String[] url = submission.getGitStudentRepo().split("/");
+			submission.setUniid(url[url.length - 2]);
+		}
+
+		if (submission.getProject() == null) {
+			String[] url = submission.getGitStudentRepo().split("/");
+			submission.setProject(url[url.length - 1]);
 		}
 
 		if (submission.getDockerTimeout() == null) {
@@ -48,8 +59,57 @@ public class SubmissionServiceImpl implements SubmissionService {
 		if (submission.getSystemExtra() == null) {
 			submission.setSystemExtra(new String[]{});
 		}
-
 	}
+
+	@Override
+	public String populateSyncFields(Submission submission) {
+		String hash;
+
+		if (submission.getHash() == null) {
+			hash = getRandomHash();
+			submission.setHash(hash);
+			submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", hash));
+		} else {
+			hash = submission.getHash(); //For integration test only.
+		}
+
+		if (submission.getPriority() == null) {
+			submission.setPriority(5);
+		}
+
+		if (submission.getTimestamp() == null) {
+			submission.setTimestamp(System.currentTimeMillis());
+		}
+
+		if (submission.getDockerExtra() == null) {
+			submission.setDockerExtra(new String[]{"stylecheck"});
+		}
+
+		if (submission.getUniid() == null) {
+			submission.setUniid("Codera");
+		}
+
+		if (submission.getSlugs() == null) {
+			String path = submission.getSource()[0].getPath().split("\\\\")[0];
+			submission.setSlugs(new String[]{path});
+		}
+
+		if (submission.getProject() == null) {
+			String[] url = submission.getGitTestSource().split("/");
+			submission.setProject(url[url.length - 2]);
+		}
+
+		if (submission.getDockerTimeout() == null) {
+			submission.setDockerTimeout(120); // 120 sec
+		}
+
+		if (submission.getSystemExtra() == null) {
+			submission.setSystemExtra(new String[]{"noMail"});
+		}
+
+		return hash;
+	}
+
 
 	@Override
 	public List<Submission> getSubmissions() {

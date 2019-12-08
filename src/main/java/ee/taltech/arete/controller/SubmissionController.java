@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
+import ee.taltech.arete.api.data.response.TestingResult;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.exception.RequestFormatException;
 import ee.taltech.arete.service.docker.ImageCheck;
@@ -20,8 +21,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @RestController
@@ -40,6 +44,8 @@ public class SubmissionController {
 	@Autowired
 	private GitPullService gitPullService;
 
+	private HashMap<String, TestingResult> syncWaitingRoom = new HashMap<>();
+
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/test")
 	public Submission Test(HttpEntity<String> httpEntity) {
@@ -49,7 +55,7 @@ public class SubmissionController {
 
 		try {
 			Submission submission = objectMapper.readValue(requestBody, Submission.class);
-			submissionService.populateFields(submission);
+			submissionService.populateAsyncFields(submission);
 			submissionService.saveSubmission(submission);
 			priorityQueueService.enqueue(submission);
 			return submission;
@@ -61,29 +67,39 @@ public class SubmissionController {
 		}
 	}
 
-
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/test/sync")
-	public void TestSync(HttpEntity<String> httpEntity) {
+	public TestingResult TestSync(HttpEntity<String> httpEntity) {
 		String requestBody = httpEntity.getBody();
 		LOGGER.info("Parsing request body: " + requestBody);
 		if (requestBody == null) throw new RequestFormatException("Empty input!");
+		try {
+			Submission submission = objectMapper.readValue(requestBody, Submission.class);
+			String hash = submissionService.populateSyncFields(submission);
 
-		// TODO: codera
-//		try {
-//			Submission submission = objectMapper.readValue(requestBody, Submission.class);
-//			submissionService.populateFields(submission);
-//			submissionService.saveSubmission(submission);
-//			priorityQueueService.enqueue(submission);
-//			return submission;
-//
-//		} catch (JsonProcessingException e) {
-//			LOGGER.error("Request format invalid!", e);
-//			throw new RequestFormatException(e.getMessage(), e);
-//
-//		}
+			submissionService.saveSubmission(submission);
+
+			priorityQueueService.enqueue(submission);
+
+			while (!syncWaitingRoom.containsKey(hash)) {
+				TimeUnit.SECONDS.sleep(1);
+			}
+			return syncWaitingRoom.remove(hash);
+
+		} catch (JsonProcessingException | InterruptedException e) {
+			LOGGER.error("Request format invalid!", e);
+			throw new RequestFormatException(e.getMessage(), e);
+
+		}
 	}
 
+
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@PostMapping("/waitingroom/{hash}")
+	public void WaitingList(HttpEntity<String> httpEntity, @PathVariable("hash") String hash) throws JsonProcessingException {
+		TestingResult response = objectMapper.readValue(Objects.requireNonNull(httpEntity.getBody()), TestingResult.class);
+		syncWaitingRoom.put(hash, response);
+	}
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/image/update/{image}")
@@ -167,5 +183,4 @@ public class SubmissionController {
 			throw new RequestFormatException(e.getMessage());
 		}
 	}
-
 }

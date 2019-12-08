@@ -1,23 +1,29 @@
 package ee.taltech.arete.initializers;
 
+import ee.taltech.arete.api.data.request.AreteRequestAsync;
+import ee.taltech.arete.api.data.request.AreteRequestSync;
 import ee.taltech.arete.domain.Submission;
 import org.apache.commons.lang.RandomStringUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class SubmissionInitializer {
-	private final static String UNIID_DOCKER = "uniid";
 	private final static String UNIID_GIT = "envomp";
+	private static final String STUDENT_REPO_PYTHON = "https://gitlab.cs.ttu.ee/envomp/iti0102-2019";
+	private static final String STUDENT_REPO = "https://gitlab.cs.ttu.ee/envomp/iti0202-2019";
+	private static final String PROJECT_PYTHON = "iti0102-2019";
+	private static final String PROJECT = "iti0202-2019";
 	private final static String TESTING_PLATFORM = "java";
 	private final static String TESTING_PLATFORM_PYTHON = "python";
-	private static final String PROJECT_DOCKER = "iti69-420";
-	private static final String PROJECT_GIT = "iti0202-2019";
-	private static final String PROJECT_GIT_PYTHON = "iti0102-2019";
-	private static final String PROJECT_BASE = "ex";
+	private static final String PROJECT_GIT = "https://gitlab.cs.ttu.ee/iti0202-2019/ex";
+	private static final String PROJECT_GIT_PYTHON = "https://gitlab.cs.ttu.ee/iti0102-2019/ex";
 	private final static String RETURN_URL = "https://jsonplaceholder.typicode.com/posts";
 	private final static String[] EXTRA = new String[]{"stylecheck"};
 
@@ -25,15 +31,17 @@ public class SubmissionInitializer {
 
 		return Submission.builder()
 				.uniid(UNIID_GIT)
+				.gitStudentRepo(STUDENT_REPO_PYTHON)
+				.project(PROJECT_PYTHON)
 				.hash("fb23ca3217bc9051241b56488a100e6d744201ef")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.dockerTimeout(120)
-				.systemExtra(new String[]{"noMail"})
+//				.systemExtra(new String[]{"noMail"})
+				.systemExtra(new String[]{})
 				.dockerExtra(new String[]{"stylecheck"})
-				.project(PROJECT_GIT_PYTHON)
-				.projectBase(PROJECT_BASE)
 				.timestamp(System.currentTimeMillis())
+				.gitTestSource(PROJECT_GIT_PYTHON)
 				.priority(10)
 				.build();
 	}
@@ -43,14 +51,16 @@ public class SubmissionInitializer {
 
 		return Submission.builder()
 				.uniid(UNIID_GIT)
+				.gitStudentRepo(STUDENT_REPO)
+				.project(PROJECT)
 				.hash("8133c4fb0dbcda3709d9f8ced953f5ef5af4e0ca")
 				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
 				.dockerTimeout(120)
-				.systemExtra(new String[]{"noMail"})
+//				.systemExtra(new String[]{"noMail"})
+				.systemExtra(new String[]{})
 				.dockerExtra(new String[]{"stylecheck"})
-				.project(PROJECT_GIT)
-				.projectBase(PROJECT_BASE)
+				.gitTestSource(PROJECT_GIT)
 				.timestamp(System.currentTimeMillis())
 				.priority(10)
 				.build();
@@ -60,33 +70,45 @@ public class SubmissionInitializer {
 	public static Submission getControllerEndpointSubmission() {
 		return Submission.builder()
 				.uniid(UNIID_GIT)
+				.gitStudentRepo(STUDENT_REPO)
+				.project(PROJECT)
 				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
 				.systemExtra(new String[]{"noMail"})
 				.dockerExtra(new String[]{"stylecheck"})
 				.hash("d3f5510928bb8dacc20d29110e9268756418bef9")
+				.gitTestSource(PROJECT_GIT)
 				.dockerExtra(EXTRA)
-				.projectBase(PROJECT_BASE)
-				.project(PROJECT_GIT)
 				.build();
 	}
 
-	public static String getFullSubmissionString() throws JSONException {
-		JSONObject jsonObject = new JSONObject();
-		JSONArray jsonArray = new JSONArray();
-		for (String extra : EXTRA) {
-			jsonArray.put(extra);
-		}
-		jsonObject.put("uniid", UNIID_GIT);
-		jsonObject.put("hash", "2448474b6a76ef534660817948dc8b816e40dd48");
-		jsonObject.put("testingPlatform", TESTING_PLATFORM);
-		jsonObject.put("returnUrl", RETURN_URL);
-		jsonObject.put("dockerExtra", jsonArray);
-		jsonObject.put("project", PROJECT_GIT);
+	public static AreteRequestAsync getFullSubmissionString() {
 
-		System.out.println(jsonObject.toString());
+		return AreteRequestAsync.builder()
+				.gitStudentRepo(STUDENT_REPO)
+				.hash("2448474b6a76ef534660817948dc8b816e40dd48")
+				.testingPlatform(TESTING_PLATFORM)
+				.returnUrl(RETURN_URL)
+				.dockerExtra(EXTRA)
+				.gitTestSource(PROJECT_GIT)
+				.build();
+	}
 
-		return jsonObject.toString();
+
+	public static AreteRequestSync getFullSubmissionStringSync(String base) throws IOException {
+		String hash = getRandomHash();
+		return AreteRequestSync.builder()
+				.testingPlatform(TESTING_PLATFORM)
+				.dockerExtra(EXTRA)
+				.gitTestSource(PROJECT_GIT)
+				.hash(hash)
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.source(new ArrayList<>(Collections.singletonList(
+						AreteRequestSync.SourceFile.builder()
+								.path("EX01IdCode\\src\\ee\\taltech\\iti0202\\idcode\\IDCode.java")
+								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\IDCode.java"), StandardCharsets.US_ASCII))
+								.build())))
+				.build();
 	}
 
 	private static String getRandomHash() {

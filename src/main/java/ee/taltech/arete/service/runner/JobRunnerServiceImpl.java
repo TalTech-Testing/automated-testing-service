@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,15 +34,17 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 	@Override
 	public void runJob(Submission submission) {
 
-		try {
-			gitPullService.repositoryMaintenance(submission);
-		} catch (Exception e) {
-			LOGGER.error("Student didn't have new submissions: {}", e.getMessage());
+		if (submission.getSource() == null) {
+			try {
+				gitPullService.repositoryMaintenance(submission);
+			} catch (Exception e) {
+				LOGGER.error("Student didn't have new submissions: {}", e.getMessage());
 
-			reportFailedSubmission(submission, e);
+				reportFailedSubmission(submission, e);
 
-			priorityQueueService.killThread(submission);
-			return;
+				priorityQueueService.killThread(submission);
+				return;
+			}
 		}
 
 		LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
@@ -83,11 +84,6 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			} catch (Exception e) {
 				LOGGER.error("Malformed mail: {}", e.getMessage());
 			}
-		}
-
-		try {
-			new PrintWriter(output).close(); // clears output file
-		} catch (Exception ignored) {
 		}
 
 	}

@@ -1,10 +1,12 @@
 package ee.taltech.arete.controller;
 
 import ee.taltech.arete.AreteApplication;
+import ee.taltech.arete.api.data.request.AreteRequestAsync;
+import ee.taltech.arete.api.data.request.AreteRequestSync;
+import ee.taltech.arete.api.data.response.TestingResult;
 import ee.taltech.arete.domain.Submission;
 import io.restassured.RestAssured;
 import org.apache.http.HttpStatus;
-import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,22 +28,22 @@ import static org.hamcrest.Matchers.is;
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SubmissionControllerTest {
 
-	private Submission submission;
+	private AreteRequestSync submission;
 
 	@LocalServerPort
 	private int port;
 
 	@Before
-	public void init() {
-		submission = getControllerEndpointSubmission();
+	public void init() throws IOException {
 		RestAssured.baseURI = "http://localhost";
 		RestAssured.port = port;
+		submission = getFullSubmissionStringSync(String.format("http://localhost:%s", port));
 	}
 
 	@Test
-	public void addNewSubmission() throws IOException, JSONException, InterruptedException {
+	public void addNewSubmissionAsync() throws InterruptedException {
 
-		String payload = getFullSubmissionString();
+		AreteRequestAsync payload = getFullSubmissionString();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -56,6 +58,23 @@ public class SubmissionControllerTest {
 
 		TimeUnit.SECONDS.sleep(30);
 		//TODO To actually check if it tests
+
+	}
+
+	@Test
+	public void addNewSubmissionSync() {
+
+		TestingResult answer = given()
+				.when()
+				.body(submission)
+				.post("/test/sync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(TestingResult.class);
+
+		System.out.println(answer);
 
 	}
 
