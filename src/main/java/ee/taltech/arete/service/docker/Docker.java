@@ -96,7 +96,11 @@ public class Docker {
 				} else {
 					for (File file : submission.getSource()) {
 						String temp;
-						temp = file.getPath().substring(file.getPath().indexOf("\\"));
+						try {
+							temp = file.getPath().substring(file.getPath().indexOf("\\"));
+						} catch (Exception e) {
+							temp = file.getPath().substring(file.getPath().indexOf("/"));
+						}
 
 						java.io.File path = new java.io.File(String.format("%s/%s", tempStudent, temp));
 						path.getParentFile().mkdirs();
@@ -167,6 +171,7 @@ public class Docker {
 			LOGGER.info("Docker for user {} with slug {} finished", submission.getUniid(), slug);
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			LOGGER.error("Job failed with exception: {}", e.getMessage());
 			throw new DockerException("Cant't launch docker, message: " + e.getMessage(), 1);
 		}
