@@ -27,7 +27,7 @@ public class hodorStudentTesterResponseTest {
 
 	@Test
 	public void JavaParsing() throws IOException {
-		String json = Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\api\\data\\response\\java2.json").toAbsolutePath(), StandardCharsets.UTF_8);
+		String json = Files.readString(Paths.get("src/test/java/ee/taltech/arete/api/data/response/java2.json").toAbsolutePath(), StandardCharsets.UTF_8);
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
 //		System.out.println(objectMapper.writeValueAsString(response));
 		AreteResponse areteResponse = new AreteResponse(getFullSubmissionJava(), response);
@@ -36,7 +36,7 @@ public class hodorStudentTesterResponseTest {
 
 	@Test
 	public void JavaExamParsing() throws IOException {
-		String json = Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\api\\data\\response\\java.json").toAbsolutePath(), StandardCharsets.UTF_8);
+		String json = Files.readString(Paths.get("rc/test/java/ee/taltech/arete/api/data/response/java.json").toAbsolutePath(), StandardCharsets.UTF_8);
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
 		AreteResponse areteResponse = new AreteResponse(getFullSubmissionJava(), response);
 //		System.out.println(objectMapper.writeValueAsString(areteResponse));
@@ -44,7 +44,7 @@ public class hodorStudentTesterResponseTest {
 
 	@Test
 	public void JavaDoesntCompile() throws IOException {
-		String json = Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\api\\data\\response\\java3.json").toAbsolutePath(), StandardCharsets.UTF_8);
+		String json = Files.readString(Paths.get("rc/test/java/ee/taltech/arete/api/data/response/java3.json").toAbsolutePath(), StandardCharsets.UTF_8);
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
 		AreteResponse areteResponse = new AreteResponse(getFullSubmissionJava(), response);
 //		System.out.println(objectMapper.writeValueAsString(areteResponse));
@@ -52,7 +52,7 @@ public class hodorStudentTesterResponseTest {
 
 	@Test
 	public void PythonParsing() throws IOException {
-		String json = Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\api\\data\\response\\python.json").toAbsolutePath(), StandardCharsets.UTF_8);
+		String json = Files.readString(Paths.get("rc/test/java/ee/taltech/arete/api/data/response/python.json").toAbsolutePath(), StandardCharsets.UTF_8);
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
 //		System.out.println(objectMapper.writeValueAsString(response));
 		AreteResponse areteResponse = new AreteResponse(getFullSubmissionPython(), response);
