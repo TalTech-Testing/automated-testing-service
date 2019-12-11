@@ -16,10 +16,10 @@ public class TestContext {
 	String file;
 	Long startDate;
 	Long endDate;
-	String mode;
-	String welcomeMessage;
-	Integer identifier;
-	Integer count;
+	//	String mode;
+//	String welcomeMessage;
+//	Integer identifier;
+//	Integer count;
 	Integer weight;
 	Integer passedCount;
 	Integer grade;

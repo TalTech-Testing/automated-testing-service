@@ -23,6 +23,6 @@ public class TestingResult {
 	String result;
 	Boolean securityViolation;
 	Integer totalCount;
-	String totalGrade; // Either int or NaN
+	String totalGrade; // Either Double or NaN
 	Integer totalPassedCount;
 }

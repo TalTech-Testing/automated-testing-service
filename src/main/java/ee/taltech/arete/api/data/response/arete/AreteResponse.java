@@ -17,9 +17,13 @@ public class AreteResponse {
 	ArrayList<Error> errors = new ArrayList<>();
 	ArrayList<File> files = new ArrayList<>();
 	ArrayList<File> testFiles = new ArrayList<>();
-	ArrayList<TestContext> tests = new ArrayList<>();
+	ArrayList<TestContext> testSuites = new ArrayList<>();
 	ArrayList<ConsoleOutput> consoleOutputs = new ArrayList<>();
 	String output;
+	Integer totalCount;
+	String totalGrade;
+	Integer totalPassedCount;
+	Integer style = 100;
 
 	public AreteResponse(Submission submission, String message) { //Failed submission
 		Error error = new Error.ErrorBuilder().columnNo(0).lineNo(0).fileName("tester").message(message).build();
@@ -34,6 +38,18 @@ public class AreteResponse {
 	public AreteResponse(Submission submission, hodorStudentTesterResponse response) { //Successful submission
 		for (TestingResult result : response.getResults()) {
 
+			if (result.getTotalCount() != null) {
+				totalCount = result.getTotalCount();
+			}
+
+			if (result.getTotalGrade() != null) {
+				totalGrade = result.getTotalGrade();
+			}
+
+			if (result.getTotalPassedCount() != null) {
+				totalPassedCount = result.getTotalPassedCount();
+			}
+
 			if (result.getErrors() != null) {
 				for (StyleError warning : result.getErrors()) {
 					Error areteWarning = new Error.ErrorBuilder()
@@ -44,6 +60,7 @@ public class AreteResponse {
 							.kind("style error")
 							.build();
 					errors.add(areteWarning);
+					style = 0;
 				}
 			}
 
@@ -79,7 +96,7 @@ public class AreteResponse {
 			}
 
 			if (result.getTestContexts() != null) {
-				tests.addAll(result.getTestContexts());
+				testSuites.addAll(result.getTestContexts());
 			}
 
 			if (result.getOutput() != null) {
