@@ -1,15 +1,17 @@
 package ee.taltech.arete.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.AreteApplication;
 import ee.taltech.arete.api.data.request.AreteRequestAsync;
 import ee.taltech.arete.api.data.request.AreteRequestSync;
-import ee.taltech.arete.api.data.response.TestingResult;
+import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.domain.Submission;
 import io.restassured.RestAssured;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -29,6 +31,12 @@ import static org.hamcrest.Matchers.is;
 public class SubmissionControllerTest {
 
 	private AreteRequestSync submission;
+	private AreteRequestSync submissionNoStd;
+	private AreteRequestSync submissionNoTester;
+	private AreteRequestSync submissionNoStyle;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@LocalServerPort
 	private int port;
@@ -38,6 +46,9 @@ public class SubmissionControllerTest {
 		RestAssured.baseURI = "http://localhost";
 		RestAssured.port = port;
 		submission = getFullSubmissionStringSync(String.format("http://localhost:%s", port));
+		submissionNoStd = getFullSubmissionStringPythonSyncNoStdout(String.format("http://localhost:%s", port));
+		submissionNoTester = getFullSubmissionStringPythonSyncNoTesterFiles(String.format("http://localhost:%s", port));
+		submissionNoStyle = getFullSubmissionStringPythonSyncNoStyle(String.format("http://localhost:%s", port));
 	}
 
 	@Test
@@ -64,7 +75,7 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmissionSync() {
 
-		TestingResult answer = given()
+		AreteResponse answer = given()
 				.when()
 				.body(submission)
 				.post("/test/sync")
@@ -72,9 +83,61 @@ public class SubmissionControllerTest {
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
 				.body()
-				.as(TestingResult.class);
+				.as(AreteResponse.class);
 
-		System.out.println(answer);
+		assert answer.getOutput() != null;
+	}
+
+	@Test
+	public void addNewSubmissionSyncNoTests() {
+
+		AreteResponse answer = given()
+				.when()
+				.body(submissionNoTester)
+				.post("/test/sync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		assert answer.getTestFiles().size() == 0;
+
+	}
+
+
+	@Test
+	public void addNewSubmissionSyncNoStd() {
+
+		AreteResponse answer = given()
+				.when()
+				.body(submissionNoStd)
+				.post("/test/sync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		assert answer.getConsoleOutputs().size() == 0;
+
+	}
+
+
+	@Test
+	public void addNewSubmissionSyncNoStyle() {
+
+		AreteResponse answer = given()
+				.when()
+				.body(submissionNoStyle)
+				.post("/test/sync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		assert answer.getErrors().size() == 0;
 
 	}
 

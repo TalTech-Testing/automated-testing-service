@@ -28,7 +28,7 @@ public class AreteRequestAsync {
 	private String project; // Default is last in url. https://gitlab.cs.ttu.ee/envomp/iti0102-2019 > project = iti0102-2019. Specify project, if its not in last position.
 
 	private String[] dockerExtra; // Default is "stylecheck".
-	private String[] systemExtra; // No defaults. You can add "noMail"
+	private String[] systemExtra; // No defaults. You can add "noMail", "noTesterFiles"
 	private Integer dockerTimeout; // Default docker timeout is 120 seconds
 	private Integer priority; // Default priority is 5
 

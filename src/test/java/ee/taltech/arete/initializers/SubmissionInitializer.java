@@ -99,7 +99,6 @@ public class SubmissionInitializer {
 		String hash = getRandomHash();
 		return AreteRequestSync.builder()
 				.testingPlatform(TESTING_PLATFORM)
-				.dockerExtra(EXTRA)
 				.gitTestSource(PROJECT_GIT)
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
@@ -107,6 +106,73 @@ public class SubmissionInitializer {
 						AreteRequestSync.SourceFile.builder()
 								.path("EX01IdCode\\src\\ee\\taltech\\iti0202\\idcode\\IDCode.java")
 								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\IDCode.java"), StandardCharsets.US_ASCII))
+								.build())))
+				.build();
+	}
+
+	public static AreteRequestSync getFullSubmissionStringPythonSync(String base) throws IOException {
+		String hash = getRandomHash();
+		return AreteRequestSync.builder()
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.gitTestSource(PROJECT_GIT_PYTHON)
+				.dockerExtra(EXTRA)
+				.hash(hash)
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.source(new ArrayList<>(Collections.singletonList(
+						AreteRequestSync.SourceFile.builder()
+								.path("ex04_cipher\\cipher.py")
+								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\cipher.py"), StandardCharsets.UTF_8))
+								.build())))
+				.build();
+	}
+
+	public static AreteRequestSync getFullSubmissionStringPythonSyncNoStyle(String base) throws IOException {
+		String hash = getRandomHash();
+		return AreteRequestSync.builder()
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.gitTestSource(PROJECT_GIT_PYTHON)
+				.dockerExtra(new String[]{})
+				.hash(hash)
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.source(new ArrayList<>(Collections.singletonList(
+						AreteRequestSync.SourceFile.builder()
+								.path("ex04_cipher\\cipher.py")
+								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\cipher.py"), StandardCharsets.UTF_8))
+								.build())))
+				.build();
+	}
+
+
+	public static AreteRequestSync getFullSubmissionStringPythonSyncNoStdout(String base) throws IOException {
+		String hash = getRandomHash();
+		return AreteRequestSync.builder()
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.dockerExtra(EXTRA)
+				.systemExtra(new String[]{"noStd"})
+				.gitTestSource(PROJECT_GIT_PYTHON)
+				.hash(hash)
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.source(new ArrayList<>(Collections.singletonList(
+						AreteRequestSync.SourceFile.builder()
+								.path("ex04_cipher\\cipher.py")
+								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\cipher.py"), StandardCharsets.UTF_8))
+								.build())))
+				.build();
+	}
+
+	public static AreteRequestSync getFullSubmissionStringPythonSyncNoTesterFiles(String base) throws IOException {
+		String hash = getRandomHash();
+		return AreteRequestSync.builder()
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.dockerExtra(EXTRA)
+				.systemExtra(new String[]{"noTesterFiles"})
+				.gitTestSource(PROJECT_GIT_PYTHON)
+				.hash(hash)
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.source(new ArrayList<>(Collections.singletonList(
+						AreteRequestSync.SourceFile.builder()
+								.path("ex04_cipher\\cipher.py")
+								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\cipher.py"), StandardCharsets.UTF_8))
 								.build())))
 				.build();
 	}

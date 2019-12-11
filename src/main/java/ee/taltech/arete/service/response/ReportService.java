@@ -1,13 +1,11 @@
 package ee.taltech.arete.service.response;
 
-public interface ReportService {
+import ee.taltech.arete.api.data.response.arete.AreteResponse;
 
-	void sendMail(String uniid, String resultPath);
+public interface ReportService {
 
 	void sendTextMail(String uniid, String text);
 
-	void sendToReturnUrl(String returnUrl, String resultPath);
-
-	void sendTextToReturnUrl(String returnUrl, String text);
+	void sendTextToReturnUrl(String returnUrl, AreteResponse response);
 
 }
