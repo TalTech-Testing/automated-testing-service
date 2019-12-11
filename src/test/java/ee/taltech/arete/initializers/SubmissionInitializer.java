@@ -105,7 +105,7 @@ public class SubmissionInitializer {
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("EX01IdCode\\src\\ee\\taltech\\iti0202\\idcode\\IDCode.java")
-								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\IDCode.java"), StandardCharsets.US_ASCII))
+								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\IDCode.java").toAbsolutePath(), StandardCharsets.US_ASCII))
 								.build())))
 				.build();
 	}
@@ -121,7 +121,7 @@ public class SubmissionInitializer {
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("ex04_cipher\\cipher.py")
-								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\cipher.py"), StandardCharsets.UTF_8))
+								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\cipher.py").toAbsolutePath(), StandardCharsets.UTF_8))
 								.build())))
 				.build();
 	}
@@ -137,7 +137,7 @@ public class SubmissionInitializer {
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("ex04_cipher\\cipher.py")
-								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\cipher.py"), StandardCharsets.UTF_8))
+								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\cipher.py").toAbsolutePath(), StandardCharsets.UTF_8))
 								.build())))
 				.build();
 	}
@@ -155,7 +155,7 @@ public class SubmissionInitializer {
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("ex04_cipher\\cipher.py")
-								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\cipher.py"), StandardCharsets.UTF_8))
+								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\cipher.py").toAbsolutePath(), StandardCharsets.UTF_8))
 								.build())))
 				.build();
 	}
@@ -172,7 +172,7 @@ public class SubmissionInitializer {
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("ex04_cipher\\cipher.py")
-								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\cipher.py"), StandardCharsets.UTF_8))
+								.contents(Files.readString(Paths.get("src\\test\\java\\ee\\taltech\\arete\\initializers\\cipher.py").toAbsolutePath(), StandardCharsets.UTF_8))
 								.build())))
 				.build();
 	}

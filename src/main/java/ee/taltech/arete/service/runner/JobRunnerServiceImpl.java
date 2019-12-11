@@ -67,7 +67,6 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 				LOGGER.info("Job {} has been ran for user {}", slug, submission.getUniid());
 
 			} catch (Exception e) {
-				e.printStackTrace();
 				LOGGER.error("job {} has failed for user {} with exception: {}", slug, submission.getUniid(), e.getMessage());
 
 				reportFailedSubmission(submission, e);
