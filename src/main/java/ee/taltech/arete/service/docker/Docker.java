@@ -12,16 +12,16 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
-import ee.taltech.arete.api.data.SourceFile;
+import ee.taltech.arete.api.data.response.arete.File;
 import ee.taltech.arete.domain.InputWriter;
 import ee.taltech.arete.domain.Submission;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Random;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
@@ -92,10 +92,17 @@ public class Docker {
 
 			try {
 				if (submission.getSource() == null) {
-					FileUtils.copyDirectory(new File(student), new File(tempStudent));
+					FileUtils.copyDirectory(new java.io.File(student), new java.io.File(tempStudent));
 				} else {
-					for (SourceFile file : submission.getSource()) {
-						File path = new File(String.format("%s/%s", tempStudent, file.getPath().substring(file.getPath().indexOf("\\"))));
+					for (File file : submission.getSource()) {
+						String temp;
+						try {
+							temp = file.getPath().substring(file.getPath().indexOf("\\"));
+						} catch (Exception e) {
+							temp = file.getPath().substring(file.getPath().indexOf("/"));
+						}
+
+						java.io.File path = new java.io.File(String.format("%s/%s", tempStudent, temp));
 						path.getParentFile().mkdirs();
 						FileWriter writer = new FileWriter(path);
 						writer.write(file.getContents());
@@ -108,13 +115,13 @@ public class Docker {
 			}
 
 			try {
-				FileUtils.copyDirectory(new File(tester), new File(tempTester));
+				FileUtils.copyDirectory(new java.io.File(tester), new java.io.File(tempTester));
 			} catch (IOException e) {
 				LOGGER.error("Failed to copy files from tester folder to temp folder.");
 				throw new IOException(e.getMessage());
 			}
 
-			mapper.writeValue(new File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getDockerExtra())));
+			mapper.writeValue(new java.io.File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getDockerExtra())));
 
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
@@ -123,9 +130,9 @@ public class Docker {
 					.withAttachStderr(true)
 					.withHostConfig(newHostConfig()
 							.withBinds(
-									new Bind(new File(output).getAbsolutePath(), volumeOutput, rw),
-									new Bind(new File(studentHost).getAbsolutePath(), volumeStudent, rw),
-									new Bind(new File(testerHost).getAbsolutePath(), volumeTester, ro)))
+									new Bind(new java.io.File(output).getAbsolutePath(), volumeOutput, rw),
+									new Bind(new java.io.File(studentHost).getAbsolutePath(), volumeStudent, rw),
+									new Bind(new java.io.File(testerHost).getAbsolutePath(), volumeTester, ro)))
 					.exec();
 
 			///   END OF WARNING   ///
@@ -138,6 +145,8 @@ public class Docker {
 //			dockerClient.waitContainerCmd(container.getId())
 //					.exec(new WaitContainerResultCallback());
 
+			StringBuilder builder = new StringBuilder(); //intermediate variable to get std
+
 			dockerClient
 					.logContainerCmd(containerName)
 					.withStdErr(true)
@@ -147,14 +156,22 @@ public class Docker {
 					.exec(new ResultCallbackTemplate<LogContainerResultCallback, Frame>() {
 						@Override
 						public void onNext(Frame frame) {
-							submission.getResult().append(new String(frame.getPayload()));
-//							System.out.print(new String(frame.getPayload()));
+							if (!Arrays.asList(submission.getSystemExtra()).contains("noStd")) {
+								builder.append(new String(frame.getPayload()));
+							}
+						}
+
+						@Override
+						public void onComplete() {
+							submission.setResult(builder.toString());
+							super.onComplete();
 						}
 					});
 
 			LOGGER.info("Docker for user {} with slug {} finished", submission.getUniid(), slug);
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			LOGGER.error("Job failed with exception: {}", e.getMessage());
 			throw new DockerException("Cant't launch docker, message: " + e.getMessage(), 1);
 		}
@@ -180,14 +197,14 @@ public class Docker {
 
 		try {
 			String tempTester = String.format("input_and_output/%s/tester", submission.getThread());
-			FileUtils.cleanDirectory(new File(tempTester));
+			FileUtils.cleanDirectory(new java.io.File(tempTester));
 		} catch (IOException e) {
 			LOGGER.error("Temp folder already empty. {}", e.getMessage());
 		}
 
 		try {
 			String tempStudent = String.format("input_and_output/%s/student", submission.getThread());
-			FileUtils.cleanDirectory(new File(tempStudent));
+			FileUtils.cleanDirectory(new java.io.File(tempStudent));
 		} catch (IOException e) {
 			LOGGER.error("Temp folder already empty. {}", e.getMessage());
 		}

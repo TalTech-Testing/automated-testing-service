@@ -91,6 +91,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 		if (submission.getSlugs() == null) {
 			String path = submission.getSource()[0].getPath().split("\\\\")[0];
+			if (path.equals(submission.getSource()[0].getPath())) {
+				path = submission.getSource()[0].getPath().split("/")[0];
+			}
 			submission.setSlugs(new String[]{path});
 		}
 

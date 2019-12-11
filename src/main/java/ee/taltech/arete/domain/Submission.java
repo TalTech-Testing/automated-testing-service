@@ -1,8 +1,7 @@
 package ee.taltech.arete.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
-import ee.taltech.arete.api.data.SourceFile;
+import ee.taltech.arete.api.data.response.arete.File;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +31,7 @@ public class Submission {
 	private String gitStudentRepo;
 	//  or
 	@Transient
-	private SourceFile[] source;
+	private File[] source;
 
 	private String hash;
 
@@ -43,13 +42,8 @@ public class Submission {
 	@Column(length = 16383)
 	private String[] slugs;
 
-	@JsonIgnore
-	@Transient
-	private final StringBuilder result = new StringBuilder();
-
-	@JsonIgnore
 	@Column(columnDefinition = "TEXT")
-	private String resultTest;
+	private String result;
 
 	private String[] dockerExtra;
 	private String[] systemExtra;
@@ -64,7 +58,7 @@ public class Submission {
 	}
 
 
-	public Submission(long id, String gitTestSource, String testingPlatform, String returnUrl, String gitStudentRepo, SourceFile[] source, String hash, String uniid, String project, String[] slugs, String resultTest, String[] dockerExtra,
+	public Submission(long id, String gitTestSource, String testingPlatform, String returnUrl, String gitStudentRepo, File[] source, String hash, String uniid, String project, String[] slugs, String result, String[] dockerExtra,
 	                  String[] systemExtra, Integer dockerTimeout, Long timestamp, Integer priority, Integer thread) {
 		this.gitTestSource = gitTestSource;
 		this.testingPlatform = testingPlatform;
@@ -75,7 +69,7 @@ public class Submission {
 		this.uniid = uniid;
 		this.project = project;
 		this.slugs = slugs;
-		this.resultTest = resultTest;
+		this.result = result;
 		this.dockerExtra = dockerExtra;
 		this.systemExtra = systemExtra;
 		this.dockerTimeout = dockerTimeout;

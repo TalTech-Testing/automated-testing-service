@@ -46,7 +46,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 	@Override
 	public void killThread(Submission submission) {
-		submission.setResultTest(submission.getResult().toString());
 		submissionService.saveSubmission(submission);
 		activeSubmissions.remove(submission);
 		jobsRan++;
