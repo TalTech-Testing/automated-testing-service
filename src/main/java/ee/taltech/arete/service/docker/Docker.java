@@ -76,9 +76,9 @@ public class Docker {
 
 			///  PROCEED TO MODIFY WITH CAUTION  ///
 
-			String output = String.format("%s/input_and_output/%s/host", home, submission.getThread());
-			String testerHost = String.format("%s/input_and_output/%s/tester", home, submission.getThread());
-			String studentHost = String.format("%s/input_and_output/%s/student", home, submission.getThread());
+			String output = String.format("input_and_output/%s/host", submission.getThread());
+			String testerHost = String.format("input_and_output/%s/tester", submission.getThread());
+			String studentHost = String.format("input_and_output/%s/student", submission.getThread());
 
 			String tester = String.format("tests/%s/%s", submission.getProject(), slug);
 			String tempTester = String.format("input_and_output/%s/tester", submission.getThread());
