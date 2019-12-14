@@ -1,5 +1,6 @@
 package ee.taltech.arete.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import ee.taltech.arete.api.data.response.arete.File;
 import lombok.Builder;
@@ -42,6 +43,7 @@ public class Submission {
 	@Column(length = 16383)
 	private String[] slugs;
 
+	@JsonIgnore
 	@Column(columnDefinition = "TEXT")
 	private String result;
 

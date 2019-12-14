@@ -75,9 +75,12 @@ public class ApplicationStartup implements ApplicationRunner {
 		try {
 
 			List<String> projects = Arrays.asList("iti0102-2019/ex", "iti0202-2019/ex");
+			List<String> projectsFolders = Arrays.asList("iti0102-2019", "iti0202-2019");
 
-			for (String project : projects) {
-				String pathToTesterFolder = String.format("tests/%s/", project);
+			for (int i = 0; i < projects.size(); i++) {
+				String project = projects.get(i);
+				String projectsFolder = projectsFolders.get(i);
+				String pathToTesterFolder = String.format("tests/%s/", projectsFolder);
 				String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s.git", project);
 				gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
 			}
