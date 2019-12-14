@@ -43,6 +43,6 @@ RUN if [ -d "/tests" ]; then rm -Rf /tests; fi
 RUN if [ -d "/input_and_output" ]; then rm -Rf /input_and_output; fi
 
 # Fire up our Spring Boot app by default
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar target/arete-0.0.1-SNAPSHOT.jar" ]
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /arete/target/arete-0.0.1-SNAPSHOT.jar" ]
 
 EXPOSE 8098:8098
