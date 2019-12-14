@@ -88,7 +88,7 @@ run:
     - docker container ls
   script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-    - docker-compose up -f docker-compose-run.yml -d --force-recreate
+    - docker-compose -f docker-compose-run.yml up -d --force-recreate
   after_script:
     - docker container ls
     - docker images
