@@ -25,6 +25,7 @@ services:
     image: ${DOCKER_USER}/arete:latest
     restart: unless-stopped
     privileged: true
+    working_dir: ${ARETE_HOME}
     depends_on:
       - db
     ports:
