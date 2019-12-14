@@ -6,6 +6,7 @@ stages:
   - test
   - build
   - deploy
+  - run
 
 
 test:
@@ -41,7 +42,7 @@ build:
     - docker images
     - docker system prune -af
   script:
-    - docker-compose up --no-start --force-recreate
+    - docker-compose up -f docker-compose-build.yml --no-start --force-recreate
   after_script:
     - docker images
     - docker container ls
@@ -65,7 +66,29 @@ deploy:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker tag arete $DOCKER_USER/arete:latest
     - docker push $DOCKER_USER/arete:latest
-    - docker-compose start
+  after_script:
+    - docker-compose down
+    - docker system prune -af
+    - docker container ls
+    - docker images
+  only:
+    - dev
+    - master
+
+run:
+  tags:
+    - dev
+    - master
+  image: $DOCKER_USER/arete:latest
+  stage: run
+  services:
+    - name: docker:dind
+  before_script:
+    - docker images
+    - docker container ls
+  script:
+    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - docker-compose up -f docker-compose-run.yml -d --force-recreate
   after_script:
     - docker container ls
     - docker images

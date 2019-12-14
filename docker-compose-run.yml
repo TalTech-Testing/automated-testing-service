@@ -31,8 +31,6 @@ services:
       args:
         - ARETE_HOME=${ARETE_HOME}
         - GITLAB_PASSWORD=${GITLAB_PASSWORD}
-      #        - DOCKER_USER=${DOCKER_USER}
-      #        - DOCKER_PASSWORD=${DOCKER_PASSWORD}
       dockerfile:
         Dockerfile-ubuntu
       context: .

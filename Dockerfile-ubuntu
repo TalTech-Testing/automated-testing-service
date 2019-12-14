@@ -1,13 +1,13 @@
-FROM ubuntu:18.04
+FROM openjdk:11
 
 MAINTAINER enrico.vompa@gmail.com
 
 ARG ARETE_HOME
 ENV ARETE_HOME=$ARETE_HOME
 
-ARG GITLAB_PASSWORD
-ENV GITLAB_PASSWORD=$GITLAB_PASSWORD
-
+#ARG GITLAB_PASSWORD
+#ENV GITLAB_PASSWORD=$GITLAB_PASSWORD
+#
 #ARG DOCKER_USER
 #ENV DOCKER_USER=$DOCKER_USER
 #
@@ -17,29 +17,29 @@ ENV GITLAB_PASSWORD=$GITLAB_PASSWORD
 ADD . $ARETE_HOME
 WORKDIR $ARETE_HOME
 
-# Install OpenJDK-11
-RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk && \
-    apt-get install -y ant && \
-    apt-get clean;
-
-# Fix certificate issues
-RUN apt-get update && \
-    apt-get install ca-certificates-java && \
-    apt-get clean && \
-    update-ca-certificates -f;
-
-# Setup JAVA_HOME -- useful for docker commandline
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
-RUN export JAVA_HOME
+## Install OpenJDK-11
+#RUN apt-get update && \
+#    apt-get install -y openjdk-11-jdk && \
+#    apt-get install -y ant && \
+#    apt-get clean;
+#
+## Fix certificate issues
+#RUN apt-get update && \
+#    apt-get install ca-certificates-java && \
+#    apt-get clean && \
+#    update-ca-certificates -f;
+#
+## Setup JAVA_HOME -- useful for docker commandline
+#ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
+#RUN export JAVA_HOME
 ENV JAVA_OPTS=""
 
 # Run Maven build
 RUN chmod +x mvnw && ./mvnw install -DskipTests
 
 # Run cleanup
-RUN if [ -d "/students" ]; then rm -Rf /students; fi
-RUN if [ -d "/tests" ]; then rm -Rf /tests; fi
+# RUN if [ -d "/students" ]; then rm -Rf /students; fi
+# RUN if [ -d "/tests" ]; then rm -Rf /tests; fi
 
 # Fire up our Spring Boot app by default
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar target/arete-0.0.1-SNAPSHOT.jar" ]

@@ -1,0 +1,47 @@
+version: '3.4'
+
+services:
+
+  db:
+    container_name: postgres
+    image: postgres:11.5
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: arete
+      POSTGRES_DB: arete
+      POSTGRES_PASSWORD: arete
+    ports:
+      - "5432:5432"
+
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - "8090:8080"
+
+  back:
+    container_name: arete
+    image: arete:latest
+    restart: unless-stopped
+    privileged: true
+    depends_on:
+      - db
+    build:
+      args:
+        - ARETE_HOME=/arete
+      #        - GITLAB_PASSWORD=${GITLAB_PASSWORD}
+      #        - DOCKER_USER=${DOCKER_USER}
+      #        - DOCKER_PASSWORD=${DOCKER_PASSWORD}
+      dockerfile:
+        Dockerfile-ubuntu
+      context: .
+    ports:
+      - "8098:8098"
+    env_file:
+      - ..env #Change to .env to run locally
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+#      - ${ARETE_HOME}/input_and_output:${ARETE_HOME}/input_and_output
+#      - ${ARETE_HOME}/students:${ARETE_HOME}/students
+#      - ${ARETE_HOME}/tests:${ARETE_HOME}/tests

@@ -28,6 +28,10 @@ public class ApplicationStartup implements ApplicationRunner {
 	@Override
 	public void run(ApplicationArguments applicationArguments) throws Exception {
 		log.info("setting up temp folders.");
+		if (System.getenv().containsKey("ARETE_HOME") && System.getenv().get("ARETE_HOME").equals("/arete")) {
+			log.info("Build phase detected. Aborting.");
+			return;
+		}
 
 		String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
 
