@@ -1,32 +1,29 @@
 variables:
   DOCKER_DRIVER: overlay
 
-
 stages:
-  #  - test
+  - test
   - build
   - deploy
-  - run
 
-
-#test:
-#  tags:
-#    - dev
-#    - master
-#  image: docker:latest
-#  stage: test
-#  services:
-#    - name: docker:dind
-#  before_script:
-#    - docker system prune -af
-#  script:
-#    - docker-compose -f docker-compose-test.yml up --force-recreate
-#  after_script:
-#    - docker-compose down
-#    - docker system prune -af
-#  only:
-#    - dev
-#    - master
+test:
+  tags:
+    - dev
+    - master
+  image: docker:latest
+  stage: test
+  services:
+    - name: docker:dind
+  before_script:
+    - docker system prune -af
+  script:
+    - docker-compose -f docker-compose-test.yml up --force-recreate
+  after_script:
+    - docker-compose down
+    - docker system prune -af
+  only:
+    - dev
+    - master
 
 
 build:
@@ -43,26 +40,6 @@ build:
     - docker system prune -af
   script:
     - docker-compose -f docker-compose-build.yml up --no-start --force-recreate
-  after_script:
-    - docker images
-    - docker container ls
-  only:
-    - dev
-    - master
-
-
-deploy:
-  tags:
-    - dev
-    - master
-  image: docker:latest
-  stage: deploy
-  services:
-    - name: docker:dind
-  before_script:
-    - docker images
-    - docker container ls
-  script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker tag arete $DOCKER_USER/arete:latest
     - docker push $DOCKER_USER/arete:latest
@@ -75,12 +52,13 @@ deploy:
     - dev
     - master
 
-run:
+
+deploy:
   tags:
     - dev
     - master
   image: $DOCKER_USER/arete:latest
-  stage: run
+  stage: deploy
   services:
     - name: docker:dind
   before_script:
@@ -88,7 +66,7 @@ run:
     - docker container ls
   script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-    - docker-compose -f docker-compose-run.yml up -d --force-recreate
+    - docker-compose -f docker-compose-deploy.yml up -d --force-recreate
   after_script:
     - docker container ls
     - docker images
