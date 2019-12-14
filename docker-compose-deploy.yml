@@ -22,24 +22,19 @@ services:
 
   back:
     container_name: arete
-    image: arete:latest
+    image: ${DOCKER_USER}/arete:latest
     restart: unless-stopped
     privileged: true
+    working_dir: ${ARETE_HOME}
     depends_on:
       - db
-    build:
-      args:
-        - ARETE_HOME=${ARETE_HOME}
-        - GITLAB_PASSWORD=${GITLAB_PASSWORD}
-      #        - DOCKER_USER=${DOCKER_USER}
-      #        - DOCKER_PASSWORD=${DOCKER_PASSWORD}
-      dockerfile:
-        Dockerfile-ubuntu
-      context: .
     ports:
       - "8098:8098"
     env_file:
       - ..env #Change to .env to run locally
+    environment:
+      ARETE_HOME: ${ARETE_HOME}
+      GITLAB_PASSWORD: ${GITLAB_PASSWORD}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${ARETE_HOME}/input_and_output:${ARETE_HOME}/input_and_output

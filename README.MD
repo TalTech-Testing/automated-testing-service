@@ -1,17 +1,21 @@
 
 # Currently supported endpoints
 
-Schemas for post are located at ```/arete/schemas```
+Schemas can be generated from arete/api/data ```/request``` and ```/response```
 
 * post
     * /test
-    * /test/sync <WIP>
+    * /test/sync
     * /tests/update/{project_base}/{project}
-    * /image/update/java-tester
+    * /image/update/{image_name}
+        * java-tester
+        * python-tester
 
 * get
+    * /submissions
+    * /submissions/{hash}
+    * /submissions/{hash}/logs
     * /logs
-    * /logs/{hash}
 
 Getting Started
 ----
@@ -22,25 +26,26 @@ Getting Started
 
 You need latest of: Docker
 
-```
-git clone https://gitlab.cs.ttu.ee/envomp/automated-testing-service.git
-cd automated-testing-service
+```shell script
+git clone https://github.com/envomp/arete
+docker login -u automatedtestingservice -p $DOCKER_PASSWORD
 docker-compose up -d
 ```
 
 ##### Local host machine with H2 ####
-You need latest of: Java11, Docker
+You need latest of: Java11, Docker, System Environments for ARETE_HOME, GITLAB_PASSWORD
 ___
 ##### for Linux
-```
+```shell script
+git clone https://gitlab.cs.ttu.ee/envomp/automated-testing-service
 ./mvnw clean install
 java -jar -Dspring.config.location=src/main/resources/application-dev.properties target/arete-0.0.1-SNAPSHOT.jar
 ```
 
-
 ##### for Windows
 
-```
+```shell script
+git clone https://gitlab.cs.ttu.ee/envomp/automated-testing-service
 mvnw.cmd clean install
 java -jar -Dspring.config.location=src/main/resources/application-dev.properties target/arete-0.0.1-SNAPSHOT.jar
 ```
@@ -51,7 +56,7 @@ ___
 
 ___
 /etc/gitlab-runner/config.toml
-```
+```shell script
 concurrent = 1
 check_interval = 0
 
@@ -73,7 +78,7 @@ ___
 
 ___
 C:/gitlab-runner/config.toml
-```
+```shell script
 concurrent = 1
 check_interval = 0
 
@@ -100,8 +105,13 @@ check_interval = 0
 ```
 
 run in terminal:
-```
+```shell script
 ./arete_local_install.sh
+```
+
+cleanup:
+```shell script
+./docker_cleanup.sh
 ```
 
 Scripts have been tested on Ubuntu 18.04 and 19.04

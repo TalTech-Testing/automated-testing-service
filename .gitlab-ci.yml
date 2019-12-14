@@ -1,12 +1,10 @@
 variables:
   DOCKER_DRIVER: overlay
 
-
 stages:
   - test
   - build
   - deploy
-
 
 test:
   tags:
@@ -41,10 +39,15 @@ build:
     - docker images
     - docker system prune -af
   script:
-    - docker-compose up --no-start --force-recreate
+    - docker-compose -f docker-compose-build.yml up --no-start --force-recreate
+    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - docker tag arete $DOCKER_USER/arete:latest
+    - docker push $DOCKER_USER/arete:latest
   after_script:
-    - docker images
+    - docker-compose down
+    - docker system prune -af
     - docker container ls
+    - docker images
   only:
     - dev
     - master
@@ -54,7 +57,7 @@ deploy:
   tags:
     - dev
     - master
-  image: docker:latest
+  image: $DOCKER_USER/arete:latest
   stage: deploy
   services:
     - name: docker:dind
@@ -63,9 +66,7 @@ deploy:
     - docker container ls
   script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-    - docker tag arete $DOCKER_USER/arete:latest
-    - docker push $DOCKER_USER/arete:latest
-    - docker-compose start
+    - docker-compose -f docker-compose-deploy.yml up -d --force-recreate
   after_script:
     - docker container ls
     - docker images
