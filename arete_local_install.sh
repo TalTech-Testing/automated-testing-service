@@ -20,7 +20,7 @@ fi
 #CLONING GIT REPOSITORY
 if [ -d .git ]; then
   printf "${GREEN}git repo already cloned${NC}\n"
-elif [ ! -d "iti0203-2019-back" ]; then
+elif [ ! -d "arete" ]; then
   printf "${YELLOW}cloning git repo${NC}\n"
   git clone https://gitlab.cs.ttu.ee/envomp/automated-testing-service.git
   cd automated-testing-service
