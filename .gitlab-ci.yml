@@ -9,24 +9,24 @@ stages:
   - run
 
 
-test:
-  tags:
-    - dev
-    - master
-  image: docker:latest
-  stage: test
-  services:
-    - name: docker:dind
-  before_script:
-    - docker system prune -af
-  script:
-    - docker-compose -f docker-compose-test.yml up --force-recreate
-  after_script:
-    - docker-compose down
-    - docker system prune -af
-  only:
-    - dev
-    - master
+#test:
+#  tags:
+#    - dev
+#    - master
+#  image: docker:latest
+#  stage: test
+#  services:
+#    - name: docker:dind
+#  before_script:
+#    - docker system prune -af
+#  script:
+#    - docker-compose -f docker-compose-test.yml up --force-recreate
+#  after_script:
+#    - docker-compose down
+#    - docker system prune -af
+#  only:
+#    - dev
+#    - master
 
 
 build:
