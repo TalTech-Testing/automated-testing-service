@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.BadRequestException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,14 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 	@Override
 	public void populateAsyncFields(Submission submission) {
+
+		String repo;
+		if (submission.getGitStudentRepo() == null) {
+			throw new BadRequestException("Git student repo is needed for async.");
+		} else {
+			repo = submission.getGitStudentRepo().replaceAll(".git", "");
+		}
+
 		if (submission.getPriority() == null) {
 			submission.setPriority(5);
 		}
@@ -43,12 +52,12 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getUniid() == null) {
-			String[] url = submission.getGitStudentRepo().split("/");
+			String[] url = repo.split("/");
 			submission.setUniid(url[url.length - 2]);
 		}
 
 		if (submission.getProject() == null) {
-			String[] url = submission.getGitStudentRepo().split("/");
+			String[] url = repo.split("/");
 			submission.setProject(url[url.length - 1]);
 		}
 
@@ -64,6 +73,10 @@ public class SubmissionServiceImpl implements SubmissionService {
 	@Override
 	public String populateSyncFields(Submission submission) {
 		String hash;
+
+		if (submission.getSource() == null || submission.getSource().length == 0) {
+			throw new BadRequestException("Source is needed for sync testing.");
+		}
 
 		if (submission.getHash() == null) {
 			hash = getRandomHash();
@@ -98,8 +111,8 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getProject() == null) {
-			String[] url = submission.getGitTestSource().split("/");
-			submission.setProject(url[url.length - 2]);
+			String[] url = submission.getGitStudentRepo().split("/");
+			submission.setProject(url[url.length - 1]);
 		}
 
 		if (submission.getDockerTimeout() == null) {

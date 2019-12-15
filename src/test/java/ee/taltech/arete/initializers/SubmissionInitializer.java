@@ -16,15 +16,15 @@ import java.util.Collections;
 
 public class SubmissionInitializer {
 	private final static String UNIID_GIT = "envomp";
-	private static final String STUDENT_REPO_PYTHON = "https:/gitlab.cs.ttu.ee/envomp/iti0102-2019";
-	private static final String STUDENT_REPO = "https:/gitlab.cs.ttu.ee/envomp/iti0202-2019";
+	private static final String STUDENT_REPO_PYTHON = "git@gitlab.cs.ttu.ee:envomp/iti0102-2019.git";
+	private static final String STUDENT_REPO = "git@gitlab.cs.ttu.ee:envomp/iti0202-2019.git";
 	private static final String PROJECT_PYTHON = "iti0102-2019";
 	private static final String PROJECT = "iti0202-2019";
 	private final static String TESTING_PLATFORM = "java";
 	private final static String TESTING_PLATFORM_PYTHON = "python";
-	private static final String PROJECT_GIT = "https:/gitlab.cs.ttu.ee/iti0202-2019/ex";
-	private static final String PROJECT_GIT_PYTHON = "https:/gitlab.cs.ttu.ee/iti0102-2019/ex";
-	private final static String RETURN_URL = "https:/jsonplaceholder.typicode.com/posts";
+	private static final String PROJECT_GIT = "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git";
+	private static final String PROJECT_GIT_PYTHON = "git@gitlab.cs.ttu.ee:iti0102-2019/ex.git";
+	private final static String RETURN_URL = "https://jsonplaceholder.typicode.com/posts";
 	private final static String[] EXTRA = new String[]{"stylecheck"};
 	private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
 
@@ -42,7 +42,6 @@ public class SubmissionInitializer {
 				.systemExtra(new String[]{})
 				.dockerExtra(new String[]{"stylecheck"})
 				.timestamp(System.currentTimeMillis())
-				.gitTestSource(PROJECT_GIT_PYTHON)
 				.priority(10)
 				.build();
 	}
@@ -61,7 +60,6 @@ public class SubmissionInitializer {
 //				.systemExtra(new String[]{"noMail"})
 				.systemExtra(new String[]{})
 				.dockerExtra(new String[]{"stylecheck"})
-				.gitTestSource(PROJECT_GIT)
 				.timestamp(System.currentTimeMillis())
 				.priority(10)
 				.build();
@@ -78,7 +76,6 @@ public class SubmissionInitializer {
 				.systemExtra(new String[]{"noMail"})
 				.dockerExtra(new String[]{"stylecheck"})
 				.hash("d3f5510928bb8dacc20d29110e9268756418bef9")
-				.gitTestSource(PROJECT_GIT)
 				.dockerExtra(EXTRA)
 				.build();
 	}
@@ -91,7 +88,6 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
 				.dockerExtra(EXTRA)
-				.gitTestSource(PROJECT_GIT)
 				.build();
 	}
 
@@ -100,7 +96,6 @@ public class SubmissionInitializer {
 		String hash = getRandomHash();
 		return AreteRequestSync.builder()
 				.testingPlatform(TESTING_PLATFORM)
-				.gitTestSource(PROJECT_GIT)
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.source(new ArrayList<>(Collections.singletonList(
@@ -115,7 +110,6 @@ public class SubmissionInitializer {
 		String hash = getRandomHash();
 		return AreteRequestSync.builder()
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.gitTestSource(PROJECT_GIT_PYTHON)
 				.dockerExtra(EXTRA)
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
@@ -131,7 +125,6 @@ public class SubmissionInitializer {
 		String hash = getRandomHash();
 		return AreteRequestSync.builder()
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.gitTestSource(PROJECT_GIT_PYTHON)
 				.dockerExtra(new String[]{})
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
@@ -150,7 +143,6 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.dockerExtra(EXTRA)
 				.systemExtra(new String[]{"noStd"})
-				.gitTestSource(PROJECT_GIT_PYTHON)
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.source(new ArrayList<>(Collections.singletonList(
@@ -167,7 +159,6 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.dockerExtra(EXTRA)
 				.systemExtra(new String[]{"noTesterFiles"})
-				.gitTestSource(PROJECT_GIT_PYTHON)
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.source(new ArrayList<>(Collections.singletonList(

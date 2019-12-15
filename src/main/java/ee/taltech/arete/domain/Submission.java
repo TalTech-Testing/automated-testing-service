@@ -23,8 +23,6 @@ public class Submission {
 	private long id;
 
 	@NotNull
-	private String gitTestSource;
-	@NotNull
 	private String testingPlatform;
 
 	private String returnUrl;
@@ -60,9 +58,8 @@ public class Submission {
 	}
 
 
-	public Submission(long id, String gitTestSource, String testingPlatform, String returnUrl, String gitStudentRepo, File[] source, String hash, String uniid, String project, String[] slugs, String result, String[] dockerExtra,
+	public Submission(long id, String testingPlatform, String returnUrl, String gitStudentRepo, File[] source, String hash, String uniid, String project, String[] slugs, String result, String[] dockerExtra,
 	                  String[] systemExtra, Integer dockerTimeout, Long timestamp, Integer priority, Integer thread) {
-		this.gitTestSource = gitTestSource;
 		this.testingPlatform = testingPlatform;
 		this.returnUrl = returnUrl;
 		this.gitStudentRepo = gitStudentRepo;

@@ -2,10 +2,7 @@ package ee.taltech.arete.service.git;
 
 import ee.taltech.arete.domain.Submission;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ListBranchCommand;
-import org.eclipse.jgit.api.PullResult;
-import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -39,6 +36,8 @@ public class GitPullServiceImpl implements GitPullService {
 
 	private static final List<String> TESTABLES = List.of("ADD", "MODIFY");
 	private static Logger LOGGER = LoggerFactory.getLogger(GitPullService.class);
+	private static TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback();
+
 
 	@Override
 	public void repositoryMaintenance(Submission submission) {
@@ -109,7 +108,6 @@ public class GitPullServiceImpl implements GitPullService {
 	}
 
 	private void SafePullAndClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException {
-
 		Path path = Paths.get(pathToFolder);
 
 		if (Files.exists(path)) {
@@ -128,10 +126,9 @@ public class GitPullServiceImpl implements GitPullService {
 		} else {
 
 			try {
+
 				Git git = Git.cloneRepository()
-						.setCredentialsProvider(
-								new UsernamePasswordCredentialsProvider(
-										"envomp", System.getenv().get("GITLAB_PASSWORD")))
+						.setTransportConfigCallback(transportConfigCallback)
 						.setURI(pathToRepo)
 						.setDirectory(new File(pathToFolder))
 						.call();
@@ -144,7 +141,8 @@ public class GitPullServiceImpl implements GitPullService {
 
 
 			} catch (Exception e) {
-				LOGGER.error("Cloning tester failed with message: {}", e.getMessage());
+				e.printStackTrace();
+				LOGGER.error("Cloning failed with message: {}", e.getMessage());
 				throw new ExceptionInInitializerError();
 			}
 		}
@@ -172,8 +170,7 @@ public class GitPullServiceImpl implements GitPullService {
 
 				try {
 					FetchResult result = git.fetch().setRemote("origin")
-							.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
-									"envomp", System.getenv().get("GITLAB_PASSWORD")))
+							.setTransportConfigCallback(transportConfigCallback)
 							.call();
 
 					Ref command = git.reset().setMode(ResetCommand.ResetType.HARD).setRef(user.getHash()).call();
@@ -183,8 +180,7 @@ public class GitPullServiceImpl implements GitPullService {
 					fixHash(git, user);
 
 					FetchResult result = git.fetch().setRemote("origin")
-							.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
-									"envomp", System.getenv().get("GITLAB_PASSWORD")))
+							.setTransportConfigCallback(transportConfigCallback)
 							.call();
 
 					Ref command = git.reset().setMode(ResetCommand.ResetType.HARD).setRef(user.getHash()).call();
@@ -193,8 +189,7 @@ public class GitPullServiceImpl implements GitPullService {
 			} else {
 
 				PullResult result = git.pull()
-						.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
-								"envomp", System.getenv().get("GITLAB_PASSWORD")))
+						.setTransportConfigCallback(transportConfigCallback)
 						.call();
 
 				assert result.isSuccessful();
@@ -209,8 +204,7 @@ public class GitPullServiceImpl implements GitPullService {
 
 			LOGGER.info("Pulled latest content to {}", pathToFolder);
 			PullResult result = git.pull()
-					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
-							"envomp", System.getenv().get("GITLAB_PASSWORD")))
+					.setTransportConfigCallback(transportConfigCallback)
 					.call();
 
 			assert result.isSuccessful();

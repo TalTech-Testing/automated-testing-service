@@ -11,9 +11,6 @@ import lombok.*;
 public class AreteRequestAsync {
 
 	@NotNull
-	private String gitTestSource; // URL for tests
-
-	@NotNull
 	private String testingPlatform; // Image used for testing. Currently available: ["java", "python"]
 
 	@NotNull

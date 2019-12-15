@@ -18,7 +18,7 @@ import java.util.*;
 @EnableAsync
 public class PriorityQueueServiceImpl implements PriorityQueueService {
 
-	private static final Integer MAX_JOBS = 8;
+	private static final Integer MAX_JOBS = Runtime.getRuntime().availableProcessors();
 	private static Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
 
 	@Autowired
