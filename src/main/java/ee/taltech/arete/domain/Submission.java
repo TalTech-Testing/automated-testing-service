@@ -31,6 +31,8 @@ public class Submission {
 	//  or
 	@Transient
 	private File[] source;
+	//  and
+	private String gitTestSource;
 
 	private String hash;
 
@@ -58,12 +60,13 @@ public class Submission {
 	}
 
 
-	public Submission(long id, String testingPlatform, String returnUrl, String gitStudentRepo, File[] source, String hash, String uniid, String project, String[] slugs, String result, String[] dockerExtra,
+	public Submission(long id, String testingPlatform, String returnUrl, String gitStudentRepo, File[] source, String gitTestSource, String hash, String uniid, String project, String[] slugs, String result, String[] dockerExtra,
 	                  String[] systemExtra, Integer dockerTimeout, Long timestamp, Integer priority, Integer thread) {
 		this.testingPlatform = testingPlatform;
 		this.returnUrl = returnUrl;
 		this.gitStudentRepo = gitStudentRepo;
 		this.source = source;
+		this.gitTestSource = gitTestSource;
 		this.hash = hash;
 		this.uniid = uniid;
 		this.project = project;

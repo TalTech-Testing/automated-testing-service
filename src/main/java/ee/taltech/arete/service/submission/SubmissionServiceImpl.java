@@ -111,8 +111,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getProject() == null) {
-			String[] url = submission.getGitStudentRepo().split("/");
-			submission.setProject(url[url.length - 1]);
+			String[] url = submission.getGitTestSource().split("/");
+			submission.setProject(url[url.length - 2]);
+
 		}
 
 		if (submission.getDockerTimeout() == null) {

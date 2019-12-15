@@ -22,8 +22,8 @@ public class SubmissionInitializer {
 	private static final String PROJECT = "iti0202-2019";
 	private final static String TESTING_PLATFORM = "java";
 	private final static String TESTING_PLATFORM_PYTHON = "python";
-	private static final String PROJECT_GIT = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/envomp/iti0202-2019.git" : "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git";
-	private static final String PROJECT_GIT_PYTHON = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git" : "git@gitlab.cs.ttu.ee:iti0102-2019/ex.git";
+	private static final String PROJECT_GIT = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git" : "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git";
+	private static final String PROJECT_GIT_PYTHON = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0102-2019/ex.git" : "git@gitlab.cs.ttu.ee:iti0102-2019/ex.git";
 	private final static String RETURN_URL = "https://jsonplaceholder.typicode.com/posts";
 	private final static String[] EXTRA = new String[]{"stylecheck"};
 	private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
@@ -98,6 +98,7 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM)
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.gitTestSource(PROJECT_GIT)
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("EX01IdCode/src/ee/taltech/iti0202/idcode/IDCode.java")
@@ -113,6 +114,7 @@ public class SubmissionInitializer {
 				.dockerExtra(EXTRA)
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.gitTestSource(PROJECT_GIT_PYTHON)
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("ex04_cipher/cipher.py")
@@ -128,6 +130,7 @@ public class SubmissionInitializer {
 				.dockerExtra(new String[]{})
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.gitTestSource(PROJECT_GIT_PYTHON)
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("ex04_cipher/cipher.py")
@@ -145,6 +148,7 @@ public class SubmissionInitializer {
 				.systemExtra(new String[]{"noStd"})
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.gitTestSource(PROJECT_GIT_PYTHON)
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("ex04_cipher/cipher.py")
@@ -161,6 +165,7 @@ public class SubmissionInitializer {
 				.systemExtra(new String[]{"noTesterFiles"})
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.gitTestSource(PROJECT_GIT_PYTHON)
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("ex04_cipher/cipher.py")

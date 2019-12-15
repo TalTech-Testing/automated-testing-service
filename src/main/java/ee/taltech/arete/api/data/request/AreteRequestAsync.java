@@ -21,11 +21,11 @@ public class AreteRequestAsync {
 
 
 	private String hash; // Specify hash to test that specific hash. Otherwise the latest hash of student repository will be tested.
-	private String uniid; // Default is second from the end in url. https://gitlab.cs.ttu.ee/envomp/iti0102-2019 > uniid = envomp. Specify uniid, if its not second from end
-	private String project; // Default is last in url. https://gitlab.cs.ttu.ee/envomp/iti0102-2019 > project = iti0102-2019. Specify project, if its not in last position.
+	private String uniid; // Default is second from the end in url. https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git > uniid = envomp. Specify uniid, if its not second from end
+	private String project; // Default is last in url. https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git > project = iti0102-2019. Specify project, if its not in last position.
 
 	private String[] dockerExtra; // Default is "stylecheck".
-	private String[] systemExtra; // No defaults. You can add "noMail", "noTesterFiles"
+	private String[] systemExtra; // No defaults. You can add "noMail", "noTesterFiles", "noStd"
 	private Integer dockerTimeout; // Default docker timeout is 120 seconds
 	private Integer priority; // Default priority is 5
 

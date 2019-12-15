@@ -13,12 +13,15 @@ import java.util.List;
 public class AreteRequestSync {
 
 	@NotNull
+	private String gitTestSource; // URL for tests
+
+	@NotNull
 	private String testingPlatform; // Image used for testing. Currently available: ["java", "python"]
 
 	@NotNull
 	private List<SourceFile> source;
 
-	private String project; // Default is second from the end in url. https://gitlab.cs.ttu.ee/iti0102-2019/ex > project = iti0102-2019. Specify project, if its not second from end
+	private String project; // Default is second from the end in url. https://gitlab.cs.ttu.ee/iti0102-2019/ex.git > project = iti0102-2019. Specify project, if its not second from end
 	private String[] dockerExtra; // Default is "stylecheck".
 	private String[] systemExtra; // No defaults. You can add "noMail", "noTesterFiles", "noStd"
 	private Integer dockerTimeout; // Default docker timeout is 120 seconds
