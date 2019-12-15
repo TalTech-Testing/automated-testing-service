@@ -19,7 +19,6 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 
 @Service
@@ -49,6 +48,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			try {
 				gitPullService.repositoryMaintenance(submission);
 			} catch (Exception e) {
+				e.printStackTrace();
 				LOGGER.error("Student didn't have new submissions: {}", e.getMessage());
 
 				reportFailedSubmission(submission, e);
@@ -124,7 +124,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			LOGGER.error("Malformed returnUrl: {}", e1.getMessage());
 		}
 
-		if (!Arrays.asList(submission.getSystemExtra()).contains("noMail")) {
+		if (!submission.getSystemExtra().contains("noMail")) {
 			try {
 				reportService.sendTextMail(submission.getUniid(), message);
 				LOGGER.info("Reported to student mailbox");

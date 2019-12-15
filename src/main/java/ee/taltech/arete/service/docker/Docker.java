@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Random;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
@@ -132,7 +131,9 @@ public class Docker {
 							.withBinds(
 									new Bind(new java.io.File(output).getAbsolutePath(), volumeOutput, rw),
 									new Bind(new java.io.File(studentHost).getAbsolutePath(), volumeStudent, rw),
-									new Bind(new java.io.File(testerHost).getAbsolutePath(), volumeTester, ro)))
+									new Bind(new java.io.File(testerHost).getAbsolutePath(), volumeTester, ro))
+							.withCpuQuota((long) (submission.getPriority() > 7 ? 200000 : 100000)) //Its about 1 or 2 cores
+							.withCpuPeriod((long) 100000))
 					.exec();
 
 			///   END OF WARNING   ///
@@ -156,7 +157,7 @@ public class Docker {
 					.exec(new ResultCallbackTemplate<LogContainerResultCallback, Frame>() {
 						@Override
 						public void onNext(Frame frame) {
-							if (!Arrays.asList(submission.getSystemExtra()).contains("noStd")) {
+							if (!submission.getSystemExtra().contains("noStd")) {
 								builder.append(new String(frame.getPayload()));
 							}
 						}

@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.BadRequestException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -30,6 +33,14 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 	@Override
 	public void populateAsyncFields(Submission submission) {
+
+		String repo;
+		if (submission.getGitStudentRepo() == null) {
+			throw new BadRequestException("Git student repo is needed for async.");
+		} else {
+			repo = submission.getGitStudentRepo().replaceAll(".git", "");
+		}
+
 		if (submission.getPriority() == null) {
 			submission.setPriority(5);
 		}
@@ -39,16 +50,17 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getDockerExtra() == null) {
-			submission.setDockerExtra(new String[]{"stylecheck"});
+			submission.setDockerExtra(new HashSet<>());
+			submission.getDockerExtra().add("stylecheck");
 		}
 
 		if (submission.getUniid() == null) {
-			String[] url = submission.getGitStudentRepo().split("/");
+			String[] url = repo.split("/");
 			submission.setUniid(url[url.length - 2]);
 		}
 
 		if (submission.getProject() == null) {
-			String[] url = submission.getGitStudentRepo().split("/");
+			String[] url = repo.split("/");
 			submission.setProject(url[url.length - 1]);
 		}
 
@@ -57,13 +69,17 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getSystemExtra() == null) {
-			submission.setSystemExtra(new String[]{});
+			submission.setSystemExtra(new HashSet<>());
 		}
 	}
 
 	@Override
 	public String populateSyncFields(Submission submission) {
 		String hash;
+
+		if (submission.getSource() == null || submission.getSource().length == 0) {
+			throw new BadRequestException("Source is needed for sync testing.");
+		}
 
 		if (submission.getHash() == null) {
 			hash = getRandomHash();
@@ -82,7 +98,8 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getDockerExtra() == null) {
-			submission.setDockerExtra(new String[]{"stylecheck"});
+			submission.setDockerExtra(new HashSet<>());
+			submission.getDockerExtra().add("stylecheck");
 		}
 
 		if (submission.getUniid() == null) {
@@ -94,12 +111,13 @@ public class SubmissionServiceImpl implements SubmissionService {
 			if (path.equals(submission.getSource()[0].getPath())) {
 				path = submission.getSource()[0].getPath().split("/")[0];
 			}
-			submission.setSlugs(new String[]{path});
+			submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
 		}
 
 		if (submission.getProject() == null) {
 			String[] url = submission.getGitTestSource().split("/");
 			submission.setProject(url[url.length - 2]);
+
 		}
 
 		if (submission.getDockerTimeout() == null) {
@@ -107,8 +125,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getSystemExtra() == null) {
-			submission.setSystemExtra(new String[]{"noMail"});
+			submission.setSystemExtra(new HashSet<>());
 		}
+		submission.getSystemExtra().add("noMail");
 
 		return hash;
 	}

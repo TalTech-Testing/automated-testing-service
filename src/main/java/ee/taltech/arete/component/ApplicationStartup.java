@@ -74,14 +74,20 @@ public class ApplicationStartup implements ApplicationRunner {
 
 		try {
 
-			List<String> projects = Arrays.asList("iti0102-2019/ex", "iti0202-2019/ex");
+			List<String> projects;
+			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+				projects = Arrays.asList("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git");
+
+			} else {
+				projects = Arrays.asList("git@gitlab.cs.ttu.ee:iti0102-2019/ex.git", "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git");
+			}
 			List<String> projectsFolders = Arrays.asList("iti0102-2019", "iti0202-2019");
 
 			for (int i = 0; i < projects.size(); i++) {
 				String project = projects.get(i);
 				String projectsFolder = projectsFolders.get(i);
 				String pathToTesterFolder = String.format("tests/%s/", projectsFolder);
-				String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s.git", project);
+				String pathToTesterRepo = String.format("%s", project);
 				gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
 			}
 		} catch (Exception e) {

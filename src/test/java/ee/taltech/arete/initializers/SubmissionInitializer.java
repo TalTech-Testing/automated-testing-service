@@ -13,19 +13,20 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 public class SubmissionInitializer {
 	private final static String UNIID_GIT = "envomp";
-	private static final String STUDENT_REPO_PYTHON = "https:/gitlab.cs.ttu.ee/envomp/iti0102-2019";
-	private static final String STUDENT_REPO = "https:/gitlab.cs.ttu.ee/envomp/iti0202-2019";
+	private static final String STUDENT_REPO_PYTHON = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git" : "git@gitlab.cs.ttu.ee:envomp/iti0102-2019.git";
+	private static final String STUDENT_REPO = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/envomp/iti0202-2019.git" : "git@gitlab.cs.ttu.ee:envomp/iti0202-2019.git";
 	private static final String PROJECT_PYTHON = "iti0102-2019";
 	private static final String PROJECT = "iti0202-2019";
 	private final static String TESTING_PLATFORM = "java";
 	private final static String TESTING_PLATFORM_PYTHON = "python";
-	private static final String PROJECT_GIT = "https:/gitlab.cs.ttu.ee/iti0202-2019/ex";
-	private static final String PROJECT_GIT_PYTHON = "https:/gitlab.cs.ttu.ee/iti0102-2019/ex";
-	private final static String RETURN_URL = "https:/jsonplaceholder.typicode.com/posts";
-	private final static String[] EXTRA = new String[]{"stylecheck"};
+	private static final String PROJECT_GIT = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git" : "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git";
+	private static final String PROJECT_GIT_PYTHON = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0102-2019/ex.git" : "git@gitlab.cs.ttu.ee:iti0102-2019/ex.git";
+	private final static String RETURN_URL = "https://jsonplaceholder.typicode.com/posts";
+	private final static HashSet<String> EXTRA = new HashSet<>(Collections.singletonList("stylecheck"));
 	private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
 
 	public static Submission getFullSubmissionPython() {
@@ -39,10 +40,9 @@ public class SubmissionInitializer {
 				.returnUrl(RETURN_URL)
 				.dockerTimeout(120)
 //				.systemExtra(new String[]{"noMail"})
-				.systemExtra(new String[]{})
-				.dockerExtra(new String[]{"stylecheck"})
+				.systemExtra(new HashSet<>())
+				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 				.timestamp(System.currentTimeMillis())
-				.gitTestSource(PROJECT_GIT_PYTHON)
 				.priority(10)
 				.build();
 	}
@@ -59,9 +59,8 @@ public class SubmissionInitializer {
 				.returnUrl(RETURN_URL)
 				.dockerTimeout(120)
 //				.systemExtra(new String[]{"noMail"})
-				.systemExtra(new String[]{})
-				.dockerExtra(new String[]{"stylecheck"})
-				.gitTestSource(PROJECT_GIT)
+				.systemExtra(new HashSet<>())
+				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 				.timestamp(System.currentTimeMillis())
 				.priority(10)
 				.build();
@@ -75,11 +74,9 @@ public class SubmissionInitializer {
 				.project(PROJECT)
 				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
-				.systemExtra(new String[]{"noMail"})
-				.dockerExtra(new String[]{"stylecheck"})
+				.systemExtra(new HashSet<>(Collections.singletonList("noMail")))
+				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 				.hash("d3f5510928bb8dacc20d29110e9268756418bef9")
-				.gitTestSource(PROJECT_GIT)
-				.dockerExtra(EXTRA)
 				.build();
 	}
 
@@ -91,7 +88,6 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
 				.dockerExtra(EXTRA)
-				.gitTestSource(PROJECT_GIT)
 				.build();
 	}
 
@@ -100,9 +96,10 @@ public class SubmissionInitializer {
 		String hash = getRandomHash();
 		return AreteRequestSync.builder()
 				.testingPlatform(TESTING_PLATFORM)
-				.gitTestSource(PROJECT_GIT)
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.gitTestSource(PROJECT_GIT)
+				.systemExtra(new HashSet<>(Collections.singletonList("noMail")))
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("EX01IdCode/src/ee/taltech/iti0202/idcode/IDCode.java")
@@ -115,10 +112,11 @@ public class SubmissionInitializer {
 		String hash = getRandomHash();
 		return AreteRequestSync.builder()
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.gitTestSource(PROJECT_GIT_PYTHON)
 				.dockerExtra(EXTRA)
 				.hash(hash)
+				.systemExtra(new HashSet<>(Collections.singletonList("noMail")))
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.gitTestSource(PROJECT_GIT_PYTHON)
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("ex04_cipher/cipher.py")
@@ -131,10 +129,11 @@ public class SubmissionInitializer {
 		String hash = getRandomHash();
 		return AreteRequestSync.builder()
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.gitTestSource(PROJECT_GIT_PYTHON)
-				.dockerExtra(new String[]{})
+				.dockerExtra(new HashSet<>())
 				.hash(hash)
+				.systemExtra(new HashSet<>(Collections.singletonList("noMail")))
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.gitTestSource(PROJECT_GIT_PYTHON)
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("ex04_cipher/cipher.py")
@@ -149,10 +148,10 @@ public class SubmissionInitializer {
 		return AreteRequestSync.builder()
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.dockerExtra(EXTRA)
-				.systemExtra(new String[]{"noStd"})
-				.gitTestSource(PROJECT_GIT_PYTHON)
+				.systemExtra(new HashSet<>(Arrays.asList("noStd", "noMail")))
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.gitTestSource(PROJECT_GIT_PYTHON)
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("ex04_cipher/cipher.py")
@@ -166,10 +165,10 @@ public class SubmissionInitializer {
 		return AreteRequestSync.builder()
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.dockerExtra(EXTRA)
-				.systemExtra(new String[]{"noTesterFiles"})
-				.gitTestSource(PROJECT_GIT_PYTHON)
+				.systemExtra(new HashSet<>(Arrays.asList("noTesterFiles", "noMail")))
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.gitTestSource(PROJECT_GIT_PYTHON)
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("ex04_cipher/cipher.py")
@@ -188,7 +187,7 @@ public class SubmissionInitializer {
 //		assert submission.getHash().length() == 40;
 		assert submission.getReturnUrl().equals(RETURN_URL);
 //		assert submission.getTestingPlatform().equals(TESTING_PLATFORM);
-		assert Arrays.equals(submission.getDockerExtra(), EXTRA);
+		assert !submission.getDockerExtra().isEmpty();
 	}
 
 	public static void endTest() {

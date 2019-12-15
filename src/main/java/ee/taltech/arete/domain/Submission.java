@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.HashSet;
 
 @ToString
 @Entity
@@ -23,8 +24,6 @@ public class Submission {
 	private long id;
 
 	@NotNull
-	private String gitTestSource;
-	@NotNull
 	private String testingPlatform;
 
 	private String returnUrl;
@@ -33,6 +32,8 @@ public class Submission {
 	//  or
 	@Transient
 	private File[] source;
+	//  and
+	private String gitTestSource;
 
 	private String hash;
 
@@ -41,14 +42,14 @@ public class Submission {
 	private String project;
 
 	@Column(length = 16383)
-	private String[] slugs;
+	private HashSet<String> slugs;
 
 	@JsonIgnore
 	@Column(columnDefinition = "TEXT")
 	private String result;
 
-	private String[] dockerExtra;
-	private String[] systemExtra;
+	private HashSet<String> dockerExtra;
+	private HashSet<String> systemExtra;
 	private Integer dockerTimeout;
 
 	private Long timestamp;
@@ -59,14 +60,13 @@ public class Submission {
 	public Submission() {
 	}
 
-
-	public Submission(long id, String gitTestSource, String testingPlatform, String returnUrl, String gitStudentRepo, File[] source, String hash, String uniid, String project, String[] slugs, String result, String[] dockerExtra,
-	                  String[] systemExtra, Integer dockerTimeout, Long timestamp, Integer priority, Integer thread) {
-		this.gitTestSource = gitTestSource;
+	public Submission(long id, String testingPlatform, String returnUrl, String gitStudentRepo, File[] source, String gitTestSource, String hash, String uniid, String project, HashSet<String> slugs, String result, HashSet<String> dockerExtra,
+	                  HashSet<String> systemExtra, Integer dockerTimeout, Long timestamp, Integer priority, Integer thread) {
 		this.testingPlatform = testingPlatform;
 		this.returnUrl = returnUrl;
 		this.gitStudentRepo = gitStudentRepo;
 		this.source = source;
+		this.gitTestSource = gitTestSource;
 		this.hash = hash;
 		this.uniid = uniid;
 		this.project = project;

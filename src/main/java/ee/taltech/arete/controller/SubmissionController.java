@@ -104,25 +104,26 @@ public class SubmissionController {
 	@PostMapping("/image/update/{image}")
 	public void UpdateImage(@PathVariable("image") String image) throws InterruptedException {
 
+		priorityQueueService.halt();
 		String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
-
 		DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
 				.withDockerHost(dockerHost)
 				.withDockerTlsVerify(false)
 				.build();
-
 		new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/" + image).pull();
-
+		priorityQueueService.go();
 	}
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/tests/update/{projectBase}/{project}")
-	public void UpdateTests(@PathVariable("projectBase") String projectBase, @PathVariable("project") String project) {
+	public void UpdateTests(@PathVariable("projectBase") String projectBase, @PathVariable("project") String project) throws InterruptedException {
 
+		priorityQueueService.halt();
 		String pathToTesterFolder = String.format("tests/%s/", project);
 		String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", project, projectBase);
 		LOGGER.info("Checking for update for tester:");
 		gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
+		priorityQueueService.go();
 
 	}
 

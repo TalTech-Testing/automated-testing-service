@@ -5,7 +5,6 @@ import ee.taltech.arete.domain.Submission;
 import lombok.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 @Data
 @Builder
@@ -30,7 +29,7 @@ public class AreteResponse {
 		output = message;
 		this.errors.add(error);
 
-		if (!Arrays.asList(submission.getSystemExtra()).contains("noStd")) {
+		if (!submission.getSystemExtra().contains("noStd")) {
 			consoleOutputs.add(new ConsoleOutput.ConsoleOutputBuilder().content(submission.getResult()).build());
 		}
 	}
@@ -71,7 +70,7 @@ public class AreteResponse {
 							.contents(file.getContents())
 							.build();
 					if (file.getIsTest()) {
-						if (!Arrays.asList(submission.getSystemExtra()).contains("noTesterFiles")) {
+						if (!submission.getSystemExtra().contains("noTesterFiles")) {
 							testFiles.add(areteFile);
 						}
 					} else {
@@ -105,7 +104,7 @@ public class AreteResponse {
 
 		}
 
-		if (!Arrays.asList(submission.getSystemExtra()).contains("noStd")) {
+		if (!submission.getSystemExtra().contains("noStd")) {
 			consoleOutputs.add(new ConsoleOutput.ConsoleOutputBuilder().content(submission.getResult()).build());
 		}
 	}
