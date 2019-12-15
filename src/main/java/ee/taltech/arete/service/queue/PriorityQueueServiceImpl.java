@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @EnableAsync
@@ -28,9 +29,10 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	@Lazy
 	private JobRunnerService jobRunnerService;
 
+	private Boolean halted = false;
 	private Integer jobsRan = 0;
 	private Integer activeRunningJobs = 0;
-	private Integer counter = 0;
+	private List<Integer> threads = new ArrayList<>();
 	private HashMap<Submission, Integer> coolDown = new HashMap<>();
 	private List<Submission> lowPriority = new ArrayList<>();
 	private List<Submission> activeSubmissions = new ArrayList<>();
@@ -38,6 +40,12 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 			.comparingInt(Submission::getPriority)
 			.reversed()
 			.thenComparing(Submission::getTimestamp));
+
+	public PriorityQueueServiceImpl() {
+		for (int i = 1; i <= MAX_JOBS; i++) {
+			threads.add(i);
+		}
+	}
 
 	@Override
 	public void enqueue(Submission submission) {
@@ -50,6 +58,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 		activeSubmissions.remove(submission);
 		jobsRan++;
 		activeRunningJobs--;
+		threads.add(submission.getThread());
 		LOGGER.info("All done for submission on thread: {}", submission.getThread());
 	}
 
@@ -80,10 +89,23 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	}
 
 	@Override
+	public void halt() throws InterruptedException {
+		halted = true;
+		while (activeRunningJobs != 0) {
+			TimeUnit.SECONDS.sleep(1);
+		}
+	}
+
+	@Override
+	public void go() {
+		halted = false;
+	}
+
+	@Override
 	@Async
 	@Scheduled(fixedRate = 100)
 	public void runJob() {
-		if (getQueueSize() != 0) {
+		if (!halted && getQueueSize() != 0) {
 			if (activeRunningJobs < MAX_JOBS) {
 
 				Submission job = submissionPriorityQueue.poll();
@@ -102,14 +124,13 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 					return;
 				}
 
-				counter++;
 				activeRunningJobs++;
 				activeSubmissions.add(job);
 
 				LOGGER.info("active: {}, queue: {}, ran: {}", activeRunningJobs, getQueueSize(), jobsRan);
 
 				LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
-				job.setThread(counter % MAX_JOBS);
+				job.setThread(threads.remove(0));
 
 				try {
 					jobRunnerService.runJob(job);
