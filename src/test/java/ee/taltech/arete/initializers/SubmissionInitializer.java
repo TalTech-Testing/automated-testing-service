@@ -16,8 +16,8 @@ import java.util.Collections;
 
 public class SubmissionInitializer {
 	private final static String UNIID_GIT = "envomp";
-	private static final String STUDENT_REPO_PYTHON = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0102-2019/ex.git" : "git@gitlab.cs.ttu.ee:envomp/iti0102-2019.git";
-	private static final String STUDENT_REPO = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git" : "git@gitlab.cs.ttu.ee:envomp/iti0202-2019.git";
+	private static final String STUDENT_REPO_PYTHON = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git" : "git@gitlab.cs.ttu.ee:envomp/iti0102-2019.git";
+	private static final String STUDENT_REPO = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/envomp/iti0202-2019.git" : "git@gitlab.cs.ttu.ee:envomp/iti0202-2019.git";
 	private static final String PROJECT_PYTHON = "iti0102-2019";
 	private static final String PROJECT = "iti0202-2019";
 	private final static String TESTING_PLATFORM = "java";
