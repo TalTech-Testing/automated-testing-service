@@ -34,6 +34,7 @@ services:
       - ..env #Change to .env to run locally
     environment:
       ARETE_HOME: ${ARETE_HOME}
+      GITLAB_PASSWORD: ${GITLAB_PASSWORD}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${ARETE_HOME}/input_and_output:${ARETE_HOME}/input_and_output

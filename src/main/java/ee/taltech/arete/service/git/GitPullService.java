@@ -11,12 +11,6 @@ public interface GitPullService {
 
 	void resetHead(Submission submission);
 
-	/// Try not to use the following methods. Or when you need to use em. Use with caution. Modifying files concurrently leads to a hot mess.
-
-	void resetHard(String pathToFolder, String pathToRepo);
-
-	void cloneRepository(String pathToFolder, String pathToRepo);
-
 	void pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission);
 
 	String[] getChangedFolders(String pathToFolder) throws IOException;
