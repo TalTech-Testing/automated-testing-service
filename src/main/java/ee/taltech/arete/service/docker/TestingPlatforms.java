@@ -3,6 +3,7 @@ package ee.taltech.arete.service.docker;
 import ee.taltech.arete.domain.Submission;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public enum TestingPlatforms {
@@ -28,13 +29,13 @@ public enum TestingPlatforms {
 	}
 
 	public static void correctTesterInput(Submission submission) {
-		String[] output = new String[submission.getDockerExtra().length];
+		HashSet<String> output = new HashSet<>();
 		int i = 0;
 		for (String elem : submission.getDockerExtra()) {
 			if (submission.getTestingPlatform().equals("java") && elem.equals("stylecheck")) {
-				output[i] = "-r FILEWRITER,COMPILER,TESTNG,REPORT,CHECKSTYLE";
+				output.add("-r FILEWRITER,COMPILER,TESTNG,REPORT,CHECKSTYLE");
 			} else {
-				output[i] = elem;
+				output.add(elem);
 			}
 			i++;
 		}

@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.HashSet;
 
 @ToString
 @Entity
@@ -41,14 +42,14 @@ public class Submission {
 	private String project;
 
 	@Column(length = 16383)
-	private String[] slugs;
+	private HashSet<String> slugs;
 
 	@JsonIgnore
 	@Column(columnDefinition = "TEXT")
 	private String result;
 
-	private String[] dockerExtra;
-	private String[] systemExtra;
+	private HashSet<String> dockerExtra;
+	private HashSet<String> systemExtra;
 	private Integer dockerTimeout;
 
 	private Long timestamp;
@@ -59,9 +60,8 @@ public class Submission {
 	public Submission() {
 	}
 
-
-	public Submission(long id, String testingPlatform, String returnUrl, String gitStudentRepo, File[] source, String gitTestSource, String hash, String uniid, String project, String[] slugs, String result, String[] dockerExtra,
-	                  String[] systemExtra, Integer dockerTimeout, Long timestamp, Integer priority, Integer thread) {
+	public Submission(long id, String testingPlatform, String returnUrl, String gitStudentRepo, File[] source, String gitTestSource, String hash, String uniid, String project, HashSet<String> slugs, String result, HashSet<String> dockerExtra,
+	                  HashSet<String> systemExtra, Integer dockerTimeout, Long timestamp, Integer priority, Integer thread) {
 		this.testingPlatform = testingPlatform;
 		this.returnUrl = returnUrl;
 		this.gitStudentRepo = gitStudentRepo;

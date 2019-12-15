@@ -3,6 +3,7 @@ package ee.taltech.arete.service.git;
 import ee.taltech.arete.domain.Submission;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Optional;
 
 public interface GitPullService {
@@ -13,6 +14,6 @@ public interface GitPullService {
 
 	void pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission);
 
-	String[] getChangedFolders(String pathToFolder) throws IOException;
+	HashSet<String> getChangedFolders(String pathToFolder) throws IOException;
 
 }

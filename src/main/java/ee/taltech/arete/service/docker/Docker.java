@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Random;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
@@ -158,7 +157,7 @@ public class Docker {
 					.exec(new ResultCallbackTemplate<LogContainerResultCallback, Frame>() {
 						@Override
 						public void onNext(Frame frame) {
-							if (!Arrays.asList(submission.getSystemExtra()).contains("noStd")) {
+							if (!submission.getSystemExtra().contains("noStd")) {
 								builder.append(new String(frame.getPayload()));
 							}
 						}

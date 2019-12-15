@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import javax.ws.rs.BadRequestException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -48,7 +50,8 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getDockerExtra() == null) {
-			submission.setDockerExtra(new String[]{"stylecheck"});
+			submission.setDockerExtra(new HashSet<>());
+			submission.getDockerExtra().add("stylecheck");
 		}
 
 		if (submission.getUniid() == null) {
@@ -66,7 +69,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getSystemExtra() == null) {
-			submission.setSystemExtra(new String[]{});
+			submission.setSystemExtra(new HashSet<>());
 		}
 	}
 
@@ -95,7 +98,8 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getDockerExtra() == null) {
-			submission.setDockerExtra(new String[]{"stylecheck"});
+			submission.setDockerExtra(new HashSet<>());
+			submission.getDockerExtra().add("stylecheck");
 		}
 
 		if (submission.getUniid() == null) {
@@ -107,7 +111,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 			if (path.equals(submission.getSource()[0].getPath())) {
 				path = submission.getSource()[0].getPath().split("/")[0];
 			}
-			submission.setSlugs(new String[]{path});
+			submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
 		}
 
 		if (submission.getProject() == null) {
@@ -121,8 +125,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getSystemExtra() == null) {
-			submission.setSystemExtra(new String[]{"noMail"});
+			submission.setSystemExtra(new HashSet<>());
 		}
+		submission.getSystemExtra().add("noMail");
 
 		return hash;
 	}

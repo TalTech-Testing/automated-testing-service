@@ -252,7 +252,7 @@ public class GitPullServiceImpl implements GitPullService {
 	}
 
 	@Override
-	public String[] getChangedFolders(String pathToStudentFolder) throws IOException {
+	public HashSet<String> getChangedFolders(String pathToStudentFolder) throws IOException {
 		HashSet<String> repoMainFolders = new HashSet<>();
 		Repository repository = new FileRepository(pathToStudentFolder + ".git");
 		RevWalk rw = new RevWalk(repository);
@@ -272,6 +272,6 @@ public class GitPullServiceImpl implements GitPullService {
 				}
 			}
 		}
-		return repoMainFolders.toArray(new String[0]);
+		return repoMainFolders;
 	}
 }
