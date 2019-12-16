@@ -91,6 +91,7 @@ public class ApplicationStartup implements ApplicationRunner {
 				String projectsFolder = projectsFolders.get(i);
 				String pathToTesterFolder = String.format("tests/%s/", projectsFolder);
 				String pathToTesterRepo = String.format("%s", project);
+				log.info(String.format("pre setting %s", project));
 				gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
 			}
 		} catch (Exception ignored) {
