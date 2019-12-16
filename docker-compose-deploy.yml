@@ -39,3 +39,4 @@ services:
       - ${ARETE_HOME}/input_and_output:${ARETE_HOME}/input_and_output
       - ${ARETE_HOME}/students:${ARETE_HOME}/students
       - ${ARETE_HOME}/tests:${ARETE_HOME}/tests
+      - ${ARETE_HOME}/.ssh:${ARETE_HOME}/.ssh
