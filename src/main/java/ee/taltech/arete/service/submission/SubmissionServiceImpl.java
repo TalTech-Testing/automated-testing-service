@@ -56,12 +56,12 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getUniid() == null) {
-			String[] url = repo.split("/");
+			String[] url = repo.split("[/:]");
 			submission.setUniid(url[url.length - 2]);
 		}
 
 		if (submission.getProject() == null) {
-			String[] url = repo.split("/");
+			String[] url = repo.split("[/:]");
 			submission.setProject(url[url.length - 1]);
 		}
 
@@ -157,7 +157,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getProject() == null) {
-			String[] url = submission.getGitTestSource().split("/");
+			String[] url = submission.getGitTestSource().split("[/:]");
 			submission.setProject(url[url.length - 2]);
 
 		}
