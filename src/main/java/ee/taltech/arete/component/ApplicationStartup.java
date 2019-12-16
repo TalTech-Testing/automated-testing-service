@@ -86,7 +86,7 @@ public class ApplicationStartup implements ApplicationRunner {
 				log.info("Set testers through ssh");
 			}
 
-			List<String> projectsFolders = Arrays.asList("iti0102-2019", "iti0202-2019");
+			List<String> projectsFolders = Arrays.asList("iti0202-2019", "iti0102-2019");
 
 			for (int i = 0; i < projects.size(); i++) {
 				String project = projects.get(i);
@@ -103,6 +103,7 @@ public class ApplicationStartup implements ApplicationRunner {
 		} catch (Exception ignored) {
 		}
 
+		log.info("Done setup");
 		priorityQueueService.go();
 
 	}
