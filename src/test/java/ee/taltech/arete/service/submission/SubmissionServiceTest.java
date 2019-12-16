@@ -30,4 +30,12 @@ class SubmissionServiceTest {
 		assert submissionService.getSubmissionByHash(submission.getHash()).get(0).getUniid().equals(submission.getUniid());
 	}
 
+	@Test
+	void fixRepo() {
+		Submission submission = new Submission();
+		submission.setGitStudentRepo("https://gitlab.cs.ttu.ee/envomp/iti0102-2019");
+		submissionService.fixRepo(submission);
+		System.out.println(submission.getGitStudentRepo());
+	}
+
 }

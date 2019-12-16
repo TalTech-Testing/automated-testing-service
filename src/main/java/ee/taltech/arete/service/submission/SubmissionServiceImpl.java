@@ -74,22 +74,26 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 	}
 
-	private void fixRepo(Submission submission) {
+	@Override
+	public void fixRepo(Submission submission) {
 		if (submission.getGitStudentRepo() != null) {
 			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
 				if (submission.getGitStudentRepo().startsWith("git")) {
 					String fixed = submission.getGitStudentRepo();
-					fixed.replaceFirst(":", "/");
-					fixed.replace("git@", "https://");
+					fixed = fixed.replaceFirst(":", "/");
+					fixed = fixed.replace("git@", "https://");
 					submission.setGitStudentRepo(fixed);
 				}
 			} else {
 				if (submission.getGitStudentRepo().startsWith("http")) {
 					String fixed = submission.getGitStudentRepo();
-					fixed.replace("https://", "git@");
-					fixed.replaceFirst("/", ":");
+					fixed = fixed.replace("https://", "git@");
+					fixed = fixed.replaceFirst("/", ":");
 					submission.setGitStudentRepo(fixed);
 				}
+			}
+			if (!submission.getGitStudentRepo().endsWith(".git")) {
+				submission.setGitStudentRepo(submission.getGitStudentRepo() + ".git");
 			}
 		}
 
@@ -97,17 +101,20 @@ public class SubmissionServiceImpl implements SubmissionService {
 			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
 				if (submission.getGitTestSource().startsWith("git")) {
 					String fixed = submission.getGitStudentRepo();
-					fixed.replaceFirst(":", "/");
-					fixed.replace("git@", "https://");
+					fixed = fixed.replaceFirst(":", "/");
+					fixed = fixed.replace("git@", "https://");
 					submission.setGitTestSource(fixed);
 				}
 			} else {
 				if (submission.getGitTestSource().startsWith("http")) {
 					String fixed = submission.getGitStudentRepo();
-					fixed.replace("https://", "git@");
-					fixed.replaceFirst("/", ":");
+					fixed = fixed.replace("https://", "git@");
+					fixed = fixed.replaceFirst("/", ":");
 					submission.setGitTestSource(fixed);
 				}
+			}
+			if (!submission.getGitTestSource().endsWith(".git")) {
+				submission.setGitTestSource(submission.getGitTestSource() + ".git");
 			}
 		}
 
