@@ -77,13 +77,11 @@ public class ApplicationStartup implements ApplicationRunner {
 
 			List<String> projects;
 			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
-				System.out.println();
-				System.out.println("Contains key");
-				System.out.println();
 				projects = Arrays.asList("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git");
-
+				log.info("Set testers through https");
 			} else {
 				projects = Arrays.asList("git@gitlab.cs.ttu.ee:iti0102-2019/ex.git", "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git");
+				log.info("Set testers through ssh");
 			}
 
 			List<String> projectsFolders = Arrays.asList("iti0102-2019", "iti0202-2019");
