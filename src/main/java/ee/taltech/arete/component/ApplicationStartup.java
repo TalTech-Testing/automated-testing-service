@@ -46,14 +46,12 @@ public class ApplicationStartup implements ApplicationRunner {
 
 			try {
 				new File(String.format("input_and_output/%s/host/input.json", i)).createNewFile();
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (Exception ignored) {
 			}
 
 			try {
 				new File(String.format("input_and_output/%s/host/output.json", i)).createNewFile();
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (Exception ignored) {
 			}
 
 		}
@@ -68,8 +66,7 @@ public class ApplicationStartup implements ApplicationRunner {
 
 			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/java-tester:latest").pull();
 			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/python-tester:latest").pull();
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ignored) {
 		}
 
 		try {
@@ -90,8 +87,7 @@ public class ApplicationStartup implements ApplicationRunner {
 				String pathToTesterRepo = String.format("%s", project);
 				gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ignored) {
 		}
 
 	}
