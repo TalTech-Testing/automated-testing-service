@@ -70,9 +70,9 @@ public class SubmissionInitializer {
 	public static Submission getControllerEndpointSubmission() {
 		return Submission.builder()
 				.uniid(UNIID_GIT)
-				.gitStudentRepo(STUDENT_REPO)
-				.project(PROJECT)
-				.testingPlatform(TESTING_PLATFORM)
+				.gitStudentRepo(STUDENT_REPO_PYTHON)
+				.project(PROJECT_PYTHON)
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.systemExtra(new HashSet<>(Collections.singletonList("noMail")))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
