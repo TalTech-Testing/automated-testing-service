@@ -8,8 +8,7 @@ stages:
 
 test:
   tags:
-    - dev
-    - master
+    - docker
   image: docker:latest
   stage: test
   services:
@@ -28,8 +27,7 @@ test:
 
 build:
   tags:
-    - dev
-    - master
+    - docker
   image: docker:latest
   stage: build
   services:
