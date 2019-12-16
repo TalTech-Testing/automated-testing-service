@@ -29,7 +29,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	@Lazy
 	private JobRunnerService jobRunnerService;
 
-	private Boolean halted = false;
+	private Boolean halted = true;
 	private Integer jobsRan = 0;
 	private Integer activeRunningJobs = 0;
 	private List<Integer> threads = new ArrayList<>();

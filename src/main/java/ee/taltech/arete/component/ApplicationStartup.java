@@ -5,6 +5,7 @@ import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import ee.taltech.arete.service.docker.ImageCheck;
 import ee.taltech.arete.service.git.GitPullService;
+import ee.taltech.arete.service.queue.PriorityQueueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +26,16 @@ public class ApplicationStartup implements ApplicationRunner {
 	@Autowired
 	private GitPullService gitPullService;
 
+	@Autowired
+	private PriorityQueueService priorityQueueService;
+
 	@Override
 	public void run(ApplicationArguments applicationArguments) throws Exception {
 		log.info("setting up temp folders.");
-		if (System.getenv().containsKey("ARETE_HOME") && System.getenv().get("ARETE_HOME").equals("/arete")) {
-			log.info("Build phase detected. Aborting.");
-			return;
-		}
+//		if (System.getenv().containsKey("ARETE_HOME") && System.getenv().get("ARETE_HOME").equals("/arete")) {
+//			log.info("Build phase detected. Aborting.");
+//			return;
+//		}
 
 		createDirectory("input_and_output");
 		createDirectory("students");
@@ -73,11 +77,15 @@ public class ApplicationStartup implements ApplicationRunner {
 
 			List<String> projects;
 			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+				System.out.println();
+				System.out.println("Contains key");
+				System.out.println();
 				projects = Arrays.asList("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git");
 
 			} else {
 				projects = Arrays.asList("git@gitlab.cs.ttu.ee:iti0102-2019/ex.git", "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git");
 			}
+
 			List<String> projectsFolders = Arrays.asList("iti0102-2019", "iti0202-2019");
 
 			for (int i = 0; i < projects.size(); i++) {
@@ -89,6 +97,8 @@ public class ApplicationStartup implements ApplicationRunner {
 			}
 		} catch (Exception ignored) {
 		}
+
+		priorityQueueService.go();
 
 	}
 
