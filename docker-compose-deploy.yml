@@ -22,6 +22,7 @@ services:
 
   back:
     container_name: arete
+    #    entrypoint: ["sh", "-c", "sleep infinity"]
     image: ${DOCKER_USER}/arete:latest
     restart: unless-stopped
     privileged: true
@@ -39,4 +40,4 @@ services:
       - ${ARETE_HOME}/input_and_output:${ARETE_HOME}/input_and_output
       - ${ARETE_HOME}/students:${ARETE_HOME}/students
       - ${ARETE_HOME}/tests:${ARETE_HOME}/tests
-      - ${ARETE_HOME}/.ssh:${ARETE_HOME}/.ssh
+      - ${ARETE_HOME}/ssh:/root/.ssh
