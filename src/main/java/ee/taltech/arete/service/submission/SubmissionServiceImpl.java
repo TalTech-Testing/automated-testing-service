@@ -79,15 +79,15 @@ public class SubmissionServiceImpl implements SubmissionService {
 			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
 				if (submission.getGitStudentRepo().startsWith("git")) {
 					String fixed = submission.getGitStudentRepo();
-					fixed.replace("https://", "git@");
-					fixed.replaceFirst("/", ":");
+					fixed.replaceFirst(":", "/");
+					fixed.replace("git@", "https://");
 					submission.setGitStudentRepo(fixed);
 				}
 			} else {
 				if (submission.getGitStudentRepo().startsWith("http")) {
 					String fixed = submission.getGitStudentRepo();
-					fixed.replaceFirst(":", "/");
-					fixed.replace("git@", "https://");
+					fixed.replace("https://", "git@");
+					fixed.replaceFirst("/", ":");
 					submission.setGitStudentRepo(fixed);
 				}
 			}
@@ -97,15 +97,15 @@ public class SubmissionServiceImpl implements SubmissionService {
 			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
 				if (submission.getGitTestSource().startsWith("git")) {
 					String fixed = submission.getGitStudentRepo();
-					fixed.replace("https://", "git@");
-					fixed.replaceFirst("/", ":");
+					fixed.replaceFirst(":", "/");
+					fixed.replace("git@", "https://");
 					submission.setGitTestSource(fixed);
 				}
 			} else {
 				if (submission.getGitTestSource().startsWith("http")) {
 					String fixed = submission.getGitStudentRepo();
-					fixed.replaceFirst(":", "/");
-					fixed.replace("git@", "https://");
+					fixed.replace("https://", "git@");
+					fixed.replaceFirst("/", ":");
 					submission.setGitTestSource(fixed);
 				}
 			}
