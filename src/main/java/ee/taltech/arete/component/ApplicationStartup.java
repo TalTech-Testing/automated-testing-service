@@ -92,7 +92,11 @@ public class ApplicationStartup implements ApplicationRunner {
 				String pathToTesterFolder = String.format("tests/%s/", projectsFolder);
 				String pathToTesterRepo = String.format("%s", project);
 				log.info(String.format("pre setting %s", project));
-				gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
+				try {
+					gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
+				} catch (Exception e) {
+					log.info(String.format("pre setting %s failed with an exception: %s", project, e.getMessage()));
+				}
 			}
 		} catch (Exception ignored) {
 		}
