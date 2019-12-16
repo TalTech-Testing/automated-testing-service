@@ -17,7 +17,7 @@ class GitPullServiceImplTest {
 	private GitPullService gitPullService;
 
 	@Test
-	void pullJob() throws InterruptedException {
+	void pullJob() {
 		Submission submission = getControllerEndpointSubmission();
 		gitPullService.repositoryMaintenance(submission);
 

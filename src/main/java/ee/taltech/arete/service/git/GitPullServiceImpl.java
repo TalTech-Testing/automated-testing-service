@@ -113,13 +113,13 @@ public class GitPullServiceImpl implements GitPullService {
 		}
 	}
 
-	private void SafeClone(String pathToFolder, String pathToRepo) throws GitAPIException {
+	private void SafeClone(String pathToFolder, String pathToRepo) {
 		try {
 			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
 				Git git = Git.cloneRepository()
 						.setCredentialsProvider(
 								new UsernamePasswordCredentialsProvider(
-										"envomp", System.getenv().get("GITLAB_PASSWORD"))) // integration testing only pls.
+										"envomp", System.getenv().get("GITLAB_PASSWORD")))
 						.setURI(pathToRepo)
 						.setDirectory(new File(pathToFolder))
 						.call();
@@ -164,9 +164,14 @@ public class GitPullServiceImpl implements GitPullService {
 
 						LOGGER.info("Pulled specific hash {} for user {}", user.getHash(), user.getUniid());
 					} catch (Exception e) {
-						fixHash(git, user);
-						fetch(git);
-						reset(git, user);
+						try {
+							fixHash(git, user);
+							fetch(git);
+							reset(git, user);
+						} catch (Exception e1) {
+							LOGGER.info("Failed to fetch and reset.");
+							throw new ExceptionInInitializerError(e1.getMessage());
+						}
 					}
 
 				} else {
@@ -210,13 +215,13 @@ public class GitPullServiceImpl implements GitPullService {
 
 	private void fetch(Git git) throws GitAPIException {
 		if (System.getenv().containsKey("GITLAB_PASSWORD")) {
-			FetchResult result = git.fetch().setRemote("origin")
+			FetchResult result = git.fetch()
 					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
 							"envomp", System.getenv().get("GITLAB_PASSWORD")))
 					.call();
 
 		} else {
-			FetchResult result = git.fetch().setRemote("origin")
+			FetchResult result = git.fetch()
 					.setTransportConfigCallback(transportConfigCallback)
 					.call();
 		}
