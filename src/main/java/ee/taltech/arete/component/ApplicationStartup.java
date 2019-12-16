@@ -96,6 +96,7 @@ public class ApplicationStartup implements ApplicationRunner {
 				log.info(String.format("pre setting %s", project));
 				try {
 					gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
+
 				} catch (Exception e) {
 					log.info(String.format("pre setting %s failed with an exception: %s", project, e.getMessage()));
 				}
