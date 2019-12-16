@@ -8,22 +8,19 @@ stages:
 
 test:
   tags:
-    - docker
+    - dev
+    - master
   image: docker:latest
   stage: test
   services:
     - name: docker:dind
   before_script:
-    - apk update
-    - apk upgrade
-    - apk add python python-dev py-pip build-base curl
-    - curl -L https://github.com/docker/compose/releases/download/1.8.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
-    - pip install docker-compose
+    - docker system prune -af
   script:
     - docker-compose -f docker-compose-test.yml up --force-recreate
   after_script:
     - docker-compose down
+    - docker system prune -af
   only:
     - dev
     - master
@@ -31,18 +28,16 @@ test:
 
 build:
   tags:
-    - docker
+    - dev
+    - master
   image: docker:latest
   stage: build
   services:
     - name: docker:dind
   before_script:
-    - apk update
-    - apk upgrade
-    - apk add python python-dev py-pip build-base curl
-    - curl -L https://github.com/docker/compose/releases/download/1.8.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
-    - pip install docker-compose
+    - docker container ls
+    - docker images
+    - docker system prune -af
   script:
     - docker-compose -f docker-compose-build.yml up --no-start --force-recreate
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
@@ -50,6 +45,9 @@ build:
     - docker push $DOCKER_USER/arete:latest
   after_script:
     - docker-compose down
+    - docker system prune -af
+    - docker container ls
+    - docker images
   only:
     - dev
     - master
