@@ -36,7 +36,7 @@ public class GitPullServiceImpl implements GitPullService {
 
 	private static final List<String> TESTABLES = List.of("ADD", "MODIFY");
 	private static Logger LOGGER = LoggerFactory.getLogger(GitPullService.class);
-	private static TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback();
+	private static TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback(); // failed ssh will fallback onto password
 
 
 	@Override
@@ -102,37 +102,38 @@ public class GitPullServiceImpl implements GitPullService {
 
 		} else {
 
-			try {
-				SafeClone(pathToFolder, pathToRepo);
-				LOGGER.info("Cloned to folder: {}", pathToFolder);
+			SafeClone(pathToFolder, pathToRepo);
+			LOGGER.info("Cloned to folder: {}", pathToFolder);
 
-				if (submission.isPresent()) {
-					SafePull(pathToFolder, submission);
-				}
-
-			} catch (Exception e) {
-				LOGGER.error("Cloning failed with message: {}", e.getMessage());
-				throw new ExceptionInInitializerError(e.getMessage());
+			if (submission.isPresent()) {
+				SafePull(pathToFolder, submission);
 			}
+
+
 		}
 	}
 
-	private void SafeClone(String pathToFolder, String pathToRepo) throws GitAPIException {
-		if (System.getenv().containsKey("GITLAB_PASSWORD")) {
-			Git git = Git.cloneRepository()
-					.setCredentialsProvider(
-							new UsernamePasswordCredentialsProvider(
-									"envomp", System.getenv().get("GITLAB_PASSWORD"))) // integration testing only pls.
-					.setURI(pathToRepo)
-					.setDirectory(new File(pathToFolder))
-					.call();
+	private void SafeClone(String pathToFolder, String pathToRepo) {
+		try {
+			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+				Git git = Git.cloneRepository()
+						.setCredentialsProvider(
+								new UsernamePasswordCredentialsProvider(
+										"envomp", System.getenv().get("GITLAB_PASSWORD")))
+						.setURI(pathToRepo)
+						.setDirectory(new File(pathToFolder))
+						.call();
 
-		} else {
-			Git git = Git.cloneRepository()
-					.setTransportConfigCallback(transportConfigCallback)
-					.setURI(pathToRepo)
-					.setDirectory(new File(pathToFolder))
-					.call();
+			} else {
+				Git git = Git.cloneRepository()
+						.setTransportConfigCallback(transportConfigCallback)
+						.setURI(pathToRepo)
+						.setDirectory(new File(pathToFolder))
+						.call();
+			}
+		} catch (Exception e) {
+			LOGGER.error("Cloning failed with message: {}", e.getMessage());
+			throw new ExceptionInInitializerError(e.getMessage());
 		}
 	}
 
@@ -150,34 +151,44 @@ public class GitPullServiceImpl implements GitPullService {
 
 	private void SafePull(String pathToFolder, Optional<Submission> submission) throws GitAPIException, IOException {
 
-		Git git = Git.open(new File(pathToFolder));
-		if (submission.isPresent()) {
-			Submission user = submission.get();
+		try {
+			Git git = Git.open(new File(pathToFolder));
+			if (submission.isPresent()) {
+				Submission user = submission.get();
 
-			if (submission.get().getHash() != null) {
+				if (submission.get().getHash() != null) {
 
-				try {
-					fetch(git);
-					reset(git, user);
+					try {
+						fetch(git);
+						reset(git, user);
 
-					LOGGER.info("Pulled specific hash {} for user {}", user.getHash(), user.getUniid());
-				} catch (Exception e) {
-					fixHash(git, user);
-					fetch(git);
-					reset(git, user);
+						LOGGER.info("Pulled specific hash {} for user {}", user.getHash(), user.getUniid());
+					} catch (Exception e) {
+						try {
+							fixHash(git, user);
+							fetch(git);
+							reset(git, user);
+						} catch (Exception e1) {
+							LOGGER.info("Failed to fetch and reset.");
+							throw new ExceptionInInitializerError(e1.getMessage());
+						}
+					}
+
+				} else {
+
+					SafePull(git);
+					user.setHash(getLatestHash(git));
+					LOGGER.info("Pulled for user {} and set hash {}", user.getUniid(), user.getHash());
 				}
 
 			} else {
 
 				SafePull(git);
-				user.setHash(getLatestHash(git));
-				LOGGER.info("Pulled for user {} and set hash {}", user.getUniid(), user.getHash());
+				LOGGER.info("Pulled to {} with hash {}", pathToFolder, getLatestHash(git));
 			}
-
-		} else {
-
-			SafePull(git);
-			LOGGER.info("Pulled to {} with hash {}", pathToFolder, getLatestHash(git));
+		} catch (Exception e) {
+			LOGGER.error("Pull failed with message: {}", e.getMessage());
+			throw new ExceptionInInitializerError(e.getMessage());
 		}
 	}
 
@@ -204,13 +215,13 @@ public class GitPullServiceImpl implements GitPullService {
 
 	private void fetch(Git git) throws GitAPIException {
 		if (System.getenv().containsKey("GITLAB_PASSWORD")) {
-			FetchResult result = git.fetch().setRemote("origin")
+			FetchResult result = git.fetch()
 					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
 							"envomp", System.getenv().get("GITLAB_PASSWORD")))
 					.call();
 
 		} else {
-			FetchResult result = git.fetch().setRemote("origin")
+			FetchResult result = git.fetch()
 					.setTransportConfigCallback(transportConfigCallback)
 					.call();
 		}

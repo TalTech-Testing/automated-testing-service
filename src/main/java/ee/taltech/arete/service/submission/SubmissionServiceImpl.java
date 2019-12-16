@@ -38,6 +38,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 		if (submission.getGitStudentRepo() == null) {
 			throw new BadRequestException("Git student repo is needed for async.");
 		} else {
+			fixRepo(submission);
 			repo = submission.getGitStudentRepo().replaceAll(".git", "");
 		}
 
@@ -73,6 +74,45 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 	}
 
+	private void fixRepo(Submission submission) {
+		if (submission.getGitStudentRepo() != null) {
+			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+				if (submission.getGitStudentRepo().startsWith("git")) {
+					String fixed = submission.getGitStudentRepo();
+					fixed.replace("https://", "git@");
+					fixed.replaceFirst("/", ":");
+					submission.setGitStudentRepo(fixed);
+				}
+			} else {
+				if (submission.getGitStudentRepo().startsWith("http")) {
+					String fixed = submission.getGitStudentRepo();
+					fixed.replaceFirst(":", "/");
+					fixed.replace("git@", "https://");
+					submission.setGitStudentRepo(fixed);
+				}
+			}
+		}
+
+		if (submission.getGitTestSource() != null) {
+			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+				if (submission.getGitTestSource().startsWith("git")) {
+					String fixed = submission.getGitStudentRepo();
+					fixed.replace("https://", "git@");
+					fixed.replaceFirst("/", ":");
+					submission.setGitTestSource(fixed);
+				}
+			} else {
+				if (submission.getGitTestSource().startsWith("http")) {
+					String fixed = submission.getGitStudentRepo();
+					fixed.replaceFirst(":", "/");
+					fixed.replace("git@", "https://");
+					submission.setGitTestSource(fixed);
+				}
+			}
+		}
+
+	}
+
 	@Override
 	public String populateSyncFields(Submission submission) {
 		String hash;
@@ -80,6 +120,8 @@ public class SubmissionServiceImpl implements SubmissionService {
 		if (submission.getSource() == null || submission.getSource().length == 0) {
 			throw new BadRequestException("Source is needed for sync testing.");
 		}
+
+		fixRepo(submission);
 
 		if (submission.getHash() == null) {
 			hash = getRandomHash();

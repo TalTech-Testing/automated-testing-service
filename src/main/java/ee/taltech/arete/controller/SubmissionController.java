@@ -120,7 +120,7 @@ public class SubmissionController {
 
 		priorityQueueService.halt();
 		String pathToTesterFolder = String.format("tests/%s/", project);
-		String pathToTesterRepo = String.format("https://gitlab.cs.ttu.ee/%s/%s.git", project, projectBase);
+		String pathToTesterRepo = String.format("git@gitlab.cs.ttu.ee:%s/%s.git", project, projectBase);
 		LOGGER.info("Checking for update for tester:");
 		gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
 		priorityQueueService.go();
