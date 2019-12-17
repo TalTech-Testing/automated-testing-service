@@ -17,7 +17,7 @@ services:
     ports:
       - "8098:8098"
     env_file:
-      - ..env #Change to .env to run locally
+      - ..env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${ARETE_HOME}/test/input_and_output:${ARETE_HOME}/input_and_output
