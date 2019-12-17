@@ -9,7 +9,7 @@ services:
     privileged: true
     build:
       args:
-        - ARETE_HOME=${ARETE_HOME}
+        - ARETE_HOME=${ARETE_HOME}/arete-test
         - GITLAB_PASSWORD=${GITLAB_PASSWORD}
       dockerfile:
         Dockerfile-ubuntu-test
@@ -17,9 +17,9 @@ services:
     ports:
       - "8098:8098"
     env_file:
-      - ..env #Change to .env to run locally
+      - ..env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${ARETE_HOME}/input_and_output:/${ARETE_HOME}/input_and_output
-      - ${ARETE_HOME}/students:/${ARETE_HOME}/students
-      - ${ARETE_HOME}/tests:/${ARETE_HOME}/tests
+      - ${ARETE_HOME}/arete-test/input_and_output:${ARETE_HOME}/arete-test/input_and_output
+      - ${ARETE_HOME}/arete-test/students:${ARETE_HOME}/arete-test/students
+      - ${ARETE_HOME}/arete-test/tests:${ARETE_HOME}/arete-test/tests

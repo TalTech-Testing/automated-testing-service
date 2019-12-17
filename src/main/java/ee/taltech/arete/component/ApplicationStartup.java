@@ -77,9 +77,7 @@ public class ApplicationStartup implements ApplicationRunner {
 
 			List<String> projects;
 			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
-				projects = Arrays.asList("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git"
-//						, "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git"
-				);
+				projects = Arrays.asList("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git");
 				log.info("Set testers through https");
 			} else {
 				projects = Arrays.asList("git@gitlab.cs.ttu.ee:iti0102-2019/ex.git"
@@ -98,6 +96,7 @@ public class ApplicationStartup implements ApplicationRunner {
 				log.info(String.format("pre setting %s", project));
 				try {
 					gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
+
 				} catch (Exception e) {
 					log.info(String.format("pre setting %s failed with an exception: %s", project, e.getMessage()));
 				}
@@ -105,6 +104,7 @@ public class ApplicationStartup implements ApplicationRunner {
 		} catch (Exception ignored) {
 		}
 
+		log.info("Done setup");
 		priorityQueueService.go();
 
 	}
