@@ -11,6 +11,8 @@ public interface SubmissionService {
 
 	String populateSyncFields(Submission submission);
 
+	void fixRepo(Submission submission);
+
 	List<Submission> getSubmissions();
 
 	List<Submission> getSubmissionByHash(String hash);
