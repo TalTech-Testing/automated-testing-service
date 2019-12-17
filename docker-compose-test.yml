@@ -20,3 +20,6 @@ services:
       - ..env #Change to .env to run locally
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ${ARETE_HOME}/test/input_and_output:${ARETE_HOME}/input_and_output
+      - ${ARETE_HOME}/test/students:${ARETE_HOME}/students
+      - ${ARETE_HOME}/test/tests:${ARETE_HOME}/tests
