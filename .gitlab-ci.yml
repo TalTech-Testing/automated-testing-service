@@ -15,9 +15,9 @@ test:
   services:
     - name: docker:dind
   script:
-    - docker-compose -f docker-compose-test.yml up --build --force-recreate
+    - docker-compose -f docker-compose-test.yml up --build --force-recreate --no-deps
   after_script:
-    - docker-compose down --remove-orphans
+    - docker-compose -f docker-compose-test.yml down --remove-orphans
   only:
     - dev
     - master
@@ -40,7 +40,7 @@ build:
     - docker tag arete $DOCKER_USER/arete:latest
     - docker push $DOCKER_USER/arete:latest
   after_script:
-    - docker-compose down --remove-orphans
+    - docker-compose -f docker-compose-build.yml down --remove-orphans
     - docker container ls
     - docker images
   only:
