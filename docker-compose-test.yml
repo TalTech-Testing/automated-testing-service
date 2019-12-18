@@ -5,7 +5,7 @@ services:
   back:
     container_name: arete-test
     image: arete-test:latest
-    restart: unless-stopped
+    restart: never
     privileged: true
     build:
       args:
@@ -14,10 +14,6 @@ services:
       dockerfile:
         Dockerfile-ubuntu-test
       context: .
-    ports:
-      - "8098:8098"
-    env_file:
-      - ..env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${ARETE_HOME}/arete-test/input_and_output:${ARETE_HOME}/arete-test/input_and_output
