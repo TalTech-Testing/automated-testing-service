@@ -5,7 +5,7 @@ services:
   back:
     container_name: arete-test
     image: arete-test:latest
-    restart: never
+    restart: unless-stopped
     privileged: true
     build:
       args:
