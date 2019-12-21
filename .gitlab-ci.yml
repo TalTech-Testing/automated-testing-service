@@ -1,26 +1,28 @@
 variables:
   DOCKER_DRIVER: overlay
 
+
 stages:
-  #  - test
+  - test
   - build
   - deploy
 
-#test:
-#  tags:
-#    - dev
-#    - master
-#  image: docker:latest
-#  stage: test
-#  services:
-#    - name: docker:dind
-#  script:
-#    - docker-compose -f docker-compose-test.yml up --build --force-recreate --no-deps
-#  after_script:
-#    - docker-compose -f docker-compose-test.yml down --remove-orphans -v -f
-#  only:
-#    - dev
-#    - master
+
+test:
+  tags:
+    - dev
+    - master
+  image: docker:latest
+  stage: test
+  services:
+    - name: docker:dind
+  script:
+    - docker-compose -f docker-compose-test.yml up --build --force-recreate --no-deps
+  after_script:
+    - docker-compose -f docker-compose-test.yml down --remove-orphans -v -f
+  only:
+    - dev
+    - master
 
 
 build:
