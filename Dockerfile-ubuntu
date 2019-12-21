@@ -30,9 +30,10 @@ RUN apt-get update && \
     apt-get clean && \
     update-ca-certificates -f;
 
-RUN apt-get install software-properties-common
+# Git LFS
+RUN apt-get install -y software-properties-common
 RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
-RUN apt-get install git-lfs
+RUN apt-get install -y git-lfs
 RUN git lfs install
 
 # Setup JAVA_HOME -- useful for docker commandline
