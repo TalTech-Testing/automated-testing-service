@@ -1,4 +1,5 @@
-FROM openjdk:11
+#FROM openjdk:11
+FROM ubuntu:18.04
 
 MAINTAINER enrico.vompa@gmail.com
 
@@ -17,21 +18,27 @@ ENV ARETE_HOME=$ARETE_HOME
 ADD . $ARETE_HOME
 WORKDIR $ARETE_HOME
 
-## Install OpenJDK-11
-#RUN apt-get update && \
-#    apt-get install -y openjdk-11-jdk && \
-#    apt-get install -y ant && \
-#    apt-get clean;
-#
-## Fix certificate issues
-#RUN apt-get update && \
-#    apt-get install ca-certificates-java && \
-#    apt-get clean && \
-#    update-ca-certificates -f;
-#
-## Setup JAVA_HOME -- useful for docker commandline
-#ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
-#RUN export JAVA_HOME
+# Install OpenJDK-11
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk && \
+    apt-get install -y ant && \
+    apt-get clean;
+
+# Fix certificate issues
+RUN apt-get update && \
+    apt-get install ca-certificates-java && \
+    apt-get clean && \
+    update-ca-certificates -f;
+
+# Git LFS
+RUN apt-get install -y software-properties-common curl
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
+RUN apt-get install -y git-lfs
+RUN git lfs install
+
+# Setup JAVA_HOME -- useful for docker commandline
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
+RUN export JAVA_HOME
 ENV JAVA_OPTS=""
 
 # Run Maven build
