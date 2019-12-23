@@ -40,7 +40,9 @@ public class SubmissionInitializer {
 				.returnUrl(RETURN_URL)
 				.dockerTimeout(120)
 //				.systemExtra(new HashSet<>())
-//				.systemExtra(new HashSet<>(Collections.singletonList("noMail")))
+				.systemExtra((new HashSet<>(Arrays.asList(
+////						, "noMail"
+				))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 				.timestamp(System.currentTimeMillis())
 				.priority(10)
@@ -59,7 +61,9 @@ public class SubmissionInitializer {
 				.returnUrl(RETURN_URL)
 				.dockerTimeout(120)
 //				.systemExtra(new HashSet<>())
-//				.systemExtra(new HashSet<>(Collections.singletonList("noMail")))
+				.systemExtra((new HashSet<>(Arrays.asList(
+////						, "noMail"
+				))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 				.timestamp(System.currentTimeMillis())
 				.priority(10)
@@ -74,7 +78,9 @@ public class SubmissionInitializer {
 				.project(PROJECT_PYTHON)
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
-//				.systemExtra(new HashSet<>(Collections.singletonList("noMail")))
+				.systemExtra((new HashSet<>(Arrays.asList(
+////						, "noMail"
+				))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 				.hash("d3f5510928bb8dacc20d29110e9268756418bef9")
 				.build();
@@ -86,7 +92,9 @@ public class SubmissionInitializer {
 				.gitStudentRepo(STUDENT_REPO)
 				.hash("2448474b6a76ef534660817948dc8b816e40dd48")
 				.testingPlatform(TESTING_PLATFORM)
-//				.systemExtra(new HashSet<>(Collections.singletonList("noMail")))
+				.systemExtra((new HashSet<>(Arrays.asList(
+////						, "noMail"
+				))))
 				.returnUrl(RETURN_URL)
 				.dockerExtra(EXTRA)
 				.build();
@@ -100,7 +108,9 @@ public class SubmissionInitializer {
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.gitTestSource(PROJECT_GIT)
-//				.systemExtra(new HashSet<>(Collections.singletonList("noMail")))
+				.systemExtra((new HashSet<>(Arrays.asList(
+////						, "noMail"
+				))))
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequestSync.SourceFile.builder()
 								.path("EX01IdCode/src/ee/taltech/iti0202/idcode/IDCode.java")
@@ -115,7 +125,9 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.dockerExtra(EXTRA)
 				.hash(hash)
-//				.systemExtra(new HashSet<>(Collections.singletonList("noMail")))
+				.systemExtra((new HashSet<>(Arrays.asList(
+////						, "noMail"
+				))))
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.gitTestSource(PROJECT_GIT_PYTHON)
 				.source(new ArrayList<>(Collections.singletonList(
@@ -132,7 +144,9 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.dockerExtra(new HashSet<>())
 				.hash(hash)
-//				.systemExtra(new HashSet<>(Collections.singletonList("noMail")))
+				.systemExtra((new HashSet<>(Arrays.asList(
+////						, "noMail"
+				))))
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.gitTestSource(PROJECT_GIT_PYTHON)
 				.source(new ArrayList<>(Collections.singletonList(
