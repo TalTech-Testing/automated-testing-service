@@ -147,19 +147,10 @@ public class SubmissionController {
 	@GetMapping("/submissions/{hash}/logs")
 	public String GetSubmissionLogs(@PathVariable("hash") String hash) {
 
-		return "<!DOCTYPE html>\n" +
-				"<html lang=\"en\">\n" +
-				"<head>\n" +
-				"    <meta charset=\"UTF-8\">\n" +
-				"    <title>Logs</title>\n" +
-				"</head>\n" +
-				"<body>" +
-				submissionService.getSubmissionByHash(hash).stream()
-						.map(submission -> submission.getResult()
-								.replace("\n", "<br />\n"))
-						.collect(Collectors.joining()) +
-				"</body>\n" +
-				"</html>";
+		return submissionService.getSubmissionByHash(hash)
+				.stream()
+				.map(Submission::getResult)
+				.collect(Collectors.joining());
 
 	}
 

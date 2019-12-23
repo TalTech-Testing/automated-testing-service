@@ -15,9 +15,9 @@ public class UnitTest {
 	String status;
 	Integer weight;
 	String description;
-	Boolean printExceptionMessage;
-	Boolean printStackTrace;
-	Integer timeElapsed;
+	Boolean printExceptionMessage = true;
+	Boolean printStackTrace = true;
+	Long timeElapsed;
 	ArrayList<String> groupsDependedUpon;
 	ArrayList<String> methodsDependedUpon;
 	String name;
