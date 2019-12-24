@@ -24,7 +24,7 @@ public class AreteRequestSync {
 
 	private String project; // Default is second from the end in url. https://gitlab.cs.ttu.ee/iti0102-2019/ex.git > project = iti0102-2019. Specify project, if its not second from end
 	private HashSet<String> dockerExtra; // Default is "stylecheck".
-	private HashSet<String> systemExtra; // No defaults. You can add "noMail", "noTesterFiles", "noStd"
+	private HashSet<String> systemExtra; // No defaults. You can add "noMail", "noTesterFiles", "noStd", "noFeedback"
 	private Integer dockerTimeout; // Default docker timeout is 120 seconds
 	private Integer priority; // Default priority is 5
 	// For integration tests. You can use them.. but use async while you are at it.

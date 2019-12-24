@@ -14,10 +14,9 @@ import java.util.ArrayList;
 public class UnitTest {
 	String status;
 	Integer weight;
-	String description;
 	Boolean printExceptionMessage;
 	Boolean printStackTrace;
-	Integer timeElapsed;
+	Long timeElapsed;
 	ArrayList<String> groupsDependedUpon;
 	ArrayList<String> methodsDependedUpon;
 	String name;

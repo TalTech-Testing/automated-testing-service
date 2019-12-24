@@ -91,6 +91,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		try {
 			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
+//			System.out.println(json);
 			JSONObject jsonObject = new JSONObject(json);
 			if ("hodor_studenttester".equals(jsonObject.get("type"))) {
 				hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
@@ -101,6 +102,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			message = areteResponse.getOutput();
 
 		} catch (Exception e) {
+//			e.printStackTrace();
 			throw new UnexpectedTypeException(e.getMessage());
 		}
 

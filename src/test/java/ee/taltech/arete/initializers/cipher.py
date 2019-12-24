@@ -3,7 +3,7 @@ from itertools import cycle
 
 def rail_pattern(n):
     r = list(range(n))
-    return cycle(r + r[-2:0:-1])
+    return cycle(r + r[-2: 0: - 1])
 
 
 def encode(a, b):
@@ -18,7 +18,7 @@ def decode(a, b):
     result = [''] * len(a)
     for i, c in zip(indexes, a):
         result[i] = c
-    return ''.join(result).replace("_", " ")
+    return ''.join(result).replace("_", "_")
 
 
 print(encode("Mind on vaja krüpteerida", 3))  # => M_v_prido_aaküteiannjred

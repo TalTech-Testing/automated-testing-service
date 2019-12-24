@@ -97,6 +97,8 @@ public class SubmissionController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/waitingroom/{hash}")
 	public void WaitingList(HttpEntity<String> httpEntity, @PathVariable("hash") String hash) throws JsonProcessingException {
+//		System.out.println(httpEntity.getBody());
+//		objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
 		syncWaitingRoom.put(hash, objectMapper.readValue(Objects.requireNonNull(httpEntity.getBody()), AreteResponse.class));
 	}
 
@@ -147,19 +149,10 @@ public class SubmissionController {
 	@GetMapping("/submissions/{hash}/logs")
 	public String GetSubmissionLogs(@PathVariable("hash") String hash) {
 
-		return "<!DOCTYPE html>\n" +
-				"<html lang=\"en\">\n" +
-				"<head>\n" +
-				"    <meta charset=\"UTF-8\">\n" +
-				"    <title>Logs</title>\n" +
-				"</head>\n" +
-				"<body>" +
-				submissionService.getSubmissionByHash(hash).stream()
-						.map(submission -> submission.getResult()
-								.replace("\n", "<br />\n"))
-						.collect(Collectors.joining()) +
-				"</body>\n" +
-				"</html>";
+		return submissionService.getSubmissionByHash(hash)
+				.stream()
+				.map(Submission::getResult)
+				.collect(Collectors.joining());
 
 	}
 

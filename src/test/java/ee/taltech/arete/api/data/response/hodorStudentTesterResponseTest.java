@@ -28,12 +28,12 @@ public class hodorStudentTesterResponseTest {
 	private ObjectMapper objectMapper;
 
 	@Test
-	public void JavaParsing() throws IOException {
+	public void JavaParsingFullResponse() throws IOException {
 		String json = Files.readString(Paths.get(home + "/src/test/java/ee/taltech/arete/api/data/response/java2.json"), StandardCharsets.UTF_8);
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
 //		System.out.println(objectMapper.writeValueAsString(response));
 		AreteResponse areteResponse = new AreteResponse(getFullSubmissionJava(), response);
-//		System.out.println(objectMapper.writeValueAsString(areteResponse));
+		System.out.println(objectMapper.writeValueAsString(areteResponse.getOutput()));
 	}
 
 	@Test
@@ -41,7 +41,7 @@ public class hodorStudentTesterResponseTest {
 		String json = Files.readString(Paths.get(home + "/src/test/java/ee/taltech/arete/api/data/response/java.json"), StandardCharsets.UTF_8);
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
 		AreteResponse areteResponse = new AreteResponse(getFullSubmissionJava(), response);
-//		System.out.println(objectMapper.writeValueAsString(areteResponse));
+		System.out.println(objectMapper.writeValueAsString(areteResponse.getOutput()));
 	}
 
 	@Test
@@ -49,7 +49,7 @@ public class hodorStudentTesterResponseTest {
 		String json = Files.readString(Paths.get(home + "/src/test/java/ee/taltech/arete/api/data/response/java3.json"), StandardCharsets.UTF_8);
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
 		AreteResponse areteResponse = new AreteResponse(getFullSubmissionJava(), response);
-//		System.out.println(objectMapper.writeValueAsString(areteResponse));
+		System.out.println(objectMapper.writeValueAsString(areteResponse.getOutput()));
 	}
 
 	@Test
@@ -58,6 +58,6 @@ public class hodorStudentTesterResponseTest {
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
 //		System.out.println(objectMapper.writeValueAsString(response));
 		AreteResponse areteResponse = new AreteResponse(getFullSubmissionPython(), response);
-//		System.out.println(objectMapper.writeValueAsString(areteResponse));
+		System.out.println(objectMapper.writeValueAsString(areteResponse.getOutput()));
 	}
 }
