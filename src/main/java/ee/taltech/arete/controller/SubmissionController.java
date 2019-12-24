@@ -97,6 +97,8 @@ public class SubmissionController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/waitingroom/{hash}")
 	public void WaitingList(HttpEntity<String> httpEntity, @PathVariable("hash") String hash) throws JsonProcessingException {
+//		System.out.println(httpEntity.getBody());
+//		objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
 		syncWaitingRoom.put(hash, objectMapper.readValue(Objects.requireNonNull(httpEntity.getBody()), AreteResponse.class));
 	}
 

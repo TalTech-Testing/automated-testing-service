@@ -58,6 +58,6 @@ public class hodorStudentTesterResponseTest {
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
 //		System.out.println(objectMapper.writeValueAsString(response));
 		AreteResponse areteResponse = new AreteResponse(getFullSubmissionPython(), response);
-		System.out.println(objectMapper.writeValueAsString(areteResponse));
+		System.out.println(objectMapper.writeValueAsString(areteResponse.getOutput()));
 	}
 }

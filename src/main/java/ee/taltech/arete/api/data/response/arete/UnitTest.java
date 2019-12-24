@@ -14,9 +14,8 @@ import java.util.ArrayList;
 public class UnitTest {
 	String status;
 	Integer weight;
-	String description;
-	Boolean printExceptionMessage = true;
-	Boolean printStackTrace = true;
+	Boolean printExceptionMessage;
+	Boolean printStackTrace;
 	Long timeElapsed;
 	ArrayList<String> groupsDependedUpon;
 	ArrayList<String> methodsDependedUpon;

@@ -2,37 +2,9 @@
   "type": "hodor_studenttester",
   "results": [
     {
-      "count": 8,
+      "count": 4,
       "code": 101,
       "errors": [
-        {
-          "fileName": "/pytest_tmp/cipher.py",
-          "lineNo": 6,
-          "columnNo": 19,
-          "message": "E221 multiple spaces before operator",
-          "kind": "style error"
-        },
-        {
-          "fileName": "/pytest_tmp/cipher.py",
-          "lineNo": 6,
-          "columnNo": 27,
-          "message": "E203 whitespace before ':'",
-          "kind": "style error"
-        },
-        {
-          "fileName": "/pytest_tmp/cipher.py",
-          "lineNo": 6,
-          "columnNo": 31,
-          "message": "E203 whitespace before ':'",
-          "kind": "style error"
-        },
-        {
-          "fileName": "/pytest_tmp/cipher.py",
-          "lineNo": 12,
-          "columnNo": 40,
-          "message": "E271 multiple spaces after keyword",
-          "kind": "style error"
-        },
         {
           "fileName": "/pytest_tmp/cipher.py",
           "lineNo": 1,
@@ -76,7 +48,7 @@
       "files": [
         {
           "path": "cipher.py",
-          "contents": "from itertools import cycle\n\n\ndef rail_pattern(n):\n    r = list(range(n))\n    return cycle(r  + r[-2 : 0 : - 1])\n\n\ndef encode(a, b):\n    p = rail_pattern(b)\n    # this relies on key being called in order, guaranteed?\n    return ''.join(sorted(a, key=lambda  i: next(p))).replace(\" \", \"_\")\n\n\ndef decode(a, b):\n    p = rail_pattern(b)\n    indexes = sorted(range(len(a)), key=lambda i: next(p))\n    result = [''] * len(a)\n    for i, c in zip(indexes, a):\n        result[i] = c\n    return ''.join(result).replace(\"_\", \"_\")\n\n\nprint(encode(\"Mind on vaja kr\u00fcpteerida\", 3))  # => M_v_prido_aak\u00fcteiannjred\nprint(encode(\"Mind on\", 3))  # => M_idonn\nprint(encode(\"hello\", 1))  # => hello\nprint(encode(\"hello\", 8))  # => hello\nprint(encode(\"kaks pead\", 1))  # => kaks_pead\n\nprint(decode(\"kaks_pead\", 1))  # => kaks pead\nprint(decode(\"M_idonn\", 3))  # => Mind on\nprint(decode(\"M_v_prido_aak\u00fcteiannjred\", 3))  # => Mind on vaja kr\u00fcpteerida\n",
+          "contents": "from itertools import cycle\n\n\ndef rail_pattern(n):\n    r = list(range(n))\n    return cycle(r + r[-2: 0: - 1])\n\n\ndef encode(a, b):\n    p = rail_pattern(b)\n    # this relies on key being called in order, guaranteed?\n    return ''.join(sorted(a, key=lambda i: next(p))).replace(\" \", \"_\")\n\n\ndef decode(a, b):\n    p = rail_pattern(b)\n    indexes = sorted(range(len(a)), key=lambda i: next(p))\n    result = [''] * len(a)\n    for i, c in zip(indexes, a):\n        result[i] = c\n    return ''.join(result).replace(\"_\", \"_\")\n\n\nprint(encode(\"Mind on vaja kr\u00fcpteerida\", 3))  # => M_v_prido_aak\u00fcteiannjred\nprint(encode(\"Mind on\", 3))  # => M_idonn\nprint(encode(\"hello\", 1))  # => hello\nprint(encode(\"hello\", 8))  # => hello\nprint(encode(\"kaks pead\", 1))  # => kaks_pead\n\nprint(decode(\"kaks_pead\", 1))  # => kaks pead\nprint(decode(\"M_idonn\", 3))  # => Mind on\nprint(decode(\"M_v_prido_aak\u00fcteiannjred\", 3))  # => Mind on vaja kr\u00fcpteerida\n",
           "isTest": false
         }
       ],
@@ -98,162 +70,208 @@
               "name": "test_encode_empty_string",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 5
             },
             {
               "name": "test_encode_character",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
-              "timeElapsed": 0
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
+              "timeElapsed": 1
             },
             {
               "name": "test_encode_key_1",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_encode_longer_sentence_key_1",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_encode_sentence_key_2",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_encode_sentence_key_3",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_encode_key_bigger_than_length",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_encode_sentence_letter_sensitive",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_encode_sentence_hard",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_encode_sentence_key_bigger_than_length",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_decode_empty_string",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_decode_character",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_decode_key_1",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_decode_longer_sentence_key_1",
               "status": "FAILED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": true,
+              "exceptionClass": "AssertionError",
+              "exceptionMessage": "",
               "timeElapsed": 1
             },
             {
               "name": "test_decode_sentence_key_2",
               "status": "FAILED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": true,
+              "exceptionClass": "AssertionError",
+              "exceptionMessage": "",
               "timeElapsed": 1
             },
             {
               "name": "test_decode_sentence_key_3",
               "status": "FAILED",
               "weight": 1,
-              "description": "",
-              "timeElapsed": 0
+              "printExceptionMessage": true,
+              "exceptionClass": "AssertionError",
+              "exceptionMessage": "",
+              "timeElapsed": 1
             },
             {
               "name": "test_decode_key_bigger_than_length",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_decode_sentence_key_bigger_than_length",
               "status": "FAILED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": true,
+              "exceptionClass": "AssertionError",
+              "exceptionMessage": "",
               "timeElapsed": 0
             },
             {
               "name": "test_decode_sentence_letter_sensitive",
               "status": "FAILED",
               "weight": 1,
-              "description": "",
-              "timeElapsed": 0
+              "printExceptionMessage": true,
+              "exceptionClass": "AssertionError",
+              "exceptionMessage": "",
+              "timeElapsed": 1
             },
             {
               "name": "test_encode_long_text",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
               "timeElapsed": 1
             },
             {
               "name": "test_decode_long_text",
               "status": "FAILED",
               "weight": 1,
-              "description": "",
+              "printExceptionMessage": true,
+              "exceptionClass": "AssertionError",
+              "exceptionMessage": "",
               "timeElapsed": 4
             },
             {
               "name": "test_encode_random",
               "status": "PASSED",
               "weight": 1,
-              "description": "",
-              "timeElapsed": 300
+              "printExceptionMessage": false,
+              "exceptionClass": "",
+              "exceptionMessage": "",
+              "timeElapsed": 291
             },
             {
               "name": "test_decode_random",
               "status": "FAILED",
               "weight": 1,
-              "description": "",
-              "timeElapsed": 5
+              "printExceptionMessage": true,
+              "exceptionClass": "AssertionError",
+              "exceptionMessage": "",
+              "timeElapsed": 6
             }
           ],
           "identifier": 1,
@@ -267,7 +285,7 @@
     {
       "code": 2147483647,
       "identifier": "REPORT",
-      "output": "Style conventions checker results:\n\nPEP8 stylecheck:\ncipher.py:6:19: E221 multiple spaces before operator\ncipher.py:6:27: E203 whitespace before ':'\ncipher.py:6:31: E203 whitespace before ':'\ncipher.py:12:40: E271 multiple spaces after keyword\n2     E203 whitespace before ':'\n1     E221 multiple spaces before operator\n1     E271 multiple spaces after keyword\n\nPEP257 stylecheck:\ncipher.py:1 at module level:\n        D100: Missing docstring in public module\ncipher.py:4 in public function `rail_pattern`:\n        D103: Missing docstring in public function\ncipher.py:9 in public function `encode`:\n        D103: Missing docstring in public function\ncipher.py:15 in public function `decode`:\n        D103: Missing docstring in public function\nStyle percentage: 0%\n\n\nTest: cipher_tests.py\n\n   test_encode_empty_string: passed (5.924 ms)\n\n   test_encode_character: passed (0.9048 ms)\n\n   test_encode_key_1: passed (0.8497 ms)\n\n   test_encode_longer_sentence_key_1: passed (0.725 ms)\n\n   test_encode_sentence_key_2: passed (0.8202 ms)\n\n   test_encode_sentence_key_3: passed (0.7503 ms)\n\n   test_encode_key_bigger_than_length: passed (0.7575 ms)\n\n   test_encode_sentence_letter_sensitive: passed (0.7384 ms)\n\n   test_encode_sentence_hard: passed (0.7226 ms)\n\n   test_encode_sentence_key_bigger_than_length: passed (0.7706 ms)\n\n   test_decode_empty_string: passed (0.7117 ms)\n\n   test_decode_character: passed (0.7741 ms)\n\n   test_decode_key_1: passed (0.7234 ms)\n\n   test_decode_longer_sentence_key_1: FAILED (1.141 ms)\n\n   test_decode_sentence_key_2: FAILED (1.137 ms)\n\n   test_decode_sentence_key_3: FAILED (0.9422 ms)\n\n   test_decode_key_bigger_than_length: passed (0.7482 ms)\n\n   test_decode_sentence_key_bigger_than_length: FAILED (0.9429 ms)\n\n   test_decode_sentence_letter_sensitive: FAILED (0.927 ms)\n\n   test_encode_long_text: passed (1.237 ms)\n\n   test_decode_long_text: FAILED (4.664 ms)\n\n   test_encode_random: passed (300.5 ms)\n\n   test_decode_random: FAILED (5.618 ms)\n\n\nTotal number of tests: 23\nPassed tests: 16\nFailed tests: 7\n\nPercentage: 69.57%\n\n",
+      "output": "Style conventions checker results:\n\nPEP8 stylecheck:\n\nPEP257 stylecheck:\ncipher.py:1 at module level:\n        D100: Missing docstring in public module\ncipher.py:4 in public function `rail_pattern`:\n        D103: Missing docstring in public function\ncipher.py:9 in public function `encode`:\n        D103: Missing docstring in public function\ncipher.py:15 in public function `decode`:\n        D103: Missing docstring in public function\nCode conforms to PEP8 (coding style) guidelines! Good job!\nStyle percentage: 0%\n\n\nTest: cipher_tests.py\n\n   test_encode_empty_string: passed (5.934 ms)\n\n   test_encode_character: passed (1.062 ms)\n\n   test_encode_key_1: passed (0.8199 ms)\n\n   test_encode_longer_sentence_key_1: passed (0.7293 ms)\n\n   test_encode_sentence_key_2: passed (0.7789 ms)\n\n   test_encode_sentence_key_3: passed (0.7968 ms)\n\n   test_encode_key_bigger_than_length: passed (0.7432 ms)\n\n   test_encode_sentence_letter_sensitive: passed (0.8776 ms)\n\n   test_encode_sentence_hard: passed (0.7315 ms)\n\n   test_encode_sentence_key_bigger_than_length: passed (0.8945 ms)\n\n   test_decode_empty_string: passed (0.7811 ms)\n\n   test_decode_character: passed (0.7665 ms)\n\n   test_decode_key_1: passed (0.839 ms)\n\n   test_decode_longer_sentence_key_1: FAILED (1.143 ms)\n\n   test_decode_sentence_key_2: FAILED (1.249 ms)\n\n   test_decode_sentence_key_3: FAILED (1.087 ms)\n\n   test_decode_key_bigger_than_length: passed (0.8068 ms)\n\n   test_decode_sentence_key_bigger_than_length: FAILED (0.9677 ms)\n\n   test_decode_sentence_letter_sensitive: FAILED (1.035 ms)\n\n   test_encode_long_text: passed (1.225 ms)\n\n   test_decode_long_text: FAILED (4.948 ms)\n\n   test_encode_random: passed (291.5 ms)\n\n   test_decode_random: FAILED (6.641 ms)\n\n\nTotal number of tests: 23\nPassed tests: 16\nFailed tests: 7\n\nPercentage: 69.57%\n\n",
       "result": "SUCCESS"
     }
   ],
