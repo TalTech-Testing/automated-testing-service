@@ -150,35 +150,37 @@ public class AreteResponse {
 
 		for (TestContext context : testSuites) {
 
-			output.append("<br>");
-			testsTable(submission, output, context);
+			if (context.unitTests.size() != 0) {
 
-			List<String> positive = Arrays.asList("success", "passed");
+				output.append("<br>");
+				testsTable(submission, output, context);
 
-			long size = context.unitTests.size();
-			totalSize += size;
-			output.append(String.format("<p>Number of tests: %s</p>", size));
+				List<String> positive = Arrays.asList("success", "passed");
 
-			long passed = context.unitTests.stream().filter(x -> positive.contains(x.status.toLowerCase())).count();
-			totalPassed += passed;
-			output.append(String.format("<p>Passed tests: %s</p>", passed));
+				long size = context.unitTests.size();
+				totalSize += size;
+				output.append(String.format("<p>Number of tests: %s</p>", size));
 
-			long weights = context.unitTests.stream()
-					.map(x -> x.weight)
-					.mapToInt(Integer::intValue)
-					.sum();
-			totalWeight += weights;
-			output.append(String.format("<p>Total weight: %s</p>", weights));
+				long passed = context.unitTests.stream().filter(x -> positive.contains(x.status.toLowerCase())).count();
+				totalPassed += passed;
+				output.append(String.format("<p>Passed tests: %s</p>", passed));
 
-			long passedWeights = context.unitTests.stream()
-					.filter(x -> positive.contains(x.status.toLowerCase()))
-					.map(x -> x.weight)
-					.mapToInt(Integer::intValue)
-					.sum();
-			totalPassedWeight += passedWeights;
-			output.append(String.format("<p>Passed weight: %s</p>", passedWeights));
-			output.append(String.format("<p>Percentage: %s%s</p>", Math.round((float) passedWeights / (float) weights * 100 * 100.0) / 100.0, "%"));
+				long weights = context.unitTests.stream()
+						.map(x -> x.weight)
+						.mapToInt(Integer::intValue)
+						.sum();
+				totalWeight += weights;
+				output.append(String.format("<p>Total weight: %s</p>", weights));
 
+				long passedWeights = context.unitTests.stream()
+						.filter(x -> positive.contains(x.status.toLowerCase()))
+						.map(x -> x.weight)
+						.mapToInt(Integer::intValue)
+						.sum();
+				totalPassedWeight += passedWeights;
+				output.append(String.format("<p>Passed weight: %s</p>", passedWeights));
+				output.append(String.format("<p>Percentage: %s%s</p>", Math.round((float) passedWeights / (float) weights * 100 * 100.0) / 100.0, "%"));
+			}
 		}
 
 		this.totalCount = Math.toIntExact(totalSize);
@@ -186,9 +188,8 @@ public class AreteResponse {
 
 		output.append("<br>");
 		output.append("<br>");
-		output.append("<p>Overall</p>");
+		output.append("<h2>Overall</h2>");
 
-		output.append("<br>");
 		output.append(String.format("<p>Total number of tests: %s</p>", totalSize));
 		output.append(String.format("<p>Total passed tests: %s</p>", totalPassed));
 		output.append(String.format("<p>Total weight: %s</p>", totalWeight));
@@ -223,7 +224,6 @@ public class AreteResponse {
 		for (UnitTest test : context.unitTests) {
 
 			tr(output);
-
 			td(output);
 			output.append(test.name);
 
@@ -240,7 +240,10 @@ public class AreteResponse {
 				Random rand = new Random();
 				String randomElement = lines.get(rand.nextInt(lines.size()));
 
-				output.append(String.format("<br>%s: %s", test.getExceptionClass(), test.getExceptionMessage().equals("") ? randomElement : test.getExceptionMessage()));
+				output.append(
+						String.format("<br><a style='color:red;'>%s</a>: %s", test.getExceptionClass().equals("") ? "UnresolvedException" : test.getExceptionClass(),
+								test.getExceptionMessage().equals("") ? randomElement : test.getExceptionMessage())
+				);
 
 			}
 
@@ -253,7 +256,19 @@ public class AreteResponse {
 			output.append("</td>");
 
 			td(output);
-			output.append(test.status);
+
+			List<String> GREEN = Arrays.asList("success", "passed");
+			List<String> YELLOW = Arrays.asList("partial_success", "skipped");
+			List<String> RED = Arrays.asList("not_run", "failure", "failed", "not_set", "unknown");
+
+			if (GREEN.contains(test.status.toLowerCase())) {
+				output.append(String.format("<p style='color:greenyellow;'>%s</p>", test.status));
+			} else if (YELLOW.contains(test.status.toLowerCase())) {
+				output.append(String.format("<p style='color:yellow;'>%s</p>", test.status));
+			} else if (RED.contains(test.status.toLowerCase())) {
+				output.append(String.format("<p style='color:red;'>%s</p>", test.status));
+			}
+
 			output.append("</td>");
 
 			td(output);
