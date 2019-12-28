@@ -147,12 +147,12 @@ public class SubmissionController {
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@GetMapping("/submissions/{hash}/logs")
-	public String GetSubmissionLogs(@PathVariable("hash") String hash) {
+	public List<List<AreteResponse>> GetSubmissionLogs(@PathVariable("hash") String hash) {
 
 		return submissionService.getSubmissionByHash(hash)
 				.stream()
-				.map(Submission::getResult)
-				.collect(Collectors.joining());
+				.map(Submission::getResponse)
+				.collect(Collectors.toList());
 
 	}
 
@@ -161,16 +161,7 @@ public class SubmissionController {
 	public String GetLogs() {
 
 		try {
-			return "<!DOCTYPE html>\n" +
-					"<html lang=\"en\">\n" +
-					"<head>\n" +
-					"    <meta charset=\"UTF-8\">\n" +
-					"    <title>Logs</title>\n" +
-					"</head>\n" +
-					"<body>" +
-					Files.readString(Paths.get("logs/spring.log")).replace("\n", "<br />\n") +
-					"</body>\n" +
-					"</html>";
+			return Files.readString(Paths.get("logs/spring.log"));
 
 		} catch (Exception e) {
 			throw new RequestFormatException(e.getMessage());

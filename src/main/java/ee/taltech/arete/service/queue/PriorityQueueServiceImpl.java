@@ -135,7 +135,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 				try {
 					jobRunnerService.runJob(job);
 				} catch (Exception e) {
-//					e.printStackTrace();
+					e.printStackTrace();
 					LOGGER.error("Job failed with message: {}", e.getMessage());
 					killThread(job);
 				}

@@ -93,16 +93,29 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
 //			System.out.println(json);
 			JSONObject jsonObject = new JSONObject(json);
-			if ("hodor_studenttester".equals(jsonObject.get("type"))) {
-				hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
-				areteResponse = new AreteResponse(submission, response);
-			} else {
-				areteResponse = new AreteResponse(submission, "Unsupported tester type.");
+
+
+			try {
+				if ("hodor_studenttester".equals(jsonObject.get("type"))) {
+					hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
+					areteResponse = new AreteResponse(submission, response);
+				} else {
+					areteResponse = new AreteResponse(submission, "Unsupported tester type.");
+				}
+			} catch (Exception e1) {
+				if (jsonObject.get("output") != null) {
+					areteResponse = new AreteResponse(submission, jsonObject.get("output").toString());
+				} else {
+					areteResponse = new AreteResponse(submission, e1.getMessage());
+				}
 			}
+
 			message = areteResponse.getOutput();
 
 		} catch (Exception e) {
-//			e.printStackTrace();
+
+
+			e.printStackTrace();
 			throw new UnexpectedTypeException(e.getMessage());
 		}
 

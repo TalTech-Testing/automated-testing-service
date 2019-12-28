@@ -2,8 +2,12 @@ package ee.taltech.arete.api.data.response.arete;
 
 import ee.taltech.arete.api.data.response.hodor_studenttester.*;
 import ee.taltech.arete.domain.Submission;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import javax.persistence.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,18 +17,28 @@ import java.util.List;
 import java.util.Random;
 
 @Data
-@Builder
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "response")
+@Entity
 public class AreteResponse {
 
-	ArrayList<Error> errors = new ArrayList<>();
-	ArrayList<File> files = new ArrayList<>();
-	ArrayList<File> testFiles = new ArrayList<>();
-	ArrayList<TestContext> testSuites = new ArrayList<>();
-	ArrayList<ConsoleOutput> consoleOutputs = new ArrayList<>();
+	@OneToMany(cascade = {CascadeType.ALL})
+	List<Error> errors = new ArrayList<>();
+	@OneToMany(cascade = {CascadeType.ALL})
+	List<File> files = new ArrayList<>();
+	@OneToMany(cascade = {CascadeType.ALL})
+	List<File> testFiles = new ArrayList<>();
+	@OneToMany(cascade = {CascadeType.ALL})
+	List<TestContext> testSuites = new ArrayList<>();
+	@OneToMany(cascade = {CascadeType.ALL})
+	List<ConsoleOutput> consoleOutputs = new ArrayList<>();
+	@Column(columnDefinition = "TEXT")
 	String output;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
 	Integer totalCount;
 	String totalGrade;
 	Integer totalPassedCount;
@@ -32,15 +46,21 @@ public class AreteResponse {
 
 	public AreteResponse(Submission submission, String message) { //Failed submission
 		Error error = new Error.ErrorBuilder().columnNo(0).lineNo(0).fileName("tester").message(message).build();
-		output = message;
+		this.output = message;
 		this.errors.add(error);
 
 		if (!submission.getSystemExtra().contains("noStd")) {
 			consoleOutputs.add(new ConsoleOutput.ConsoleOutputBuilder().content(submission.getResult()).build());
 		}
+
+		if (submission.getResponse() == null) {
+			submission.setResponse(new ArrayList<>());
+		}
+		submission.getResponse().add(this);
 	}
 
 	public AreteResponse(Submission submission, hodorStudentTesterResponse response) { //Successful submission
+
 		for (TestingResult result : response.getResults()) {
 
 			if (result.getTotalCount() != null) {
@@ -115,6 +135,11 @@ public class AreteResponse {
 		if (!submission.getSystemExtra().contains("noStd")) {
 			consoleOutputs.add(new ConsoleOutput.ConsoleOutputBuilder().content(submission.getResult()).build());
 		}
+
+		if (submission.getResponse() == null) {
+			submission.setResponse(new ArrayList<>());
+		}
+		submission.getResponse().add(this);
 	}
 
 	private static void tr(StringBuilder output) {

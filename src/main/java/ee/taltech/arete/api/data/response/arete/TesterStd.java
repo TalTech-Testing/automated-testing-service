@@ -4,19 +4,20 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@Data
+@Getter
 @Builder
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "console_output")
+@Table(name = "tester_std")
 @Entity
-public class ConsoleOutput {
+public class TesterStd {
 
+	String thread;
+	Boolean truncated;
 	@Column(columnDefinition = "TEXT")
 	String content;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-
 }
