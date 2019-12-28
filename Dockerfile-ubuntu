@@ -30,8 +30,8 @@ RUN apt-get update && \
     apt-get clean && \
     update-ca-certificates -f;
 
-# Git LFS
-RUN apt-get install -y software-properties-common curl
+# Git LFS and UTF-8
+RUN apt-get install -y software-properties-common curl locales
 RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
 RUN apt-get install -y git-lfs
 RUN git lfs install
