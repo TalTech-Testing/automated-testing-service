@@ -39,12 +39,14 @@ public class GitPullServiceImpl implements GitPullService {
 
 
 	@Override
-	public void repositoryMaintenance(Submission submission) {
+	public boolean repositoryMaintenance(Submission submission) {
 
 		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getFolder());
 
 		try {
-			pullOrClone(pathToStudentFolder, submission.getGitStudentRepo(), Optional.of(submission));
+			if (!pullOrClone(pathToStudentFolder, submission.getGitStudentRepo(), Optional.of(submission))) {
+				return false;
+			}
 			if (submission.getSlugs() == null) {
 				submission.setSlugs(getChangedFolders(pathToStudentFolder));
 			}
@@ -52,6 +54,7 @@ public class GitPullServiceImpl implements GitPullService {
 			LOGGER.error("Failed to read student repository.");
 		}
 
+		return true;
 	}
 
 	private boolean resetHard(String pathToFolder, String pathToRepo) {
@@ -98,7 +101,7 @@ public class GitPullServiceImpl implements GitPullService {
 
 		} else {
 
-			if (!SafeClone(pathToFolder, pathToRepo)) {
+			if (!SafeClone(pathToFolder, pathToRepo, submission)) {
 				return false;
 			}
 			LOGGER.info("Cloned to folder: {}", pathToFolder);
@@ -107,12 +110,11 @@ public class GitPullServiceImpl implements GitPullService {
 				return SafePull(pathToFolder, submission);
 			}
 
-
 		}
 		return true;
 	}
 
-	private boolean SafeClone(String pathToFolder, String pathToRepo) {
+	private boolean SafeClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) {
 		try {
 			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
 				Git git = Git.cloneRepository()
@@ -132,6 +134,7 @@ public class GitPullServiceImpl implements GitPullService {
 			}
 			return true;
 		} catch (Exception e) {
+			submission.ifPresent(value -> value.setResult(e.getMessage()));
 			LOGGER.error("Cloning failed with message: {}", e.getMessage());
 			return false;
 		}
@@ -191,6 +194,7 @@ public class GitPullServiceImpl implements GitPullService {
 			}
 			return true;
 		} catch (Exception e) {
+			submission.ifPresent(value -> value.setResult(e.getMessage()));
 			LOGGER.error("Pull failed with message: {}", e.getMessage());
 			return false;
 		}

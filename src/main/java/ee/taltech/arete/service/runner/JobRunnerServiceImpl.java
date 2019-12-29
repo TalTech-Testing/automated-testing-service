@@ -46,12 +46,15 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		if (submission.getSource() == null) {
 			try {
-				gitPullService.repositoryMaintenance(submission);
+				if (!gitPullService.repositoryMaintenance(submission)) {
+					reportFailedSubmission(submission, new RuntimeException(submission.getResult()));
+					priorityQueueService.killThread(submission);
+					return;
+				}
 			} catch (Exception e) {
-				LOGGER.error("Student didn't have new submissions: {}", e.getMessage());
-
+				e.printStackTrace();
+				LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
 				reportFailedSubmission(submission, e);
-
 				priorityQueueService.killThread(submission);
 				return;
 			}

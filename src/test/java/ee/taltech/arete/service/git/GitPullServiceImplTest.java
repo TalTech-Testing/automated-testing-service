@@ -21,7 +21,7 @@ class GitPullServiceImplTest {
 	@Test
 	void pullJob() {
 		Submission submission = getGitPullEndpointSubmission();
-		gitPullService.repositoryMaintenance(submission);
+		assert gitPullService.repositoryMaintenance(submission);
 
 		//TODO actually check if folder was created
 

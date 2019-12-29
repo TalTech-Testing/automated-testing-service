@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface GitPullService {
 
-	void repositoryMaintenance(Submission submission);
+	boolean repositoryMaintenance(Submission submission);
 
 	boolean resetHead(Submission submission);
 
