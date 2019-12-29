@@ -36,9 +36,6 @@ services:
       dockerfile:
         Dockerfile-ubuntu
       context: .
-    environment:
-      LANG: et_EE.UTF-8
-      LC_ALL: et_EE.UTF-8
     ports:
       - "8098:8098"
     env_file:

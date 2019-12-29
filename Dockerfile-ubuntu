@@ -30,11 +30,17 @@ RUN apt-get update && \
     apt-get clean && \
     update-ca-certificates -f;
 
-# Git LFS and UTF-8
+# Git LFS and locale
 RUN apt-get install -y software-properties-common curl locales apt-utils
 RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
 RUN apt-get install -y git-lfs
 RUN git lfs install
+
+# Set the locale
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \ locale-gen
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 # Setup JAVA_HOME -- useful for docker commandline
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/

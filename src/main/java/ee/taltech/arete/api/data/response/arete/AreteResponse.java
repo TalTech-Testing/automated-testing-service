@@ -48,11 +48,11 @@ public class AreteResponse {
 	@Column(columnDefinition = "TEXT")
 	String output;
 	@JsonPropertyDescription("Number of tests")
-	Integer totalCount;
+	Integer totalCount = 0;
 	@JsonPropertyDescription("Passed percentage")
-	String totalGrade;
+	String totalGrade = "0";
 	@JsonPropertyDescription("Number of passed tests")
-	Integer totalPassedCount;
+	Integer totalPassedCount = 0;
 	@JsonPropertyDescription("Style percentage")
 	Integer style = 100;
 	@JsonPropertyDescription("Slug ran for student. for example pr01_something")

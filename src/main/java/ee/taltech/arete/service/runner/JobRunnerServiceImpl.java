@@ -127,7 +127,12 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 	private void reportFailedSubmission(Submission submission, Exception e) {
 		String message = e.getMessage(); // Sent to student
-		AreteResponse areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
+		AreteResponse areteResponse;
+		if (submission.getSlugs() == null) {
+			areteResponse = new AreteResponse("undefined", submission, message); // Sent to Moodle
+		} else {
+			areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
+		}
 
 		reportSubmission(submission, areteResponse, message);
 	}
