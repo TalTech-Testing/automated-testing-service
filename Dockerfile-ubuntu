@@ -39,15 +39,15 @@ RUN git lfs install
 # Setup JAVA_HOME -- useful for docker commandline
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
 RUN export JAVA_HOME
-ENV JAVA_OPTS=""
+ENV JAVA_OPTS="-Dfile.encoding=UTF-8"
 
 # Run Maven build
 RUN chmod +x mvnw && ./mvnw install -DskipTests
 
 # Run cleanup
-RUN if [ -d "/students" ]; then rm -Rf /students; fi
-RUN if [ -d "/tests" ]; then rm -Rf /tests; fi
-RUN if [ -d "/input_and_output" ]; then rm -Rf /input_and_output; fi
+#RUN if [ -d "/students" ]; then rm -Rf /students; fi
+#RUN if [ -d "/tests" ]; then rm -Rf /tests; fi
+#RUN if [ -d "/input_and_output" ]; then rm -Rf /input_and_output; fi
 
 # Fire up our Spring Boot app by default
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /arete/target/arete-0.0.1-SNAPSHOT.jar" ]
