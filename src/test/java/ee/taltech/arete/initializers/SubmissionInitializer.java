@@ -19,6 +19,7 @@ public class SubmissionInitializer {
 	private final static String UNIID_GIT = "envomp";
 	private static final String STUDENT_REPO_PYTHON = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git" : "git@gitlab.cs.ttu.ee:envomp/iti0102-2019.git";
 	private static final String STUDENT_REPO = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/envomp/iti0202-2019.git" : "git@gitlab.cs.ttu.ee:envomp/iti0202-2019.git";
+	private static final String STUDENT_REPO_EXAM = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0102-2018/exams/exam1.git" : "git@gitlab.cs.ttu.ee:iti0102-2018/exams/exam1.git";
 	private static final String PROJECT_PYTHON = "iti0102-2019";
 	private static final String PROJECT = "iti0202-2019";
 	private final static String TESTING_PLATFORM = "java";
@@ -34,7 +35,9 @@ public class SubmissionInitializer {
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_PYTHON)
-				.project(PROJECT_PYTHON)
+				.course(PROJECT_PYTHON)
+				.folder(PROJECT_PYTHON)
+				.token("Token")
 				.hash("fb23ca3217bc9051241b56488a100e6d744201ef")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
@@ -55,7 +58,9 @@ public class SubmissionInitializer {
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO)
-				.project(PROJECT)
+				.course(PROJECT)
+				.folder(PROJECT)
+				.token("Token")
 				.hash("8133c4fb0dbcda3709d9f8ced953f5ef5af4e0ca")
 				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
@@ -71,11 +76,13 @@ public class SubmissionInitializer {
 	}
 
 
-	public static Submission getControllerEndpointSubmission() {
+	public static Submission getGitPullEndpointSubmission() {
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_PYTHON)
-				.project(PROJECT_PYTHON)
+				.course(PROJECT_PYTHON)
+				.folder(PROJECT_PYTHON)
+				.token("Token")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.systemExtra((new HashSet<>(Arrays.asList(
@@ -86,7 +93,7 @@ public class SubmissionInitializer {
 				.build();
 	}
 
-	public static AreteRequestAsync getFullSubmissionString() {
+	public static AreteRequestAsync getFullSubmissionStringControllerEndpoint() {
 
 		return AreteRequestAsync.builder()
 				.gitStudentRepo(STUDENT_REPO)
@@ -100,6 +107,17 @@ public class SubmissionInitializer {
 				.build();
 	}
 
+	public static AreteRequestAsync getFullSubmissionStringExamControllerEndpoint() {
+
+		return AreteRequestAsync.builder()
+				.gitStudentRepo(STUDENT_REPO_EXAM)
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.systemExtra((new HashSet<>(Arrays.asList("noStd", "noFeedback", "noMail"))))
+				.uniid("envomp")
+				.returnUrl(RETURN_URL)
+				.dockerExtra(EXTRA)
+				.build();
+	}
 
 	public static AreteRequestSync getFullSubmissionStringSync(String base) throws IOException {
 		String hash = getRandomHash();
@@ -118,6 +136,7 @@ public class SubmissionInitializer {
 								.build())))
 				.build();
 	}
+
 
 	public static AreteRequestSync getFullSubmissionStringPythonSync(String base) throws IOException {
 		String hash = getRandomHash();
@@ -233,4 +252,3 @@ public class SubmissionInitializer {
 		}
 	}
 }
-

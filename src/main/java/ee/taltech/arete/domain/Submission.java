@@ -2,20 +2,22 @@ package ee.taltech.arete.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
+import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.arete.File;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 @ToString
 @Entity
 @Getter
 @Setter
 @Builder()
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "submission")
 public class Submission {
 
@@ -39,13 +41,14 @@ public class Submission {
 
 	private String uniid;
 
-	private String project;
+	private String course;
 
-	@Column(length = 16383)
+	private String folder;
+
+	@Transient
 	private HashSet<String> slugs;
 
-	@JsonIgnore
-	@Column(columnDefinition = "TEXT")
+	@Transient
 	private String result;
 
 	private HashSet<String> dockerExtra;
@@ -57,26 +60,10 @@ public class Submission {
 	private Integer priority;
 	private Integer thread;
 
-	public Submission() {
-	}
+	private String token;
 
-	public Submission(long id, String testingPlatform, String returnUrl, String gitStudentRepo, File[] source, String gitTestSource, String hash, String uniid, String project, HashSet<String> slugs, String result, HashSet<String> dockerExtra,
-	                  HashSet<String> systemExtra, Integer dockerTimeout, Long timestamp, Integer priority, Integer thread) {
-		this.testingPlatform = testingPlatform;
-		this.returnUrl = returnUrl;
-		this.gitStudentRepo = gitStudentRepo;
-		this.source = source;
-		this.gitTestSource = gitTestSource;
-		this.hash = hash;
-		this.uniid = uniid;
-		this.project = project;
-		this.slugs = slugs;
-		this.result = result;
-		this.dockerExtra = dockerExtra;
-		this.systemExtra = systemExtra;
-		this.dockerTimeout = dockerTimeout;
-		this.timestamp = timestamp;
-		this.priority = priority;
-		this.thread = thread;
-	}
+	@OneToMany(cascade = {CascadeType.ALL})
+	@JsonIgnore
+	private List<AreteResponse> response = new ArrayList<>();
+
 }

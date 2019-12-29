@@ -4,6 +4,7 @@ import ee.taltech.arete.domain.Submission;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmissionJava;
 import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmissionPython;
 
+@AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class PriorityQueueServiceTest {

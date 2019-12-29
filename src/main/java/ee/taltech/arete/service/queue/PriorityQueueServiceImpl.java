@@ -12,7 +12,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -33,8 +36,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	private Integer jobsRan = 0;
 	private Integer activeRunningJobs = 0;
 	private List<Integer> threads = new ArrayList<>();
-	private HashMap<Submission, Integer> coolDown = new HashMap<>();
-	private List<Submission> lowPriority = new ArrayList<>();
 	private List<Submission> activeSubmissions = new ArrayList<>();
 	private PriorityQueue<Submission> submissionPriorityQueue = new PriorityQueue<>(Comparator
 			.comparingInt(Submission::getPriority)
@@ -72,22 +73,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 		return submissionPriorityQueue.size();
 	}
 
-	@Async
-	@Override
-	@Scheduled(fixedRate = 1000)
-	public void timer() {
-		List<Submission> done = new ArrayList<>();
-		for (Submission job : lowPriority) {
-			coolDown.put(job, coolDown.get(job) - 1000);
-			if (coolDown.get(job) == 0) {
-				coolDown.remove(job);
-				done.add(job);
-				job.setPriority(5);
-			}
-		}
-		lowPriority.removeAll(done);
-	}
-
 	@Override
 	public void halt() throws InterruptedException {
 		halted = true;
@@ -114,12 +99,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 				if (job.getPriority() < 8 && activeSubmissions.stream().anyMatch(o -> o.getUniid().equals(job.getUniid()))) {
 					job.setPriority(4); // Mild punish for spam pushers.
 
-					if (!coolDown.containsKey(job)) {
-						lowPriority.add(job);
-					}
-
-
-					coolDown.put(job, 300000);
 					submissionPriorityQueue.add(job);
 					return;
 				}
@@ -135,7 +114,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 				try {
 					jobRunnerService.runJob(job);
 				} catch (Exception e) {
-//					e.printStackTrace();
+					e.printStackTrace();
 					LOGGER.error("Job failed with message: {}", e.getMessage());
 					killThread(job);
 				}

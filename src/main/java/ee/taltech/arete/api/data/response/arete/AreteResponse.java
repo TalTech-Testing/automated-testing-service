@@ -1,9 +1,16 @@
 package ee.taltech.arete.api.data.response.arete;
 
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import ee.taltech.arete.api.data.response.hodor_studenttester.*;
 import ee.taltech.arete.domain.Submission;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import javax.persistence.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,34 +20,70 @@ import java.util.List;
 import java.util.Random;
 
 @Data
-@Builder
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "response")
+@Entity
+@JsonClassDescription("Response sent to Moodle")
 public class AreteResponse {
 
-	ArrayList<Error> errors = new ArrayList<>();
-	ArrayList<File> files = new ArrayList<>();
-	ArrayList<File> testFiles = new ArrayList<>();
-	ArrayList<TestContext> testSuites = new ArrayList<>();
-	ArrayList<ConsoleOutput> consoleOutputs = new ArrayList<>();
+	String version = "arete_2.0";
+	@JsonPropertyDescription("List of style, compilation and other errors")
+	@OneToMany(cascade = {CascadeType.ALL})
+	List<Error> errors = new ArrayList<>();
+	@JsonPropertyDescription("List of student files")
+	@OneToMany(cascade = {CascadeType.ALL})
+	List<File> files = new ArrayList<>();
+	@JsonPropertyDescription("List of test files")
+	@OneToMany(cascade = {CascadeType.ALL})
+	List<File> testFiles = new ArrayList<>();
+	@JsonPropertyDescription("List of test suites which each contains unit-tests. Each test file produces an test suite")
+	@OneToMany(cascade = {CascadeType.ALL})
+	List<TestContext> testSuites = new ArrayList<>();
+	@JsonPropertyDescription("Console outputs from docker")
+	@OneToMany(cascade = {CascadeType.ALL})
+	List<ConsoleOutput> consoleOutputs = new ArrayList<>();
+	@JsonPropertyDescription("HTML result for student")
+	@Column(columnDefinition = "TEXT")
 	String output;
-	Integer totalCount;
-	String totalGrade;
-	Integer totalPassedCount;
+	@JsonPropertyDescription("Number of tests")
+	Integer totalCount = 0;
+	@JsonPropertyDescription("Passed percentage")
+	String totalGrade = "0";
+	@JsonPropertyDescription("Number of passed tests")
+	Integer totalPassedCount = 0;
+	@JsonPropertyDescription("Style percentage")
 	Integer style = 100;
+	@JsonPropertyDescription("Slug ran for student. for example pr01_something")
+	String slug;
+	@JsonPropertyDescription("Security Token")
+	String token;
 
-	public AreteResponse(Submission submission, String message) { //Failed submission
+	@JsonIgnore
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+
+	public AreteResponse(String slug, Submission submission, String message) { //Failed submission
 		Error error = new Error.ErrorBuilder().columnNo(0).lineNo(0).fileName("tester").message(message).build();
-		output = message;
+		this.output = message;
 		this.errors.add(error);
 
 		if (!submission.getSystemExtra().contains("noStd")) {
 			consoleOutputs.add(new ConsoleOutput.ConsoleOutputBuilder().content(submission.getResult()).build());
 		}
+
+		if (submission.getResponse() == null) {
+			submission.setResponse(new ArrayList<>());
+		}
+		submission.getResponse().add(this);
+		this.token = submission.getToken();
+		this.slug = slug;
 	}
 
-	public AreteResponse(Submission submission, hodorStudentTesterResponse response) { //Successful submission
+	public AreteResponse(String slug, Submission submission, hodorStudentTesterResponse response) { //Successful submission
+
 		for (TestingResult result : response.getResults()) {
 
 			if (result.getTotalCount() != null) {
@@ -115,6 +158,13 @@ public class AreteResponse {
 		if (!submission.getSystemExtra().contains("noStd")) {
 			consoleOutputs.add(new ConsoleOutput.ConsoleOutputBuilder().content(submission.getResult()).build());
 		}
+
+		if (submission.getResponse() == null) {
+			submission.setResponse(new ArrayList<>());
+		}
+		submission.getResponse().add(this);
+		this.token = submission.getToken();
+		this.slug = slug;
 	}
 
 	private static void tr(StringBuilder output) {
@@ -179,7 +229,9 @@ public class AreteResponse {
 						.sum();
 				totalPassedWeight += passedWeights;
 				output.append(String.format("<p>Passed weight: %s</p>", passedWeights));
-				output.append(String.format("<p>Percentage: %s%s</p>", Math.round((float) passedWeights / (float) weights * 100 * 100.0) / 100.0, "%"));
+
+				String totalGrade = String.format("%s", Math.round((float) passedWeights / (float) weights * 100 * 100.0) / 100.0);
+				output.append(String.format("<p>Percentage: %s%s</p>", totalGrade, "%"));
 			}
 		}
 
@@ -195,7 +247,9 @@ public class AreteResponse {
 		output.append(String.format("<p>Total weight: %s</p>", totalWeight));
 		output.append(String.format("<p>Total Passed weight: %s</p>", totalPassedWeight));
 
-		output.append(String.format("<p>Total Percentage: %s%s</p>", Math.round((float) totalPassedWeight / (float) totalWeight * 100 * 100.0) / 100.0, "%"));
+		String totalGrade = String.format("%s", Math.round((float) totalPassedWeight / (float) totalWeight * 100 * 100.0) / 100.0);
+		this.totalGrade = totalGrade;
+		output.append(String.format("<p>Total Percentage: %s%s</p>", totalGrade, "%"));
 
 		output.append("<br>");
 		output.append("<br>");

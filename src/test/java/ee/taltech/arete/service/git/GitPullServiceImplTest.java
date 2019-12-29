@@ -4,11 +4,13 @@ import ee.taltech.arete.domain.Submission;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static ee.taltech.arete.initializers.SubmissionInitializer.getControllerEndpointSubmission;
+import static ee.taltech.arete.initializers.SubmissionInitializer.getGitPullEndpointSubmission;
 
+@AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class GitPullServiceImplTest {
@@ -18,8 +20,8 @@ class GitPullServiceImplTest {
 
 	@Test
 	void pullJob() {
-		Submission submission = getControllerEndpointSubmission();
-		gitPullService.repositoryMaintenance(submission);
+		Submission submission = getGitPullEndpointSubmission();
+		assert gitPullService.repositoryMaintenance(submission);
 
 		//TODO actually check if folder was created
 

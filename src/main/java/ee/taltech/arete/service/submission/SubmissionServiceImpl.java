@@ -60,9 +60,30 @@ public class SubmissionServiceImpl implements SubmissionService {
 			submission.setUniid(url[url.length - 2]);
 		}
 
-		if (submission.getProject() == null) {
+		if (submission.getFolder() == null) {
 			String[] url = repo.split("[/:]");
-			submission.setProject(url[url.length - 1]);
+			submission.setFolder(url[url.length - 1]);
+		}
+
+		if (submission.getCourse() == null) {
+			if (repo.contains("/exams/")) {
+				// in case of exams, the course name is the string before "exams" path
+				String[] url = repo.split("[/:]");
+				if (submission.getSlugs() == null) {
+					HashSet<String> slugs = new HashSet<>();
+					if (url[url.length - 1].contains("-")) {
+						slugs.add(url[url.length - 1].split("-")[0]);
+					} else {
+						slugs.add(url[url.length - 1]);
+					}
+					submission.setSlugs(slugs);
+				}
+				submission.setCourse(url[url.length - 3]);
+			} else {
+				String[] url = repo.split("[/:]");
+				submission.setCourse(url[url.length - 1]);
+			}
+
 		}
 
 		if (submission.getDockerTimeout() == null) {
@@ -163,9 +184,14 @@ public class SubmissionServiceImpl implements SubmissionService {
 			submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
 		}
 
-		if (submission.getProject() == null) {
+		if (submission.getFolder() == null) {
 			String[] url = submission.getGitTestSource().split("[/:]");
-			submission.setProject(url[url.length - 2]);
+			submission.setFolder(url[url.length - 2]);
+		}
+
+		if (submission.getCourse() == null) {
+			String[] url = submission.getGitTestSource().split("[/:]");
+			submission.setCourse(url[url.length - 2]);
 
 		}
 

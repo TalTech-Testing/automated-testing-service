@@ -1,5 +1,6 @@
 package ee.taltech.arete.api.data.request;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.sun.istack.NotNull;
 import lombok.*;
 
@@ -14,22 +15,33 @@ import java.util.List;
 public class AreteRequestSync {
 
 	@NotNull
-	private String gitTestSource; // URL for tests
+	@JsonPropertyDescription("URL or ssh for test repository.")
+	private String gitTestSource;
 
 	@NotNull
-	private String testingPlatform; // Image used for testing. Currently available: ["java", "python"]
+	@JsonPropertyDescription("Image used for testing. Currently available: [java, python]")
+	private String testingPlatform;
 
 	@NotNull
+	@JsonPropertyDescription("List of student source files")
 	private List<SourceFile> source;
 
-	private String project; // Default is second from the end in url. https://gitlab.cs.ttu.ee/iti0102-2019/ex.git > project = iti0102-2019. Specify project, if its not second from end
-	private HashSet<String> dockerExtra; // Default is "stylecheck".
-	private HashSet<String> systemExtra; // No defaults. You can add "noMail", "noTesterFiles", "noStd", "noFeedback"
-	private Integer dockerTimeout; // Default docker timeout is 120 seconds
-	private Integer priority; // Default priority is 5
+	@JsonPropertyDescription("Default is second from the end in url. https://gitlab.cs.ttu.ee/iti0102-2019/ex.git > project = iti0102-2019. Specify project, if its not second from end")
+	private String project;
+	@JsonPropertyDescription("Default is (stylecheck). Give an empty hashset to remove it")
+	private HashSet<String> dockerExtra;
+	@JsonPropertyDescription("No defaults. You can add (noMail, noTesterFiles, noStd, noFeedback)")
+	private HashSet<String> systemExtra;
+	@JsonPropertyDescription("Default docker timeout is 120 seconds")
+	private Integer dockerTimeout;
+	@JsonPropertyDescription("Default priority is 5")
+	private Integer priority;
 	// For integration tests. You can use them.. but use async while you are at it.
 	private String returnUrl;
 	private String hash;
+
+	@JsonPropertyDescription("Security measurement")
+	private String token;
 
 	@Getter
 	@Builder
@@ -39,11 +51,12 @@ public class AreteRequestSync {
 	public static class SourceFile {
 
 		@NotNull
-		private String path; // EX01IdCode/src/ee/taltech/iti0202/idcode/IDCodeTest.java for example
+		@JsonPropertyDescription("EX01IdCode/src/ee/taltech/iti0202/idcode/IDCodeTest.java for example")
+		private String path;
 
 		@NotNull
-		private String contents; // contents of the file.
+		@JsonPropertyDescription("Contents of the file")
+		private String contents;
 
 	}
-
 }
