@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static ee.taltech.arete.initializers.SubmissionInitializer.getControllerEndpointSubmission;
+import static ee.taltech.arete.initializers.SubmissionInitializer.getGitPullEndpointSubmission;
 
 @AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
@@ -20,7 +20,7 @@ class GitPullServiceImplTest {
 
 	@Test
 	void pullJob() {
-		Submission submission = getControllerEndpointSubmission();
+		Submission submission = getGitPullEndpointSubmission();
 		gitPullService.repositoryMaintenance(submission);
 
 		//TODO actually check if folder was created

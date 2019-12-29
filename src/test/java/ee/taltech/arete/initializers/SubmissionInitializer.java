@@ -36,6 +36,8 @@ public class SubmissionInitializer {
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_PYTHON)
 				.course(PROJECT_PYTHON)
+				.folder(PROJECT_PYTHON)
+				.token("Token")
 				.hash("fb23ca3217bc9051241b56488a100e6d744201ef")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
@@ -57,6 +59,8 @@ public class SubmissionInitializer {
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO)
 				.course(PROJECT)
+				.folder(PROJECT)
+				.token("Token")
 				.hash("8133c4fb0dbcda3709d9f8ced953f5ef5af4e0ca")
 				.testingPlatform(TESTING_PLATFORM)
 				.returnUrl(RETURN_URL)
@@ -72,11 +76,13 @@ public class SubmissionInitializer {
 	}
 
 
-	public static Submission getControllerEndpointSubmission() {
+	public static Submission getGitPullEndpointSubmission() {
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_PYTHON)
 				.course(PROJECT_PYTHON)
+				.folder(PROJECT_PYTHON)
+				.token("Token")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.systemExtra((new HashSet<>(Arrays.asList(
@@ -87,7 +93,7 @@ public class SubmissionInitializer {
 				.build();
 	}
 
-	public static AreteRequestAsync getFullSubmissionString() {
+	public static AreteRequestAsync getFullSubmissionStringControllerEndpoint() {
 
 		return AreteRequestAsync.builder()
 				.gitStudentRepo(STUDENT_REPO)
@@ -101,7 +107,7 @@ public class SubmissionInitializer {
 				.build();
 	}
 
-	public static AreteRequestAsync getFullSubmissionStringExam() {
+	public static AreteRequestAsync getFullSubmissionStringExamControllerEndpoint() {
 
 		return AreteRequestAsync.builder()
 				.gitStudentRepo(STUDENT_REPO_EXAM)

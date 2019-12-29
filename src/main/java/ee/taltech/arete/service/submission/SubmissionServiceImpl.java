@@ -184,6 +184,11 @@ public class SubmissionServiceImpl implements SubmissionService {
 			submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
 		}
 
+		if (submission.getFolder() == null) {
+			String[] url = submission.getGitTestSource().split("[/:]");
+			submission.setFolder(url[url.length - 2]);
+		}
+
 		if (submission.getCourse() == null) {
 			String[] url = submission.getGitTestSource().split("[/:]");
 			submission.setCourse(url[url.length - 2]);

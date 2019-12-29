@@ -14,8 +14,6 @@ public interface PriorityQueueService {
 
 	Integer getQueueSize();
 
-	void timer();
-
 	void halt() throws InterruptedException;
 
 	void go();

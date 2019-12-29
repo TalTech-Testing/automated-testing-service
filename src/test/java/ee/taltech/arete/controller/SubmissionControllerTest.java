@@ -56,7 +56,7 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmissionAsync() {
 
-		AreteRequestAsync payload = getFullSubmissionString();
+		AreteRequestAsync payload = getFullSubmissionStringControllerEndpoint();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -77,7 +77,7 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmissionAsyncExam() throws InterruptedException {
 
-		AreteRequestAsync payload = getFullSubmissionStringExam();
+		AreteRequestAsync payload = getFullSubmissionStringExamControllerEndpoint();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -160,7 +160,7 @@ public class SubmissionControllerTest {
 				.body()
 				.as(AreteResponse.class);
 
-		assert answer.getErrors().size() == 0;
+		assert answer.getStyle() == 100;
 
 	}
 
