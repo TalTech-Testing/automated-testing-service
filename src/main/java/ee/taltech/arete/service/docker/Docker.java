@@ -83,11 +83,8 @@ public class Docker {
 			String tempTester = String.format("input_and_output/%s/tester", submission.getThread());
 
 			String student;
-			if (submission.getFolder().equals(slug)) {
-				student = String.format("students/%s/%s", submission.getUniid(), submission.getFolder()); // exam case
-			} else {
-				student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getFolder(), slug);
-			}
+
+			student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getFolder(), slug);
 
 			String tempStudent = String.format("input_and_output/%s/student", submission.getThread());
 

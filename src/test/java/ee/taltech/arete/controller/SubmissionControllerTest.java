@@ -54,7 +54,7 @@ public class SubmissionControllerTest {
 	}
 
 	@Test
-	public void addNewSubmissionAsync() {
+	public void addNewSubmissionAsync() throws InterruptedException {
 
 		AreteRequestAsync payload = getFullSubmissionStringControllerEndpoint();
 		Submission submission = given()
@@ -67,6 +67,7 @@ public class SubmissionControllerTest {
 				.body()
 				.as(Submission.class);
 
+		TimeUnit.SECONDS.sleep(10);
 		assertFullSubmission(submission);
 
 		//TODO To actually check if it tests
