@@ -212,6 +212,7 @@ public class Docker {
 		} catch (IOException e) {
 			LOGGER.error("Temp folder already empty. {}", e.getMessage());
 		}
+
 	}
 
 	private String getImage(DockerClient dockerClient, String image) throws InterruptedException {

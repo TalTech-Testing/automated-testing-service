@@ -82,6 +82,11 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			} catch (Exception ignored) {
 			}
 
+			try {
+				new PrintWriter(String.format("input_and_output/%s/host/input.json", submission.getThread())).close(); // clears input file
+			} catch (Exception ignored) {
+			}
+
 		}
 
 		priorityQueueService.killThread(submission);
