@@ -1,6 +1,8 @@
 package ee.taltech.arete.api.data.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
 import ee.taltech.arete.domain.Submission;
@@ -44,6 +46,25 @@ public class hodorStudentTesterResponseTest {
 		assert areteResponse.getId() >= 0;
 //		System.out.println(objectMapper.writeValueAsString(test.getResponse()));
 //		System.out.println(objectMapper.writeValueAsString(areteResponse.getOutput()));
+	}
+
+	private static void getJsonSchema() throws IOException {
+
+//		ObjectMapper mapper = new ObjectMapper();
+//		JsonSchema schema = mapper.generateJsonSchema(AreteResponse.class);
+//		System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema));
+
+		ObjectMapper jacksonObjectMapper = new ObjectMapper();
+		JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(jacksonObjectMapper);
+		JsonSchema schema = schemaGen.generateSchema(AreteResponse.class);
+		String schemaString = jacksonObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
+		System.out.println(schemaString);
+
+
+	}
+
+	public static void main(String[] args) throws IOException {
+		getJsonSchema();
 	}
 
 	@Test
