@@ -42,11 +42,13 @@ public class GitPullServiceImpl implements GitPullService {
 	@Override
 	public void repositoryMaintenance(Submission submission) {
 
-		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
+		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getFolder());
 
 		try {
 			pullOrClone(pathToStudentFolder, submission.getGitStudentRepo(), Optional.of(submission));
-			submission.setSlugs(getChangedFolders(pathToStudentFolder));
+			if (submission.getSlugs() == null) {
+				submission.setSlugs(getChangedFolders(pathToStudentFolder));
+			}
 		} catch (IOException e) {
 			LOGGER.error("Failed to read student repository.");
 		}
@@ -140,7 +142,7 @@ public class GitPullServiceImpl implements GitPullService {
 	@Override
 	public void resetHead(Submission submission) {
 
-		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getProject());
+		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getFolder());
 		try {
 			Git.open(new File(pathToStudentFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
 		} catch (Exception e) {

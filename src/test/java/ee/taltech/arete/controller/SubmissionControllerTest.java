@@ -18,6 +18,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static ee.taltech.arete.initializers.SubmissionInitializer.*;
 import static io.restassured.RestAssured.given;
@@ -66,6 +67,28 @@ public class SubmissionControllerTest {
 				.body()
 				.as(Submission.class);
 
+		assertFullSubmission(submission);
+
+		//TODO To actually check if it tests
+
+	}
+
+
+	@Test
+	public void addNewSubmissionAsyncExam() throws InterruptedException {
+
+		AreteRequestAsync payload = getFullSubmissionStringExam();
+		Submission submission = given()
+				.when()
+				.body(payload)
+				.post("/test")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(Submission.class);
+
+		TimeUnit.SECONDS.sleep(10);
 		assertFullSubmission(submission);
 
 		//TODO To actually check if it tests

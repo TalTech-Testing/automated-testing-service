@@ -28,6 +28,7 @@ import java.util.Random;
 @JsonClassDescription("Response sent to Moodle")
 public class AreteResponse {
 
+	String version = "arete_2.0";
 	@JsonPropertyDescription("List of style, compilation and other errors")
 	@OneToMany(cascade = {CascadeType.ALL})
 	List<Error> errors = new ArrayList<>();
@@ -54,12 +55,17 @@ public class AreteResponse {
 	Integer totalPassedCount;
 	@JsonPropertyDescription("Style percentage")
 	Integer style = 100;
+	@JsonPropertyDescription("Slug ran for student. for example pr01_something")
+	String slug;
+	@JsonPropertyDescription("Security Token")
+	String token;
+
 	@JsonIgnore
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	public AreteResponse(Submission submission, String message) { //Failed submission
+	public AreteResponse(String slug, Submission submission, String message) { //Failed submission
 		Error error = new Error.ErrorBuilder().columnNo(0).lineNo(0).fileName("tester").message(message).build();
 		this.output = message;
 		this.errors.add(error);
@@ -72,9 +78,11 @@ public class AreteResponse {
 			submission.setResponse(new ArrayList<>());
 		}
 		submission.getResponse().add(this);
+		this.token = submission.getToken();
+		this.slug = slug;
 	}
 
-	public AreteResponse(Submission submission, hodorStudentTesterResponse response) { //Successful submission
+	public AreteResponse(String slug, Submission submission, hodorStudentTesterResponse response) { //Successful submission
 
 		for (TestingResult result : response.getResults()) {
 
@@ -155,6 +163,8 @@ public class AreteResponse {
 			submission.setResponse(new ArrayList<>());
 		}
 		submission.getResponse().add(this);
+		this.token = submission.getToken();
+		this.slug = slug;
 	}
 
 	private static void tr(StringBuilder output) {

@@ -41,7 +41,9 @@ public class Submission {
 
 	private String uniid;
 
-	private String project;
+	private String course;
+
+	private String folder;
 
 	@Transient
 	private HashSet<String> slugs;
@@ -57,6 +59,8 @@ public class Submission {
 
 	private Integer priority;
 	private Integer thread;
+
+	private String token;
 
 	@OneToMany(cascade = {CascadeType.ALL})
 	@JsonIgnore

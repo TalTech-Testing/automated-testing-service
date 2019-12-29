@@ -2,6 +2,9 @@
   "type": "object",
   "id": "urn:jsonschema:ee:taltech:arete:api:data:response:arete:AreteResponse",
   "properties": {
+    "version": {
+      "type": "string"
+    },
     "errors": {
       "type": "array",
       "description": "List of style, compilation and other errors",
@@ -123,19 +126,11 @@
                   "description": "List of stdouts",
                   "items": {
                     "type": "object",
-                    "id": "urn:jsonschema:ee:taltech:arete:api:data:response:arete:TesterStd",
+                    "id": "urn:jsonschema:ee:taltech:arete:api:data:response:arete:ConsoleOutput",
                     "properties": {
-                      "thread": {
-                        "type": "string"
-                      },
-                      "truncated": {
-                        "type": "boolean"
-                      },
                       "content": {
-                        "type": "string"
-                      },
-                      "id": {
-                        "type": "integer"
+                        "type": "string",
+                        "description": "Std message"
                       }
                     }
                   }
@@ -153,7 +148,7 @@
                   "description": "List of stderrs",
                   "items": {
                     "type": "object",
-                    "$ref": "urn:jsonschema:ee:taltech:arete:api:data:response:arete:TesterStd"
+                    "$ref": "urn:jsonschema:ee:taltech:arete:api:data:response:arete:ConsoleOutput"
                   }
                 }
               }
@@ -195,13 +190,7 @@
       "description": "Console outputs from docker",
       "items": {
         "type": "object",
-        "id": "urn:jsonschema:ee:taltech:arete:api:data:response:arete:ConsoleOutput",
-        "properties": {
-          "content": {
-            "type": "string",
-            "description": "Std message"
-          }
-        }
+        "$ref": "urn:jsonschema:ee:taltech:arete:api:data:response:arete:ConsoleOutput"
       }
     },
     "output": {
@@ -223,6 +212,14 @@
     "style": {
       "type": "integer",
       "description": "Style percentage"
+    },
+    "slug": {
+      "type": "string",
+      "description": "Slug ran for student. for example pr01_something"
+    },
+    "token": {
+      "type": "string",
+      "description": "Security Token"
     }
   }
 }

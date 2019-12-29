@@ -72,7 +72,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 				continue;
 			}
 
-			reportSuccessfulSubmission(submission, output);
+			reportSuccessfulSubmission(slug, submission, output);
 
 			try {
 				new PrintWriter(output).close(); // clears output file
@@ -84,7 +84,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 		priorityQueueService.killThread(submission);
 	}
 
-	private void reportSuccessfulSubmission(Submission submission, String output) {
+	private void reportSuccessfulSubmission(String slug, Submission submission, String output) {
 
 		AreteResponse areteResponse; // Sent to Moodle
 		String message; // Sent to student
@@ -98,22 +98,21 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			try {
 				if ("hodor_studenttester".equals(jsonObject.get("type"))) {
 					hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
-					areteResponse = new AreteResponse(submission, response);
+					areteResponse = new AreteResponse(slug, submission, response);
 				} else {
-					areteResponse = new AreteResponse(submission, "Unsupported tester type.");
+					areteResponse = new AreteResponse(slug, submission, "Unsupported tester type.");
 				}
 			} catch (Exception e1) {
 				if (jsonObject.get("output") != null) {
-					areteResponse = new AreteResponse(submission, jsonObject.get("output").toString());
+					areteResponse = new AreteResponse(slug, submission, jsonObject.get("output").toString());
 				} else {
-					areteResponse = new AreteResponse(submission, e1.getMessage());
+					areteResponse = new AreteResponse(slug, submission, e1.getMessage());
 				}
 			}
 
 			message = areteResponse.getOutput();
 
 		} catch (Exception e) {
-
 
 			e.printStackTrace();
 			throw new UnexpectedTypeException(e.getMessage());
@@ -125,7 +124,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 	private void reportFailedSubmission(Submission submission, Exception e) {
 		String message = e.getMessage(); // Sent to student
-		AreteResponse areteResponse = new AreteResponse(submission, message); // Sent to Moodle
+		AreteResponse areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
 
 		reportSubmission(submission, areteResponse, message);
 	}

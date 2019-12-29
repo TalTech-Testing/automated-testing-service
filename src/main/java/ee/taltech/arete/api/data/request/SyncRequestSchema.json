@@ -1,0 +1,62 @@
+{
+  "type": "object",
+  "id": "urn:jsonschema:ee:taltech:arete:api:data:request:AreteRequestSync",
+  "properties": {
+    "gitTestSource": {
+      "type": "string",
+      "description": "URL or ssh for test repository."
+    },
+    "testingPlatform": {
+      "type": "string",
+      "description": "Image used for testing. Currently available: [java, python]"
+    },
+    "source": {
+      "type": "array",
+      "description": "List of student source files",
+      "items": {
+        "type": "object",
+        "id": "urn:jsonschema:ee:taltech:arete:api:data:request:AreteRequestSync:SourceFile",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "EX01IdCode/src/ee/taltech/iti0202/idcode/IDCodeTest.java for example"
+          },
+          "contents": {
+            "type": "string",
+            "description": "Contents of the file"
+          }
+        }
+      }
+    },
+    "project": {
+      "type": "string",
+      "description": "Default is second from the end in url. https://gitlab.cs.ttu.ee/iti0102-2019/ex.git > project = iti0102-2019. Specify project, if its not second from end"
+    },
+    "dockerExtra": {
+      "type": "array",
+      "description": "Default is (stylecheck). Give an empty hashset to remove it",
+      "items": {
+        "type": "string"
+      }
+    },
+    "systemExtra": {
+      "type": "array",
+      "description": "No defaults. You can add (noMail, noTesterFiles, noStd, noFeedback)",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dockerTimeout": {
+      "type": "integer",
+      "description": "Default docker timeout is 120 seconds"
+    },
+    "priority": {
+      "type": "integer",
+      "description": "Default priority is 5"
+    },
+    "token": {
+      "type": "string",
+      "description": "Security measurement"
+    }
+  }
+}
