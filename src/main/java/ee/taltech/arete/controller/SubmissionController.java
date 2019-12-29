@@ -12,6 +12,7 @@ import ee.taltech.arete.service.docker.ImageCheck;
 import ee.taltech.arete.service.git.GitPullService;
 import ee.taltech.arete.service.queue.PriorityQueueService;
 import ee.taltech.arete.service.submission.SubmissionService;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -118,7 +120,7 @@ public class SubmissionController {
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/tests/update/{projectBase}/{project}")
-	public void UpdateTests(@PathVariable("projectBase") String projectBase, @PathVariable("project") String project) throws InterruptedException {
+	public void UpdateTests(@PathVariable("projectBase") String projectBase, @PathVariable("project") String project) throws InterruptedException, GitAPIException, IOException {
 
 		priorityQueueService.halt();
 		String pathToTesterFolder = String.format("tests/%s/", project);

@@ -49,7 +49,7 @@ public class GitPullServiceImpl implements GitPullService {
 			if (submission.getSlugs() == null) {
 				submission.setSlugs(getChangedFolders(pathToStudentFolder));
 			}
-		} catch (IOException e) {
+		} catch (IOException | GitAPIException e) {
 			LOGGER.error("Failed to read student repository.");
 		}
 
@@ -66,45 +66,38 @@ public class GitPullServiceImpl implements GitPullService {
 	}
 
 	@Override
-	public void pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) {
+	public void pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException {
 
-		try {
-
-			SafePullAndClone(pathToFolder, pathToRepo, submission);
-
-		} catch (Exception e) {
-
-			LOGGER.error("Defaulting to reset hard: {}", e.getMessage());
+		if (!SafePullAndClone(pathToFolder, pathToRepo, submission)) {
+			LOGGER.error("Defaulting to reset hard");
 			resetHard(pathToFolder, pathToRepo);
 
-			try {
-				SafePullAndClone(pathToFolder, pathToRepo, submission);
-			} catch (Exception e2) {
+			if (!SafePullAndClone(pathToFolder, pathToRepo, submission)) {
 				LOGGER.error("Completely failed to pull or clone.");
 			}
 		}
-
 	}
 
-	private void SafePullAndClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException {
+
+	private boolean SafePullAndClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException {
 		Path path = Paths.get(pathToFolder);
 
 		if (Files.exists(path)) {
 			LOGGER.info("Checking for update for project: {}", pathToFolder);
 
-			try {
 
-				SafePull(pathToFolder, submission);
-
-			} catch (Exception e) {
-				LOGGER.error("Checking failed for update. Trying to reset head and pull again: {}", e.getMessage());
+			if (!SafePull(pathToFolder, submission)) {
+				LOGGER.error("Checking failed for update. Trying to reset head and pull again");
 				Git.open(new File(pathToFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
 				SafePull(pathToFolder, submission);
 			}
 
+
 		} else {
 
-			SafeClone(pathToFolder, pathToRepo);
+			if (!SafeClone(pathToFolder, pathToRepo)) {
+				return false;
+			}
 			LOGGER.info("Cloned to folder: {}", pathToFolder);
 
 			if (submission.isPresent()) {
@@ -113,9 +106,10 @@ public class GitPullServiceImpl implements GitPullService {
 
 
 		}
+		return true;
 	}
 
-	private void SafeClone(String pathToFolder, String pathToRepo) {
+	private boolean SafeClone(String pathToFolder, String pathToRepo) {
 		try {
 			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
 				Git git = Git.cloneRepository()
@@ -133,9 +127,10 @@ public class GitPullServiceImpl implements GitPullService {
 						.setDirectory(new File(pathToFolder))
 						.call();
 			}
+			return true;
 		} catch (Exception e) {
 			LOGGER.error("Cloning failed with message: {}", e.getMessage());
-			throw new ExceptionInInitializerError(e.getMessage());
+			return false;
 		}
 	}
 
@@ -151,7 +146,7 @@ public class GitPullServiceImpl implements GitPullService {
 		}
 	}
 
-	private void SafePull(String pathToFolder, Optional<Submission> submission) throws GitAPIException, IOException {
+	private boolean SafePull(String pathToFolder, Optional<Submission> submission) {
 
 		try {
 			Git git = Git.open(new File(pathToFolder));
@@ -172,7 +167,7 @@ public class GitPullServiceImpl implements GitPullService {
 							reset(git, user);
 						} catch (Exception e1) {
 							LOGGER.info("Failed to fetch and reset.");
-							throw new ExceptionInInitializerError(e1.getMessage());
+							return false;
 						}
 					}
 
@@ -188,9 +183,10 @@ public class GitPullServiceImpl implements GitPullService {
 				SafePull(git);
 				LOGGER.info("Pulled to {} with hash {}", pathToFolder, getLatestHash(git));
 			}
+			return true;
 		} catch (Exception e) {
 			LOGGER.error("Pull failed with message: {}", e.getMessage());
-			throw new ExceptionInInitializerError(e.getMessage());
+			return false;
 		}
 	}
 
