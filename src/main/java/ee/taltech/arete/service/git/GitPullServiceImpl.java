@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -55,27 +54,32 @@ public class GitPullServiceImpl implements GitPullService {
 
 	}
 
-	private void resetHard(String pathToFolder, String pathToRepo) {
+	private boolean resetHard(String pathToFolder, String pathToRepo) {
 
 		try {
 			FileUtils.deleteDirectory(new File(pathToFolder));
+			return true;
 		} catch (Exception e1) {
-			throw new ConcurrentModificationException("Folder is already in use and is corrupted at the same time. Try pushing less often there, buddy. :)"); //Never actually gets here. Unless it does.
+			return false;
 		}
 
 	}
 
 	@Override
-	public void pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException {
+	public boolean pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException {
 
 		if (!SafePullAndClone(pathToFolder, pathToRepo, submission)) {
 			LOGGER.error("Defaulting to reset hard");
-			resetHard(pathToFolder, pathToRepo);
+			if (!resetHard(pathToFolder, pathToRepo)) {
+				return false;
+			}
 
 			if (!SafePullAndClone(pathToFolder, pathToRepo, submission)) {
 				LOGGER.error("Completely failed to pull or clone.");
+				return false;
 			}
 		}
+		return true;
 	}
 
 
@@ -89,9 +93,8 @@ public class GitPullServiceImpl implements GitPullService {
 			if (!SafePull(pathToFolder, submission)) {
 				LOGGER.error("Checking failed for update. Trying to reset head and pull again");
 				Git.open(new File(pathToFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
-				SafePull(pathToFolder, submission);
+				return SafePull(pathToFolder, submission);
 			}
-
 
 		} else {
 
@@ -101,7 +104,7 @@ public class GitPullServiceImpl implements GitPullService {
 			LOGGER.info("Cloned to folder: {}", pathToFolder);
 
 			if (submission.isPresent()) {
-				SafePull(pathToFolder, submission);
+				return SafePull(pathToFolder, submission);
 			}
 
 
@@ -135,15 +138,18 @@ public class GitPullServiceImpl implements GitPullService {
 	}
 
 	@Override
-	public void resetHead(Submission submission) {
+	public boolean resetHead(Submission submission) {
 
 		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getFolder());
 		try {
 			Git.open(new File(pathToStudentFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
 		} catch (Exception e) {
 			LOGGER.error("Failed to reset HEAD for student. Defaulting to hard reset: {}", e.getMessage());
-			resetHard(pathToStudentFolder, submission.getGitStudentRepo());
+			if (!resetHard(pathToStudentFolder, submission.getGitStudentRepo())) {
+				return false;
+			}
 		}
+		return true;
 	}
 
 	private boolean SafePull(String pathToFolder, Optional<Submission> submission) {

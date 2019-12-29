@@ -11,9 +11,9 @@ public interface GitPullService {
 
 	void repositoryMaintenance(Submission submission);
 
-	void resetHead(Submission submission);
+	boolean resetHead(Submission submission);
 
-	void pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException;
+	boolean pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException;
 
 	HashSet<String> getChangedFolders(String pathToFolder) throws IOException;
 
