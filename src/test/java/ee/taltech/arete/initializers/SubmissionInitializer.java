@@ -107,6 +107,20 @@ public class SubmissionInitializer {
 				.build();
 	}
 
+	public static AreteRequestAsync getFullSubmissionStringControllerEndpointPython() {
+
+		return AreteRequestAsync.builder()
+				.gitStudentRepo(STUDENT_REPO_PYTHON)
+				.hash("77349606f71dd7238375bafae7bd5021d64606d1")
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.systemExtra((new HashSet<>(Arrays.asList(
+////						, "noMail"
+				))))
+				.returnUrl(RETURN_URL)
+				.dockerExtra(EXTRA)
+				.build();
+	}
+
 	public static AreteRequestAsync getFullSubmissionStringExamControllerEndpoint() {
 
 		return AreteRequestAsync.builder()

@@ -36,6 +36,7 @@ public class UnitTest {
 	@JsonPropertyDescription("Boolean whether to show stack trace to student or not")
 	Boolean printStackTrace;
 
+	@Column(length = 1023)
 	@JsonPropertyDescription("Time spent on test")
 	Long timeElapsed;
 

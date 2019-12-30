@@ -76,6 +76,28 @@ public class SubmissionControllerTest {
 
 
 	@Test
+	public void addNewSubmissionAsyncPython() throws InterruptedException {
+
+		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPython();
+		Submission submission = given()
+				.when()
+				.body(payload)
+				.post("/test")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(Submission.class);
+
+		TimeUnit.SECONDS.sleep(10);
+		assertFullSubmission(submission);
+
+		//TODO To actually check if it tests
+
+	}
+
+
+	@Test
 	public void addNewSubmissionAsyncExam() throws InterruptedException {
 
 		AreteRequestAsync payload = getFullSubmissionStringExamControllerEndpoint();
