@@ -24,6 +24,7 @@ public class Error {
 	@JsonPropertyDescription("Error kind(styleError, compilationError, other)")
 	String kind;
 	@JsonPropertyDescription("File, where error occured")
+	@Column(columnDefinition = "TEXT")
 	String fileName;
 	@JsonPropertyDescription("Line, where error occured")
 	Integer lineNo;

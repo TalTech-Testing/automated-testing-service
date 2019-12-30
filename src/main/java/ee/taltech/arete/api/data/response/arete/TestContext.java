@@ -22,8 +22,10 @@ public class TestContext {
 	@OneToMany(cascade = {CascadeType.ALL})
 	@JsonPropertyDescription("List of unittests tested")
 	List<UnitTest> unitTests;
+	@Column(columnDefinition = "TEXT")
 	@JsonPropertyDescription("Test name")
 	String name;
+	@Column(columnDefinition = "TEXT")
 	@JsonPropertyDescription("Test file path")
 	String file;
 	@JsonPropertyDescription("Test start time")

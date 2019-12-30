@@ -23,7 +23,9 @@ public class File {
 	private long id;
 
 	@JsonPropertyDescription("Path for the file")
+	@Column(columnDefinition = "TEXT")
 	private String path;
+
 	@JsonPropertyDescription("File content")
 	@Column(columnDefinition = "TEXT")
 	private String contents;
