@@ -52,7 +52,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 		if (submission.getDockerExtra() == null) {
 			submission.setDockerExtra(new HashSet<>());
-			submission.getDockerExtra().add("stylecheck");
+//			submission.getDockerExtra().add("stylecheck");
 		}
 
 		if (submission.getUniid() == null) {
@@ -69,21 +69,11 @@ public class SubmissionServiceImpl implements SubmissionService {
 			if (repo.contains("/exams/")) {
 				// in case of exams, the course name is the string before "exams" path
 				String[] url = repo.split("[/:]");
-				if (submission.getSlugs() == null) {
-					HashSet<String> slugs = new HashSet<>();
-					if (url[url.length - 1].contains("-")) {
-						slugs.add(url[url.length - 1].split("-")[0]);
-					} else {
-						slugs.add(url[url.length - 1]);
-					}
-					submission.setSlugs(slugs);
-				}
 				submission.setCourse(url[url.length - 3]);
 			} else {
 				String[] url = repo.split("[/:]");
 				submission.setCourse(url[url.length - 1]);
 			}
-
 		}
 
 		if (submission.getDockerTimeout() == null) {
@@ -121,14 +111,14 @@ public class SubmissionServiceImpl implements SubmissionService {
 		if (submission.getGitTestSource() != null) {
 			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
 				if (submission.getGitTestSource().startsWith("git")) {
-					String fixed = submission.getGitStudentRepo();
+					String fixed = submission.getGitTestSource();
 					fixed = fixed.replaceFirst(":", "/");
 					fixed = fixed.replace("git@", "https://");
 					submission.setGitTestSource(fixed);
 				}
 			} else {
 				if (submission.getGitTestSource().startsWith("http")) {
-					String fixed = submission.getGitStudentRepo();
+					String fixed = submission.getGitTestSource();
 					fixed = fixed.replace("https://", "git@");
 					fixed = fixed.replaceFirst("/", ":");
 					submission.setGitTestSource(fixed);
@@ -169,7 +159,6 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 		if (submission.getDockerExtra() == null) {
 			submission.setDockerExtra(new HashSet<>());
-			submission.getDockerExtra().add("stylecheck");
 		}
 
 		if (submission.getUniid() == null) {

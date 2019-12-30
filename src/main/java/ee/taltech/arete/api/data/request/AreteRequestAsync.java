@@ -37,7 +37,7 @@ public class AreteRequestAsync {
 	@JsonPropertyDescription("Default is last in url. https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git > project = iti0102-2019. Specify project, if its not in last position.")
 	private String project;
 
-	@JsonPropertyDescription("Default is (stylecheck). Give an empty hashset to remove it")
+	@JsonPropertyDescription("No defaults. You can add (stylecheck)")
 	private HashSet<String> dockerExtra;
 	@JsonPropertyDescription("No defaults. You can add (noMail, noTesterFiles, noStd, noFeedback)")
 	private HashSet<String> systemExtra;

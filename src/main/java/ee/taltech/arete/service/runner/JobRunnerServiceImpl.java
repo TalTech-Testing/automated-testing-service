@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-import javax.validation.UnexpectedTypeException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -123,7 +122,8 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 		} catch (Exception e) {
 
 			e.printStackTrace();
-			throw new UnexpectedTypeException(e.getMessage());
+			message = e.getMessage();
+			areteResponse = new AreteResponse(slug, submission, e.getMessage());
 		}
 
 		reportSubmission(submission, areteResponse, message);
