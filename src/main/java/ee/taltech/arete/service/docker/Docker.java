@@ -175,7 +175,7 @@ public class Docker {
 			LOGGER.info("Docker for user {} with slug {} finished", submission.getUniid(), slug);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			LOGGER.error("Job failed with exception: {}", e.getMessage());
 			throw new DockerException("Cant't launch docker, message: " + e.getMessage(), 1);
 		}

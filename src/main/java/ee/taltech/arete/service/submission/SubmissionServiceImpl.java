@@ -196,7 +196,6 @@ public class SubmissionServiceImpl implements SubmissionService {
 		return hash;
 	}
 
-
 	@Override
 	public List<Submission> getSubmissions() {
 		LOG.info("Reading all Submissions from database.");

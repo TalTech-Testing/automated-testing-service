@@ -47,14 +47,12 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			try {
 				if (!gitPullService.repositoryMaintenance(submission)) {
 					reportFailedSubmission(submission, new RuntimeException(submission.getResult()));
-					priorityQueueService.killThread(submission);
 					return;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+//				e.printStackTrace();
 				LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
 				reportFailedSubmission(submission, e);
-				priorityQueueService.killThread(submission);
 				return;
 			}
 		}
@@ -88,7 +86,6 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		}
 
-		priorityQueueService.killThread(submission);
 	}
 
 	private void reportSuccessfulSubmission(String slug, Submission submission, String output) {
@@ -121,7 +118,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+//			e.printStackTrace();
 			message = e.getMessage();
 			areteResponse = new AreteResponse(slug, submission, e.getMessage());
 		}

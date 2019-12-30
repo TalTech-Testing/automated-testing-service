@@ -56,6 +56,7 @@ public class SubmissionController {
 		if (requestBody == null) throw new RequestFormatException("Empty input!");
 
 		try {
+
 			Submission submission = objectMapper.readValue(requestBody, Submission.class);
 			submissionService.populateAsyncFields(submission);
 			submissionService.saveSubmission(submission);
@@ -76,11 +77,10 @@ public class SubmissionController {
 		LOGGER.info("Parsing request body: " + requestBody);
 		if (requestBody == null) throw new RequestFormatException("Empty input!");
 		try {
+
 			Submission submission = objectMapper.readValue(requestBody, Submission.class);
 			String hash = submissionService.populateSyncFields(submission);
-
 			submissionService.saveSubmission(submission);
-
 			priorityQueueService.enqueue(submission);
 
 			while (!syncWaitingRoom.containsKey(hash)) {
@@ -144,6 +144,14 @@ public class SubmissionController {
 	public List<Submission> GetSubmissions() {
 
 		return submissionService.getSubmissions();
+
+	}
+
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@GetMapping("/submissions/active")
+	public List<Submission> GetActiveSubmissions() {
+
+		return priorityQueueService.getActiveSubmissions();
 
 	}
 

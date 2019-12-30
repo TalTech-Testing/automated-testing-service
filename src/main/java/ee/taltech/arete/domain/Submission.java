@@ -50,6 +50,7 @@ public class Submission {
 	@Column(length = 1023)
 	private String course;
 
+	@Transient
 	@Column(length = 1023)
 	private String folder;
 
@@ -71,8 +72,10 @@ public class Submission {
 
 	private Integer priority;
 
+	@Transient
 	private Integer thread;
 
+	@Transient
 	@Column(length = 1023)
 	private String token;
 

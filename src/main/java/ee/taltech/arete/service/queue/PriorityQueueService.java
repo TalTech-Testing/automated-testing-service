@@ -2,6 +2,8 @@ package ee.taltech.arete.service.queue;
 
 import ee.taltech.arete.domain.Submission;
 
+import java.util.List;
+
 public interface PriorityQueueService {
 
 	void enqueue(Submission submission);
@@ -18,4 +20,5 @@ public interface PriorityQueueService {
 
 	void go();
 
+	List<Submission> getActiveSubmissions();
 }
