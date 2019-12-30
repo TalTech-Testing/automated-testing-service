@@ -28,35 +28,51 @@ import java.util.Random;
 @JsonClassDescription("Response sent to Moodle")
 public class AreteResponse {
 
+	@Column(length = 1023)
 	String version = "arete_2.0";
+
 	@JsonPropertyDescription("List of style, compilation and other errors")
 	@OneToMany(cascade = {CascadeType.ALL})
 	List<Error> errors = new ArrayList<>();
+
 	@JsonPropertyDescription("List of student files")
 	@OneToMany(cascade = {CascadeType.ALL})
 	List<File> files = new ArrayList<>();
+
 	@JsonPropertyDescription("List of test files")
 	@OneToMany(cascade = {CascadeType.ALL})
 	List<File> testFiles = new ArrayList<>();
+
 	@JsonPropertyDescription("List of test suites which each contains unit-tests. Each test file produces an test suite")
 	@OneToMany(cascade = {CascadeType.ALL})
 	List<TestContext> testSuites = new ArrayList<>();
+
 	@JsonPropertyDescription("Console outputs from docker")
 	@OneToMany(cascade = {CascadeType.ALL})
 	List<ConsoleOutput> consoleOutputs = new ArrayList<>();
+
 	@JsonPropertyDescription("HTML result for student")
 	@Column(columnDefinition = "TEXT")
 	String output;
+
 	@JsonPropertyDescription("Number of tests")
 	Integer totalCount = 0;
+
+	@Column(length = 1023)
 	@JsonPropertyDescription("Passed percentage")
 	String totalGrade = "0";
+
 	@JsonPropertyDescription("Number of passed tests")
 	Integer totalPassedCount = 0;
+
 	@JsonPropertyDescription("Style percentage")
 	Integer style = 100;
+
+	@Column(length = 1023)
 	@JsonPropertyDescription("Slug ran for student. for example pr01_something")
 	String slug;
+
+	@Column(length = 1023)
 	@JsonPropertyDescription("Security Token")
 	String token;
 

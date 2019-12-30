@@ -23,7 +23,7 @@ public class File {
 	private long id;
 
 	@JsonPropertyDescription("Path for the file")
-	@Column(columnDefinition = "TEXT")
+	@Column(length = 1023)
 	private String path;
 
 	@JsonPropertyDescription("File content")
