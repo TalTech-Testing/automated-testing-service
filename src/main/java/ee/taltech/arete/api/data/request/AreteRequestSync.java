@@ -28,7 +28,7 @@ public class AreteRequestSync {
 
 	@JsonPropertyDescription("Default is second from the end in url. https://gitlab.cs.ttu.ee/iti0102-2019/ex.git > project = iti0102-2019. Specify project, if its not second from end")
 	private String project;
-	@JsonPropertyDescription("No defaults. You can add (stylecheck)")
+	@JsonPropertyDescription("No defaults. You can add (stylecheck) or something. It is sent to smaller tester. Look the possibilities from the small tester repository for more details.")
 	private HashSet<String> dockerExtra;
 	@JsonPropertyDescription("No defaults. You can add (noMail, noTesterFiles, noStd, noFeedback)")
 	private HashSet<String> systemExtra;
