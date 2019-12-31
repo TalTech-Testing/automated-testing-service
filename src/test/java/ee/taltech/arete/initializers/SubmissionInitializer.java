@@ -38,7 +38,7 @@ public class SubmissionInitializer {
 				.course(PROJECT_PYTHON)
 				.folder(PROJECT_PYTHON)
 				.token("Token")
-				.hash("fb23ca3217bc9051241b56488a100e6d744201ef")
+				.hash("1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.dockerTimeout(120)
@@ -111,13 +111,28 @@ public class SubmissionInitializer {
 
 		return AreteRequestAsync.builder()
 				.gitStudentRepo(STUDENT_REPO_PYTHON)
-				.hash("77349606f71dd7238375bafae7bd5021d64606d1")
+				.hash("1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.systemExtra((new HashSet<>(Arrays.asList(
 ////						, "noMail"
 				))))
 				.returnUrl(RETURN_URL)
 				.dockerExtra(EXTRA)
+				.build();
+	}
+
+	public static AreteRequestAsync getFullSubmissionStringControllerEndpointPythonLong() {
+
+		return AreteRequestAsync.builder()
+				.gitStudentRepo(STUDENT_REPO_PYTHON)
+				.hash("a932ed61340fbaa08e308f591d5b5791044abc0c")
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.systemExtra((new HashSet<>(Arrays.asList(
+////						, "noMail"
+				))))
+				.returnUrl(RETURN_URL)
+				.dockerExtra(EXTRA)
+				.dockerTimeout(10)
 				.build();
 	}
 

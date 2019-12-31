@@ -50,7 +50,6 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 					return;
 				}
 			} catch (Exception e) {
-//				e.printStackTrace();
 				LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
 				reportFailedSubmission(submission, e);
 				return;
@@ -95,7 +94,6 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		try {
 			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
-//			System.out.println(json);
 			JSONObject jsonObject = new JSONObject(json);
 
 
@@ -118,7 +116,6 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		} catch (Exception e) {
 
-//			e.printStackTrace();
 			message = e.getMessage();
 			areteResponse = new AreteResponse(slug, submission, e.getMessage());
 		}
@@ -149,6 +146,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		if (!submission.getSystemExtra().contains("noMail")) {
 			try {
+//				System.out.println(message);
 				reportService.sendTextMail(submission.getUniid(), message);
 				LOGGER.info("Reported to student mailbox");
 			} catch (Exception e1) {

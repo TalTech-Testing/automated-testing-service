@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
 import static com.github.dockerjava.api.model.AccessMode.rw;
@@ -42,6 +44,8 @@ public class Docker {
 
 	private Submission submission;
 	private String slug;
+
+	private boolean done = false;
 
 	public Docker(Submission submission, String slug) {
 		this.submission = submission;
@@ -168,16 +172,27 @@ public class Docker {
 						@Override
 						public void onComplete() {
 							submission.setResult(builder.toString());
+							done = true;
+							LOGGER.info("Docker for user {} with slug {} finished", submission.getUniid(), slug);
 							super.onComplete();
+
 						}
 					});
 
-			LOGGER.info("Docker for user {} with slug {} finished", submission.getUniid(), slug);
+
+			int seconds = submission.getDockerTimeout();
+			while (!done) {
+				TimeUnit.SECONDS.sleep(1);
+				seconds--;
+				if (seconds == 0) {
+					throw new TimeoutException("Timed out");
+				}
+			}
 
 		} catch (Exception e) {
 //			e.printStackTrace();
-			LOGGER.error("Job failed with exception: {}", e.getMessage());
-			throw new DockerException("Cant't launch docker, message: " + e.getMessage(), 1);
+			LOGGER.error("Exception caught while running docker: {}", e.getMessage());
+			throw new DockerException("Exception in docker, message: " + e.getMessage(), 1);
 		}
 	}
 
@@ -185,7 +200,7 @@ public class Docker {
 		if (dockerClient != null && container != null) {
 
 			try {
-				dockerClient.stopContainerCmd(container.getId()).withTimeout(200).exec();
+				dockerClient.stopContainerCmd(container.getId()).exec();
 				LOGGER.info("Stopped container: {}", container.getId());
 			} catch (Exception stop) {
 				LOGGER.info("Container {} has already been stopped", container.getId());
