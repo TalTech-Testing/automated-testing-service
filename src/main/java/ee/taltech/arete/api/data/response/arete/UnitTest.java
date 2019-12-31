@@ -19,8 +19,9 @@ import java.util.List;
 public class UnitTest {
 
 	@JsonPropertyDescription("Groups of unittests this unittest depends on. If any test fails in that group, this test is skipped")
-	@ElementCollection(targetClass = String.class)
-	@Column(columnDefinition = "TEXT")
+	@ElementCollection
+	@CollectionTable(name = "depended_groups", joinColumns = @JoinColumn(name = "id"))
+	@Column(length = 1023)
 	List<String> groupsDependedUpon;
 
 	@Column(length = 1023)
@@ -41,8 +42,9 @@ public class UnitTest {
 	Long timeElapsed;
 
 	@JsonPropertyDescription("Methods depended, otherwise skipped")
-	@ElementCollection(targetClass = String.class)
-	@Column(columnDefinition = "TEXT")
+	@ElementCollection
+	@CollectionTable(name = "depended_methods", joinColumns = @JoinColumn(name = "id"))
+	@Column(length = 1023)
 	List<String> methodsDependedUpon;
 
 	@Column(columnDefinition = "TEXT")

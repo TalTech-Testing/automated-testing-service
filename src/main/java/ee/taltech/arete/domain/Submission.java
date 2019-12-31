@@ -8,8 +8,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @ToString
 @Entity
@@ -35,8 +35,8 @@ public class Submission {
 	@Column(length = 1023)
 	private String gitStudentRepo;
 	//  or
-	@Transient
-	private File[] source;
+	@OneToMany(cascade = {CascadeType.ALL})
+	private List<File> source;
 	//  and
 	@Column(length = 1023)
 	private String gitTestSource;
@@ -50,21 +50,27 @@ public class Submission {
 	@Column(length = 1023)
 	private String course;
 
-	@Transient
 	@Column(length = 1023)
 	private String folder;
 
-	@Transient
-	private HashSet<String> slugs;
+	@ElementCollection
+	@CollectionTable(name = "slugs", joinColumns = @JoinColumn(name = "id"))
+	@Column(length = 1023)
+	private Set<String> slugs;
 
 	@Transient
+	@JsonIgnore
 	private String result;
 
+	@ElementCollection
+	@CollectionTable(name = "docker_extra", joinColumns = @JoinColumn(name = "id"))
 	@Column(length = 1023)
-	private HashSet<String> dockerExtra;
+	private Set<String> dockerExtra;
 
+	@ElementCollection
+	@CollectionTable(name = "system_extra", joinColumns = @JoinColumn(name = "id"))
 	@Column(length = 1023)
-	private HashSet<String> systemExtra;
+	private Set<String> systemExtra;
 
 	private Integer dockerTimeout;
 
@@ -76,7 +82,6 @@ public class Submission {
 	private Integer thread;
 
 	@Transient
-	@Column(length = 1023)
 	private String token;
 
 	@OneToMany(cascade = {CascadeType.ALL})

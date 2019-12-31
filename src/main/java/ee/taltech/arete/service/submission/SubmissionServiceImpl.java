@@ -135,7 +135,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 	public String populateSyncFields(Submission submission) {
 		String hash;
 
-		if (submission.getSource() == null || submission.getSource().length == 0) {
+		if (submission.getSource() == null || submission.getSource().size() == 0) {
 			throw new BadRequestException("Source is needed for sync testing.");
 		}
 
@@ -166,9 +166,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 		}
 
 		if (submission.getSlugs() == null) {
-			String path = submission.getSource()[0].getPath().split("\\\\")[0];
-			if (path.equals(submission.getSource()[0].getPath())) {
-				path = submission.getSource()[0].getPath().split("/")[0];
+			String path = submission.getSource().get(0).getPath().split("\\\\")[0];
+			if (path.equals(submission.getSource().get(0).getPath())) {
+				path = submission.getSource().get(0).getPath().split("/")[0];
 			}
 			submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
 		}
