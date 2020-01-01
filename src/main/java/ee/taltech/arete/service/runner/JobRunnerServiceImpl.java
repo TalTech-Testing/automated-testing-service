@@ -142,7 +142,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message) {
 		try {
 			reportService.sendTextToReturnUrl(submission.getReturnUrl(), areteResponse);
-			LOGGER.info("Reported to return url");
+			LOGGER.info("Reported to return url for {} with score {}", submission.getUniid(), areteResponse.getTotalGrade());
 		} catch (Exception e1) {
 			LOGGER.error("Malformed returnUrl: {}", e1.getMessage());
 		}
