@@ -96,6 +96,9 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		try {
 			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
+			LOGGER.info("--------------------------------------------------------------------------");
+			LOGGER.info(json);
+			LOGGER.info("--------------------------------------------------------------------------");
 			JSONObject jsonObject = new JSONObject(json);
 
 
@@ -142,7 +145,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message) {
 		try {
 			reportService.sendTextToReturnUrl(submission.getReturnUrl(), areteResponse);
-			LOGGER.info("Reported to return url for {} with score {}", submission.getUniid(), areteResponse.getTotalGrade());
+			LOGGER.info("Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
 		} catch (Exception e1) {
 			LOGGER.error("Malformed returnUrl: {}", e1.getMessage());
 		}

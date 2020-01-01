@@ -70,7 +70,5 @@ public class ReportServiceImpl implements ReportService {
 		HttpResponse<String> response = client.send(request,
 				HttpResponse.BodyHandlers.ofString());
 
-//		System.out.println(response.body());
-
 	}
 }
