@@ -75,12 +75,14 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 			try {
 				new PrintWriter(output).close(); // clears output file
-			} catch (Exception ignored) {
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage());
 			}
 
 			try {
 				new PrintWriter(String.format("input_and_output/%s/host/input.json", submission.getThread())).close(); // clears input file
-			} catch (Exception ignored) {
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage());
 			}
 
 		}
@@ -105,6 +107,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 					areteResponse = new AreteResponse(slug, submission, "Unsupported tester type.");
 				}
 			} catch (Exception e1) {
+				LOGGER.error(e1.getMessage());
 				if (jsonObject.get("output") != null) {
 					areteResponse = new AreteResponse(slug, submission, jsonObject.get("output").toString());
 				} else {
@@ -115,7 +118,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			message = areteResponse.getOutput();
 
 		} catch (Exception e) {
-
+			LOGGER.error(e.getMessage());
 			message = e.getMessage();
 			areteResponse = new AreteResponse(slug, submission, e.getMessage());
 		}

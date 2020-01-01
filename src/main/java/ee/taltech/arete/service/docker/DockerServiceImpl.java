@@ -47,7 +47,9 @@ public class DockerServiceImpl implements DockerService {
 			docker.run();
 
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			exception = e;
+
 		} finally {
 			docker.cleanup();
 		}

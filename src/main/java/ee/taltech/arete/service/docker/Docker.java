@@ -175,7 +175,6 @@ public class Docker {
 							done = true;
 							LOGGER.info("Docker for user {} with slug {} finished", submission.getUniid(), slug);
 							super.onComplete();
-
 						}
 					});
 
@@ -190,7 +189,6 @@ public class Docker {
 			}
 
 		} catch (Exception e) {
-//			e.printStackTrace();
 			LOGGER.error("Exception caught while running docker: {}", e.getMessage());
 			throw new DockerException("Exception in docker, message: " + e.getMessage(), 1);
 		}
