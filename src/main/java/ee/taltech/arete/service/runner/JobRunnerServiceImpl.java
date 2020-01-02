@@ -99,6 +99,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		try {
 			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
+//			System.out.println(json);
 			JSONObject jsonObject = new JSONObject(json);
 
 			try {

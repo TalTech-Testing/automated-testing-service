@@ -266,7 +266,7 @@ public class SubmissionInitializer {
 
 	public static void assertFullSubmission(Submission submission) {
 		assert submission.getUniid() != null;
-		assert submission.getHash() != null;
+//		assert submission.getHash() != null;
 		assert submission.getReturnUrl().equals(RETURN_URL);
 //		assert submission.getTestingPlatform().equals(TESTING_PLATFORM);
 		assert !submission.getDockerExtra().isEmpty();
