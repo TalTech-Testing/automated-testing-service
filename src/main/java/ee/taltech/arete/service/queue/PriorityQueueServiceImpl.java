@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @EnableAsync
 public class PriorityQueueServiceImpl implements PriorityQueueService {
 
-	private static final Integer MAX_JOBS = Runtime.getRuntime().availableProcessors();
+	private static final Integer MAX_JOBS = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1);
 	private static Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
 
 	@Autowired

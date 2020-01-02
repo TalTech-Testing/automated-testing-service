@@ -44,7 +44,7 @@ public class SubmissionInitializer {
 				.dockerTimeout(120)
 //				.systemExtra(new HashSet<>())
 				.systemExtra((new HashSet<>(Arrays.asList(
-////						, "noMail"
+						"noMail"
 				))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 				.timestamp(System.currentTimeMillis())
@@ -67,7 +67,7 @@ public class SubmissionInitializer {
 				.dockerTimeout(120)
 //				.systemExtra(new HashSet<>())
 				.systemExtra((new HashSet<>(Arrays.asList(
-////						, "noMail"
+						"noMail"
 				))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 				.timestamp(System.currentTimeMillis())
@@ -100,7 +100,7 @@ public class SubmissionInitializer {
 				.hash("2448474b6a76ef534660817948dc8b816e40dd48")
 				.testingPlatform(TESTING_PLATFORM)
 				.systemExtra((new HashSet<>(Arrays.asList(
-////						, "noMail"
+						"noMail"
 				))))
 				.returnUrl(RETURN_URL)
 				.dockerExtra(EXTRA)
@@ -114,7 +114,7 @@ public class SubmissionInitializer {
 				.hash("1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.systemExtra((new HashSet<>(Arrays.asList(
-////						, "noMail"
+						"noMail"
 				))))
 				.returnUrl(RETURN_URL)
 				.dockerExtra(EXTRA)
@@ -133,6 +133,21 @@ public class SubmissionInitializer {
 				.returnUrl(RETURN_URL)
 				.dockerExtra(EXTRA)
 				.dockerTimeout(10)
+				.build();
+	}
+
+	public static AreteRequestAsync getFullSubmissionStringControllerEndpointPythonRecursion() {
+
+		return AreteRequestAsync.builder()
+				.gitStudentRepo("https://gitlab.cs.ttu.ee/kreban/iti0102-2019.git")
+				.hash("7c39a45ab725f6106fc1b5fe06ef531ae3265825")
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.systemExtra((new HashSet<>(Arrays.asList(
+//						, "noMail"
+				))))
+				.returnUrl(RETURN_URL)
+				.dockerExtra(EXTRA)
+				.priority(10)
 				.build();
 	}
 
@@ -250,8 +265,8 @@ public class SubmissionInitializer {
 
 
 	public static void assertFullSubmission(Submission submission) {
-		assert submission.getUniid().equals(UNIID_GIT);
-//		assert submission.getHash().length() == 40;
+		assert submission.getUniid() != null;
+		assert submission.getHash() != null;
 		assert submission.getReturnUrl().equals(RETURN_URL);
 //		assert submission.getTestingPlatform().equals(TESTING_PLATFORM);
 		assert !submission.getDockerExtra().isEmpty();

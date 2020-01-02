@@ -86,13 +86,14 @@ public class AreteResponse {
 		this.output = message;
 		this.errors.add(error);
 
-		if (!submission.getSystemExtra().contains("noStd")) {
+		if (submission.getSystemExtra() != null && !submission.getSystemExtra().contains("noStd")) {
 			consoleOutputs.add(new ConsoleOutput.ConsoleOutputBuilder().content(submission.getResult()).build());
 		}
 
 		if (submission.getResponse() == null) {
 			submission.setResponse(new ArrayList<>());
 		}
+
 		submission.getResponse().add(this);
 		this.token = submission.getToken();
 		this.slug = slug;

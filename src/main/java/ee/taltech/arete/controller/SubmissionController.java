@@ -23,10 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -64,8 +61,8 @@ public class SubmissionController {
 			return submission;
 
 		} catch (JsonProcessingException e) {
-			LOGGER.error("Request format invalid!", e);
-			throw new RequestFormatException(e.getMessage(), e);
+			LOGGER.error("Request format invalid: {}", e.getMessage());
+			throw new RequestFormatException(e.getMessage());
 
 		}
 	}
@@ -89,9 +86,8 @@ public class SubmissionController {
 			return syncWaitingRoom.remove(hash);
 
 		} catch (JsonProcessingException | InterruptedException e) {
-			LOGGER.error("Request format invalid!", e);
-			throw new RequestFormatException(e.getMessage(), e);
-
+			LOGGER.error("Request format invalid: {}", e.getMessage());
+			throw new RequestFormatException(e.getMessage());
 		}
 	}
 
@@ -101,33 +97,49 @@ public class SubmissionController {
 	public void WaitingList(HttpEntity<String> httpEntity, @PathVariable("hash") String hash) throws JsonProcessingException {
 //		System.out.println(httpEntity.getBody());
 //		objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
-		syncWaitingRoom.put(hash, objectMapper.readValue(Objects.requireNonNull(httpEntity.getBody()), AreteResponse.class));
+		try {
+			syncWaitingRoom.put(hash, objectMapper.readValue(Objects.requireNonNull(httpEntity.getBody()), AreteResponse.class));
+		} catch (Exception e) {
+			LOGGER.error("Processing sync job failed: {}", e.getMessage());
+			syncWaitingRoom.put(hash, new AreteResponse("Codera", new Submission(), e.getMessage()));
+		}
 	}
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/image/update/{image}")
-	public void UpdateImage(@PathVariable("image") String image) throws InterruptedException {
+	public String UpdateImage(@PathVariable("image") String image) throws InterruptedException {
 
-		priorityQueueService.halt();
-		String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
-		DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-				.withDockerHost(dockerHost)
-				.withDockerTlsVerify(false)
-				.build();
-		new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/" + image).pull();
-		priorityQueueService.go();
+		try {
+			priorityQueueService.halt();
+			String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
+			DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+					.withDockerHost(dockerHost)
+					.withDockerTlsVerify(false)
+					.build();
+			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/" + image).pull();
+			priorityQueueService.go();
+			return "Successfully updated image: " + image;
+		} catch (Exception e) {
+			throw new RequestFormatException(e.getMessage());
+		}
+
 	}
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/tests/update/{projectBase}/{project}")
-	public void UpdateTests(@PathVariable("projectBase") String projectBase, @PathVariable("project") String project) throws InterruptedException, GitAPIException, IOException {
+	public String UpdateTests(@PathVariable("projectBase") String projectBase, @PathVariable("project") String project) throws InterruptedException, GitAPIException, IOException {
 
-		priorityQueueService.halt();
-		String pathToTesterFolder = String.format("tests/%s/", project);
-		String pathToTesterRepo = String.format("git@gitlab.cs.ttu.ee:%s/%s.git", project, projectBase);
-		LOGGER.info("Checking for update for tester:");
-		gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
-		priorityQueueService.go();
+		try {
+			priorityQueueService.halt();
+			String pathToTesterFolder = String.format("tests/%s/", project);
+			String pathToTesterRepo = String.format("git@gitlab.cs.ttu.ee:%s/%s.git", project, projectBase);
+			LOGGER.info("Checking for update for tester:");
+			gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
+			priorityQueueService.go();
+			return "Successfully updated tests: " + project;
+		} catch (Exception e) {
+			throw new RequestFormatException(e.getMessage());
+		}
 
 	}
 
@@ -135,7 +147,11 @@ public class SubmissionController {
 	@GetMapping("/submissions/{hash}")
 	public List<Submission> GetSubmissionsByHash(@PathVariable("hash") String hash) {
 
-		return submissionService.getSubmissionByHash(hash);
+		try {
+			return submissionService.getSubmissionByHash(hash);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
 
 	}
 
@@ -143,7 +159,11 @@ public class SubmissionController {
 	@GetMapping("/submissions")
 	public List<Submission> GetSubmissions() {
 
-		return submissionService.getSubmissions();
+		try {
+			return submissionService.getSubmissions();
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
 
 	}
 
@@ -151,7 +171,11 @@ public class SubmissionController {
 	@GetMapping("/submissions/active")
 	public List<Submission> GetActiveSubmissions() {
 
-		return priorityQueueService.getActiveSubmissions();
+		try {
+			return priorityQueueService.getActiveSubmissions();
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
 
 	}
 
@@ -159,10 +183,14 @@ public class SubmissionController {
 	@GetMapping("/submissions/{hash}/logs")
 	public List<List<AreteResponse>> GetSubmissionLogs(@PathVariable("hash") String hash) {
 
-		return submissionService.getSubmissionByHash(hash)
-				.stream()
-				.map(Submission::getResponse)
-				.collect(Collectors.toList());
+		try {
+			return submissionService.getSubmissionByHash(hash)
+					.stream()
+					.map(Submission::getResponse)
+					.collect(Collectors.toList());
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
 
 	}
 

@@ -99,11 +99,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		try {
 			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
-//			LOGGER.info("--------------------------------------------------------------------------");
-//			LOGGER.info(json);
-//			LOGGER.info("--------------------------------------------------------------------------");
 			JSONObject jsonObject = new JSONObject(json);
-
 
 			try {
 				if ("hodor_studenttester".equals(jsonObject.get("type"))) {
@@ -126,6 +122,12 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 				}
 			}
 
+//			if (areteResponse.getTotalGrade().equals("0.0")) {
+////				LOGGER.error("--------------------------------------------------------------------------");
+////				LOGGER.error(json);
+////				LOGGER.error("--------------------------------------------------------------------------");
+//			}
+
 			message = areteResponse.getOutput();
 
 		} catch (Exception e) {
@@ -139,7 +141,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 	}
 
 	private void reportFailedSubmission(Submission submission, Exception e) {
-		String message = e.getMessage(); // Sent to student
+		String message = String.format("Testing failed with message: %s", e.getMessage()); // Sent to student
 		AreteResponse areteResponse;
 		if (submission.getSlugs() == null) {
 			areteResponse = new AreteResponse("undefined", submission, message); // Sent to Moodle
@@ -160,7 +162,6 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		if (!submission.getSystemExtra().contains("noMail")) {
 			try {
-//				System.out.println(message);
 				reportService.sendTextMail(submission.getUniid(), message);
 				LOGGER.info("Reported to student mailbox");
 			} catch (Exception e1) {
