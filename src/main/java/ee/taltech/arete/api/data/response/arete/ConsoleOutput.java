@@ -26,4 +26,7 @@ public class ConsoleOutput {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
+	public ConsoleOutput(String content) {
+		this.content = content;
+	}
 }

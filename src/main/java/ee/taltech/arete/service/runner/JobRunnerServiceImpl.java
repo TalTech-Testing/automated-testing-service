@@ -2,6 +2,7 @@ package ee.taltech.arete.service.runner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
+import ee.taltech.arete.api.data.response.arete.ConsoleOutput;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.docker.DockerService;
@@ -18,6 +19,8 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -96,9 +99,9 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		try {
 			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
-			LOGGER.info("--------------------------------------------------------------------------");
-			LOGGER.info(json);
-			LOGGER.info("--------------------------------------------------------------------------");
+//			LOGGER.info("--------------------------------------------------------------------------");
+//			LOGGER.info(json);
+//			LOGGER.info("--------------------------------------------------------------------------");
 			JSONObject jsonObject = new JSONObject(json);
 
 
@@ -106,6 +109,11 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 				if ("hodor_studenttester".equals(jsonObject.get("type"))) {
 					hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
 					areteResponse = new AreteResponse(slug, submission, response);
+				} else if ("arete".equals(jsonObject.get("type"))) {
+					areteResponse = objectMapper.readValue(json, AreteResponse.class);
+					List<ConsoleOutput> outs = new ArrayList<>();
+					outs.add(new ConsoleOutput(submission.getResult()));
+					areteResponse.setConsoleOutputs(outs);
 				} else {
 					areteResponse = new AreteResponse(slug, submission, "Unsupported tester type.");
 				}
