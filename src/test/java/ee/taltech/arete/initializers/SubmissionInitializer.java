@@ -139,8 +139,7 @@ public class SubmissionInitializer {
 	public static AreteRequestAsync getFullSubmissionStringControllerEndpointPythonRecursion() {
 
 		return AreteRequestAsync.builder()
-				.gitStudentRepo("https://gitlab.cs.ttu.ee/kreban/iti0102-2019.git")
-				.hash("7c39a45ab725f6106fc1b5fe06ef531ae3265825")
+				.gitStudentRepo("https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.systemExtra((new HashSet<>(Arrays.asList(
 //						, "noMail"

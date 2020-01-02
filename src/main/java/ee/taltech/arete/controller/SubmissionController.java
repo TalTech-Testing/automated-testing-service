@@ -195,6 +195,17 @@ public class SubmissionController {
 	}
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
+	@GetMapping("/debug/{bool}")
+	public void setDebug(@PathVariable("bool") int bool) {
+
+		try {
+			submissionService.debugMode(bool != 0);
+		} catch (Exception e) {
+			throw new RequestFormatException(e.getMessage());
+		}
+	}
+
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	@GetMapping("/logs")
 	public String GetLogs() {
 

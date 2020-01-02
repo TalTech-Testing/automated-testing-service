@@ -27,6 +27,8 @@ public class SubmissionServiceImpl implements SubmissionService {
 	@Autowired
 	private SubmissionRepository submissionRepository;
 
+	private Boolean DEBUG = true;
+
 	private static String getRandomHash() {
 		return RandomStringUtils.random(40, true, true).toLowerCase();
 	}
@@ -52,7 +54,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 		if (submission.getDockerExtra() == null) {
 			submission.setDockerExtra(new HashSet<>());
-//			submission.getDockerExtra().add("stylecheck");
+			if (DEBUG) {
+				submission.getDockerExtra().add("stylecheck");
+			}
 		}
 
 		if (submission.getUniid() == null) {
@@ -229,4 +233,15 @@ public class SubmissionServiceImpl implements SubmissionService {
 //			}
 //		}
 	}
+
+	@Override
+	public void debugMode(boolean bool) {
+		this.DEBUG = bool;
+	}
+
+	@Override
+	public boolean isDebug() {
+		return DEBUG;
+	}
+
 }

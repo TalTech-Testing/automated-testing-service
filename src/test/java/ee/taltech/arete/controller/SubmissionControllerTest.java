@@ -121,7 +121,7 @@ public class SubmissionControllerTest {
 
 //	@Test
 //	public void addNewSubmissionAsyncPythonReccursion() throws InterruptedException {
-//		for (int i = 0; i < 50; i++) {
+//		for (int i = 0; i < 1; i++) {
 //			AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPythonRecursion();
 //			Submission submission = given()
 //					.when()

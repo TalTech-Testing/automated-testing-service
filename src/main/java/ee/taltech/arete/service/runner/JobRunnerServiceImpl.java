@@ -9,6 +9,7 @@ import ee.taltech.arete.service.docker.DockerService;
 import ee.taltech.arete.service.git.GitPullService;
 import ee.taltech.arete.service.queue.PriorityQueueService;
 import ee.taltech.arete.service.response.ReportService;
+import ee.taltech.arete.service.submission.SubmissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,9 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 	@Autowired
 	ReportService reportService;
+
+	@Autowired
+	SubmissionService submissionService;
 
 	@Override
 	public void runJob(Submission submission) {
@@ -99,7 +103,6 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		try {
 			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
-//			System.out.println(json);
 			JSONObject jsonObject = new JSONObject(json);
 
 			try {
@@ -170,7 +173,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			}
 		}
 
-		if (!System.getenv().containsKey("GITLAB_PASSWORD")) {
+		if (!System.getenv().containsKey("GITLAB_PASSWORD") && submissionService.isDebug()) {
 			try {
 				reportService.sendTextMail("envomp", message);
 				LOGGER.info("Reported to student mailbox");

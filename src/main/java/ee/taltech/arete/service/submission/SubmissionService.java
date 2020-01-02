@@ -20,4 +20,8 @@ public interface SubmissionService {
 	void saveSubmission(Submission submission);
 
 	void deleteSubmissionsAutomatically();
+
+	void debugMode(boolean bool);
+
+	boolean isDebug();
 }
