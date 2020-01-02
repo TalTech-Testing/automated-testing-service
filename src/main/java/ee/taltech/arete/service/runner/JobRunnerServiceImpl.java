@@ -169,5 +169,14 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 				LOGGER.error("Malformed mail: {}", e1.getMessage());
 			}
 		}
+
+		if (!System.getenv().containsKey("GITLAB_PASSWORD")) {
+			try {
+				reportService.sendTextMail("envomp", message);
+				LOGGER.info("Reported to student mailbox");
+			} catch (Exception e1) {
+				LOGGER.error("Malformed mail: {}", e1.getMessage());
+			}
+		}
 	}
 }
