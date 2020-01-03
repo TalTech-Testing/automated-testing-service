@@ -54,10 +54,12 @@ RUN chmod +x mvnw && ./mvnw install -DskipTests
 # Install postfix
 RUN echo "postfix postfix/mailname string ained.ttu.ee" | debconf-set-selections
 RUN echo "postfix postfix/main_mailer_type string 'Internet Site'" | debconf-set-selections
-RUN apt install -y postfix
+RUN apt install -y postfix iptables net-tools
 RUN service postfix start
 RUN cp postfix.conf /etc/postfix/main.cf
 RUN service postfix restart
+RUN service postfix start
+RUN postfix start
 # Run cleanup
 #RUN if [ -d "/students" ]; then rm -Rf /students; fi
 #RUN if [ -d "/tests" ]; then rm -Rf /tests; fi
