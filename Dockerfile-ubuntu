@@ -51,6 +51,11 @@ ENV JAVA_OPTS="-Dfile.encoding=UTF-8"
 # Run Maven build
 RUN chmod +x mvnw && ./mvnw install -DskipTests
 
+# Install postfix
+RUN echo "postfix postfix/mailname string ained.ttu.ee" | debconf-set-selections
+RUN echo "postfix postfix/main_mailer_type string 'Internet Site'" | debconf-set-selections
+RUN apt install -y postfix
+
 # Run cleanup
 #RUN if [ -d "/students" ]; then rm -Rf /students; fi
 #RUN if [ -d "/tests" ]; then rm -Rf /tests; fi

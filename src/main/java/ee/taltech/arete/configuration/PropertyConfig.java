@@ -18,17 +18,21 @@ public class PropertyConfig {
 	@Bean
 	public JavaMailSender getJavaMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-		mailSender.setHost("smtp.gmail.com");
-		mailSender.setPort(587);
+		if (System.getenv().containsKey("GITLAB_PASSWORD")) { // if debug
+			mailSender.setHost("smtp.gmail.com");
+			mailSender.setPort(587);
 
-		mailSender.setUsername("automated.testing.service@gmail.com");
-		mailSender.setPassword("s5KyDLo^ji*XBw2K&Tl3yBG2wwN2QVIQ&dPcfv**K204j9GWNez");
+			mailSender.setUsername("automated.testing.service@gmail.com");
+			mailSender.setPassword("s5KyDLo^ji*XBw2K&Tl3yBG2wwN2QVIQ&dPcfv**K204j9GWNez");
 
-		Properties props = mailSender.getJavaMailProperties();
-		props.put("mail.transport.protocol", "smtp");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
-		props.put("mail.debug", "false");
+			Properties props = mailSender.getJavaMailProperties();
+			props.put("mail.transport.protocol", "smtp");
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.debug", "false");
+		} else {
+			mailSender.setHost("localhost");
+		}
 
 		return mailSender;
 	}
