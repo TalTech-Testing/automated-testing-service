@@ -55,17 +55,14 @@ RUN chmod +x mvnw && ./mvnw install -DskipTests
 RUN echo "postfix postfix/mailname string ained.ttu.ee" | debconf-set-selections
 RUN echo "postfix postfix/main_mailer_type string 'Internet Site'" | debconf-set-selections
 RUN apt install -y postfix iptables net-tools
-RUN service postfix start
 RUN cp postfix.conf /etc/postfix/main.cf
-RUN service postfix restart
-RUN service postfix start
-RUN postfix start
+
 # Run cleanup
 #RUN if [ -d "/students" ]; then rm -Rf /students; fi
 #RUN if [ -d "/tests" ]; then rm -Rf /tests; fi
 #RUN if [ -d "/input_and_output" ]; then rm -Rf /input_and_output; fi
 
-# Fire up our Spring Boot app by default
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /arete/target/arete-0.0.1-SNAPSHOT.jar" ]
+# Fire up our Spring Boot app by default and start mail service.
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /arete/target/arete-0.0.1-SNAPSHOT.jar && service postfix start" ]
 
 EXPOSE 8098:8098
