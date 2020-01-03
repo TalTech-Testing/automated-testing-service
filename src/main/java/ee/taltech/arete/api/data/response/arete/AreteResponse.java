@@ -72,6 +72,12 @@ public class AreteResponse {
 	@Column(length = 1023)
 	@JsonPropertyDescription("Security Token")
 	String token;
+	@JsonPropertyDescription("Commit hash from gitlab")
+	String hash;
+	@JsonPropertyDescription("Students uniid")
+	String uniid;
+	@JsonPropertyDescription("Testing timestamp")
+	Long timestamp;
 
 	@JsonIgnore
 	@Id
@@ -80,6 +86,9 @@ public class AreteResponse {
 
 	public AreteResponse(String slug, Submission submission, String message) { //Failed submission
 		Error error = new Error.ErrorBuilder().columnNo(0).lineNo(0).fileName("tester").message(message).build();
+		this.hash = submission.getHash();
+		this.uniid = submission.getUniid();
+		this.timestamp = submission.getTimestamp();
 		this.output = message;
 		this.errors.add(error);
 
@@ -180,6 +189,9 @@ public class AreteResponse {
 		submission.getResponse().add(this);
 		this.token = submission.getToken();
 		this.slug = slug;
+		this.hash = submission.getHash();
+		this.uniid = submission.getUniid();
+		this.timestamp = submission.getTimestamp();
 	}
 
 	private static void tr(StringBuilder output) {
