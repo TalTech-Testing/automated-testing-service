@@ -1,19 +1,9 @@
-#FROM openjdk:11
 FROM ubuntu:18.04
 
 MAINTAINER enrico.vompa@gmail.com
 
 ARG ARETE_HOME
 ENV ARETE_HOME=$ARETE_HOME
-
-#ARG GITLAB_PASSWORD
-#ENV GITLAB_PASSWORD=$GITLAB_PASSWORD
-#
-#ARG DOCKER_USER
-#ENV DOCKER_USER=$DOCKER_USER
-#
-#ARG DOCKER_PASSWORD
-#ENV DOCKER_PASSWORD=$DOCKER_PASSWORD
 
 ADD . $ARETE_HOME
 WORKDIR $ARETE_HOME
@@ -57,12 +47,7 @@ RUN echo "postfix postfix/main_mailer_type string 'Internet Site'" | debconf-set
 RUN apt install -y postfix iptables net-tools
 RUN cp postfix.conf /etc/postfix/main.cf
 
-# Run cleanup
-#RUN if [ -d "/students" ]; then rm -Rf /students; fi
-#RUN if [ -d "/tests" ]; then rm -Rf /tests; fi
-#RUN if [ -d "/input_and_output" ]; then rm -Rf /input_and_output; fi
-
 # Fire up our Spring Boot app by default and start mail service.
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /arete/target/arete-0.0.1-SNAPSHOT.jar && service postfix start" ]
+ENTRYPOINT [ "sh", "-c", "service postfix start && java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /arete/target/arete-0.0.1-SNAPSHOT.jar" ]
 
 EXPOSE 8098:8098
