@@ -73,7 +73,6 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 				objectMapper
 						.readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class)
 						.overrideDefaults(submission);
-				System.out.println(submission);
 				LOGGER.debug("Overrode default parameters");
 			} catch (Exception e) {
 				LOGGER.debug("Using default parameters");
