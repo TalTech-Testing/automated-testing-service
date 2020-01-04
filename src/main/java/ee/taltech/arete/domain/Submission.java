@@ -58,6 +58,9 @@ public class Submission {
 	@Column(length = 1023)
 	private Set<String> slugs;
 
+	@Column(length = 1023)
+	private String commitMessage;
+
 	@Transient
 	@JsonIgnore
 	private String result;

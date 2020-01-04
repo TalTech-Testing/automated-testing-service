@@ -72,12 +72,18 @@ public class AreteResponse {
 	@Column(length = 1023)
 	@JsonPropertyDescription("Security Token")
 	String token;
+
 	@JsonPropertyDescription("Commit hash from gitlab")
 	String hash;
+
 	@JsonPropertyDescription("Students uniid")
 	String uniid;
+
 	@JsonPropertyDescription("Testing timestamp")
 	Long timestamp;
+
+	@JsonPropertyDescription("Commit message for student repository")
+	String commitMessage;
 
 	@JsonIgnore
 	@Id
@@ -89,6 +95,7 @@ public class AreteResponse {
 		this.hash = submission.getHash();
 		this.uniid = submission.getUniid();
 		this.timestamp = submission.getTimestamp();
+		this.commitMessage = submission.getCommitMessage();
 		this.output = message;
 		this.errors.add(error);
 
@@ -192,6 +199,7 @@ public class AreteResponse {
 		this.hash = submission.getHash();
 		this.uniid = submission.getUniid();
 		this.timestamp = submission.getTimestamp();
+		this.commitMessage = submission.getCommitMessage();
 	}
 
 	private static void tr(StringBuilder output) {

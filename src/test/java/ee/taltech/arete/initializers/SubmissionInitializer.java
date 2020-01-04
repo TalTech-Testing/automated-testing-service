@@ -89,7 +89,7 @@ public class SubmissionInitializer {
 ////						, "noMail"
 				))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
-				.hash("d3f5510928bb8dacc20d29110e9268756418bef9")
+				.hash("a5462dc0377504e79b25ad76c9d0a4c7ce27f7d4")
 				.build();
 	}
 
