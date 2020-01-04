@@ -150,6 +150,16 @@ public class SubmissionInitializer {
 				.build();
 	}
 
+	public static AreteRequestAsync getFullSubmissionStringControllerEndpointPythonCustomConfiguration() {
+
+		return AreteRequestAsync.builder()
+				.gitStudentRepo("https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git")
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.returnUrl(RETURN_URL)
+				.priority(10)
+				.build();
+	}
+
 	public static AreteRequestAsync getFullSubmissionStringExamControllerEndpoint() {
 
 		return AreteRequestAsync.builder()
