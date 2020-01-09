@@ -1,5 +1,6 @@
 package ee.taltech.arete.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.AreteApplication;
 import ee.taltech.arete.api.data.request.AreteRequestAsync;
@@ -76,9 +77,10 @@ public class SubmissionControllerTest {
 
 
 	@Test
-	public void addNewSubmissionAsyncPython() throws InterruptedException {
+	public void addNewSubmissionAsyncPython() throws InterruptedException, JsonProcessingException {
 
 		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPython();
+		System.out.println(objectMapper.writeValueAsString(payload));
 		Submission submission = given()
 				.when()
 				.body(payload)

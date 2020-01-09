@@ -25,6 +25,7 @@ import java.net.http.HttpResponse;
 public class ReportServiceImpl implements ReportService {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(ReportService.class);
+
 	@Autowired
 	private JavaMailSender javaMailSender;
 
@@ -33,14 +34,14 @@ public class ReportServiceImpl implements ReportService {
 
 	@Async
 	@Override
-	public void sendTextMail(String uniid, String text) { // For exceptions
+	public void sendTextMail(String uniid, String text, String header) { // For exceptions
 
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
 			helper.setFrom("automatedTestingService@taltech.ee");
 			helper.setTo(String.format("%s@taltech.ee", uniid));
-			helper.setSubject("Test results");
+			helper.setSubject(header);
 			helper.setText(text, true);
 			javaMailSender.send(message);
 		} catch (Exception e) {

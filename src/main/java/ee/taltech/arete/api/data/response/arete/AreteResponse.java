@@ -289,6 +289,8 @@ public class AreteResponse {
 		output.append("<br>");
 		output.append("<br>");
 		output.append(String.format("<p>Timestamp: %s</p>", submission.getTimestamp()));
+		output.append("<br>");
+		output.append("<p>If the real cause of failure can't be displayed, something else will be displayed :D</p>");
 		return output.toString();
 	}
 
@@ -298,9 +300,9 @@ public class AreteResponse {
 		return lines[rand.nextInt(lines.length)];
 	}
 
-	private void TestsHeader(StringBuilder output) {
+	private void TestsHeader(StringBuilder output, String headerName) {
 		th(output);
-		output.append("Test");
+		output.append(headerName);
 		output.append("</th>");
 
 		th(output);
@@ -394,7 +396,7 @@ public class AreteResponse {
 		output.append("<br>");
 		output.append("<table style='width:100%;border: 1px solid black;border-collapse: collapse;'>");
 
-		TestsHeader(output);
+		TestsHeader(output, context.file);
 
 		context.unitTests.sort((o1, o2) -> {
 			if (o1.status.equals(o2.status)) {
@@ -419,7 +421,7 @@ public class AreteResponse {
 				String randomElement = getRandomElement();
 
 				output.append(
-						String.format("<br><a style='color:red;'>%s</a>: %s", test.getExceptionClass().equals("") ? "UnresolvedException" : test.getExceptionClass(),
+						String.format("<br><a style='color:red;'>%s</a>: %s", test.getExceptionClass().equals("") ? "Exception" : test.getExceptionClass(),
 								test.getExceptionMessage().equals("") ? randomElement : test.getExceptionMessage())
 				);
 

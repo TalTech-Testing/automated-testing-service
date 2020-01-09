@@ -152,7 +152,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			areteResponse = new AreteResponse(slug, submission, e.getMessage());
 		}
 
-		reportSubmission(submission, areteResponse, message);
+		reportSubmission(submission, areteResponse, message, slug);
 
 	}
 
@@ -165,10 +165,10 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
 		}
 
-		reportSubmission(submission, areteResponse, message);
+		reportSubmission(submission, areteResponse, message, "Failed submission");
 	}
 
-	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message) {
+	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, String header) {
 		try {
 			reportService.sendTextToReturnUrl(submission.getReturnUrl(), areteResponse);
 			LOGGER.info("Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
@@ -178,7 +178,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		if (!submission.getSystemExtra().contains("noMail")) {
 			try {
-				reportService.sendTextMail(submission.getUniid(), message);
+				reportService.sendTextMail(submission.getUniid(), message, header);
 				LOGGER.info("Reported to student mailbox");
 			} catch (Exception e1) {
 				LOGGER.error("Malformed mail: {}", e1.getMessage());
@@ -187,7 +187,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		if (!System.getenv().containsKey("GITLAB_PASSWORD") && submissionService.isDebug()) {
 			try {
-				reportService.sendTextMail("envomp", message);
+				reportService.sendTextMail("envomp", message, header);
 				LOGGER.info("Reported to student mailbox");
 			} catch (Exception e1) {
 				LOGGER.error("Malformed mail: {}", e1.getMessage());
