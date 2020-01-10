@@ -23,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
 import static com.github.dockerjava.api.model.AccessMode.rw;
@@ -43,6 +44,8 @@ public class Docker {
 
 	private Submission submission;
 	private String slug;
+
+	private boolean done = false;
 
 	public Docker(Submission submission, String slug) {
 		this.submission = submission;
@@ -84,11 +87,8 @@ public class Docker {
 			String tempTester = String.format("input_and_output/%s/tester", submission.getThread());
 
 			String student;
-			if (submission.getFolder().equals(slug)) {
-				student = String.format("students/%s/%s", submission.getUniid(), submission.getFolder()); // exam case
-			} else {
-				student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getFolder(), slug);
-			}
+
+			student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getFolder(), slug);
 
 			String tempStudent = String.format("input_and_output/%s/student", submission.getThread());
 
@@ -126,6 +126,7 @@ public class Docker {
 				LOGGER.error("Failed to copy files from tester folder to temp folder.");
 				throw new IOException(e.getMessage());
 			}
+
 			mapper.writeValue(new java.io.File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getDockerExtra())));
 
 			container = dockerClient.createContainerCmd(imageId)
@@ -134,13 +135,14 @@ public class Docker {
 					.withAttachStdout(true)
 					.withAttachStderr(true)
 					.withHostConfig(newHostConfig()
-							.withBinds(
-									new Bind(new java.io.File(output).getAbsolutePath(), volumeOutput, rw),
-									new Bind(new java.io.File(studentHost).getAbsolutePath(), volumeStudent, rw),
-									new Bind(new java.io.File(testerHost).getAbsolutePath(), volumeTester, ro))
-							.withCpuQuota((long) (submission.getPriority() > 7 ? 200000 : 100000)) //Its about 1 or 2 cores
-							.withCpuPeriod((long) 100000))
-					.exec();
+									.withBinds(
+											new Bind(new java.io.File(output).getAbsolutePath(), volumeOutput, rw),
+											new Bind(new java.io.File(studentHost).getAbsolutePath(), volumeStudent, rw),
+											new Bind(new java.io.File(testerHost).getAbsolutePath(), volumeTester, ro))
+									.withCpuCount(2L)
+//							.withCpuQuota((long) (submission.getPriority() > 7 ? 200000 : 200000)) //Its about 1 or 2 cores, revert back to 1 core for both cases
+//							.withCpuPeriod((long) 100000)
+					).exec();
 
 			///   END OF WARNING   ///
 
@@ -171,16 +173,25 @@ public class Docker {
 						@Override
 						public void onComplete() {
 							submission.setResult(builder.toString());
+							done = true;
+							LOGGER.info("Docker for user {} with slug {} finished", submission.getUniid(), slug);
 							super.onComplete();
 						}
 					});
 
-			LOGGER.info("Docker for user {} with slug {} finished", submission.getUniid(), slug);
+
+			int seconds = submission.getDockerTimeout();
+			while (!done) {
+				TimeUnit.SECONDS.sleep(1);
+				seconds--;
+				if (seconds == 0) {
+					throw new TimeoutException("Timed out");
+				}
+			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			LOGGER.error("Job failed with exception: {}", e.getMessage());
-			throw new DockerException("Cant't launch docker, message: " + e.getMessage(), 1);
+			LOGGER.error("Exception caught while running docker: {}", e.getMessage());
+			throw new DockerException("Exception in docker, message: " + e.getMessage(), 1);
 		}
 	}
 
@@ -188,7 +199,7 @@ public class Docker {
 		if (dockerClient != null && container != null) {
 
 			try {
-				dockerClient.stopContainerCmd(container.getId()).withTimeout(200).exec();
+				dockerClient.stopContainerCmd(container.getId()).exec();
 				LOGGER.info("Stopped container: {}", container.getId());
 			} catch (Exception stop) {
 				LOGGER.info("Container {} has already been stopped", container.getId());
@@ -215,6 +226,7 @@ public class Docker {
 		} catch (IOException e) {
 			LOGGER.error("Temp folder already empty. {}", e.getMessage());
 		}
+
 	}
 
 	private String getImage(DockerClient dockerClient, String image) throws InterruptedException {

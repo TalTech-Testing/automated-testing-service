@@ -2,24 +2,30 @@ package ee.taltech.arete.service.runner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
+import ee.taltech.arete.api.data.response.arete.ConsoleOutput;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
 import ee.taltech.arete.api.data.response.legacy.LegacyTestJobResult;
+import ee.taltech.arete.api.data.response.legacy.LegacyTestingResult;
+import ee.taltech.arete.domain.DefaultParameters;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.docker.DockerService;
 import ee.taltech.arete.service.git.GitPullService;
 import ee.taltech.arete.service.queue.PriorityQueueService;
 import ee.taltech.arete.service.response.ReportService;
+import ee.taltech.arete.service.submission.SubmissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-import javax.validation.UnexpectedTypeException;
+import java.io.File;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -42,6 +48,9 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 	@Autowired
 	ReportService reportService;
 
+	@Autowired
+	SubmissionService submissionService;
+
 	@Override
 	public void runJob(Submission submission) {
 
@@ -49,14 +58,11 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			try {
 				if (!gitPullService.repositoryMaintenance(submission)) {
 					reportFailedSubmission(submission, new RuntimeException(submission.getResult()));
-					priorityQueueService.killThread(submission);
 					return;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
 				LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
 				reportFailedSubmission(submission, e);
-				priorityQueueService.killThread(submission);
 				return;
 			}
 		}
@@ -64,6 +70,16 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 		LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
 
 		for (String slug : submission.getSlugs()) {
+
+			try {
+				objectMapper
+						.readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class)
+						.overrideDefaults(submission);
+				LOGGER.debug("Overrode default parameters");
+			} catch (Exception e) {
+				LOGGER.debug("Using default parameters");
+			}
+
 			String output;
 			try {
 				output = dockerService.runDocker(submission, slug);
@@ -80,12 +96,18 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 			try {
 				new PrintWriter(output).close(); // clears output file
-			} catch (Exception ignored) {
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage());
+			}
+
+			try {
+				new PrintWriter(String.format("input_and_output/%s/host/input.json", submission.getThread())).close(); // clears input file
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage());
 			}
 
 		}
 
-		priorityQueueService.killThread(submission);
 	}
 
 	private void reportSuccessfulSubmission(String slug, Submission submission, String output) {
@@ -103,6 +125,12 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 					html = true;
 					hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
 					areteResponse = new AreteResponse(slug, submission, response);
+				} else if ("arete".equals(jsonObject.get("type"))) {
+					html = true;
+					areteResponse = objectMapper.readValue(json, AreteResponse.class);
+					List<ConsoleOutput> outs = new ArrayList<>();
+					outs.add(new ConsoleOutput(submission.getResult()));
+					areteResponse.setConsoleOutputs(outs);
 				} else if ("hodor_legacy".equals(jsonObject.get("type"))) {
 					LegacyTestJobResult response = objectMapper.readValue(json, LegacyTestJobResult.class);
 					areteResponse = new AreteResponse(slug, submission, response);
@@ -111,7 +139,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 				}
 			} catch (Exception e1) {
 				html = false;
-				e1.printStackTrace();
+				LOGGER.error(e1.getMessage());
 				if (jsonObject.get("output") != null) {
 					areteResponse = new AreteResponse(slug, submission, jsonObject.get("output").toString());
 				} else {
@@ -119,20 +147,26 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 				}
 			}
 
+//			if (areteResponse.getTotalGrade().equals("0.0")) {
+////				LOGGER.error("--------------------------------------------------------------------------");
+////				LOGGER.error(json);
+////				LOGGER.error("--------------------------------------------------------------------------");
+//			}
+
 			message = areteResponse.getOutput();
 
 		} catch (Exception e) {
-
-			e.printStackTrace();
-			throw new UnexpectedTypeException(e.getMessage());
+			LOGGER.error(e.getMessage());
+			message = e.getMessage();
+			areteResponse = new AreteResponse(slug, submission, e.getMessage());
 		}
 
-		reportSubmission(submission, areteResponse, message, html);
+		reportSubmission(submission, areteResponse, message, slug, html);
 
 	}
 
 	private void reportFailedSubmission(Submission submission, Exception e) {
-		String message = e.getMessage(); // Sent to student
+		String message = String.format("Testing failed with message: %s", e.getMessage()); // Sent to student
 		AreteResponse areteResponse;
 		if (submission.getSlugs() == null) {
 			areteResponse = new AreteResponse("undefined", submission, message); // Sent to Moodle
@@ -140,20 +174,29 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
 		}
 
-		reportSubmission(submission, areteResponse, message, false);
+		reportSubmission(submission, areteResponse, message, "Failed submission", false);
 	}
 
-	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, Boolean html) {
+	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, String header, Boolean html) {
 		try {
 			reportService.sendTextToReturnUrl(submission.getReturnUrl(), areteResponse);
-			LOGGER.info("Reported to return url");
+			LOGGER.info("Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
 		} catch (Exception e1) {
 			LOGGER.error("Malformed returnUrl: {}", e1.getMessage());
 		}
 
 		if (!submission.getSystemExtra().contains("noMail")) {
 			try {
-				reportService.sendTextMail(submission.getUniid(), message, html);
+				reportService.sendTextMail(submission.getUniid(), message, header, html);
+				LOGGER.info("Reported to student mailbox");
+			} catch (Exception e1) {
+				LOGGER.error("Malformed mail: {}", e1.getMessage());
+			}
+		}
+
+		if (!System.getenv().containsKey("GITLAB_PASSWORD") && submissionService.isDebug()) {
+			try {
+				reportService.sendTextMail("envomp", message, header, html);
 				LOGGER.info("Reported to student mailbox");
 			} catch (Exception e1) {
 				LOGGER.error("Malformed mail: {}", e1.getMessage());

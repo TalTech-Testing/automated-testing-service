@@ -32,7 +32,7 @@
     },
     "dockerExtra" : {
       "type" : "array",
-      "description" : "Default is (stylecheck). Give an empty hashset to remove it",
+      "description" : "No defaults. You can add (stylecheck) or something. It is sent to smaller tester. Look the possibilities from the small tester repository for more details.",
       "items" : {
         "type" : "string"
       }

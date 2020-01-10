@@ -12,7 +12,6 @@ import ee.taltech.arete.service.docker.ImageCheck;
 import ee.taltech.arete.service.git.GitPullService;
 import ee.taltech.arete.service.queue.PriorityQueueService;
 import ee.taltech.arete.service.submission.SubmissionService;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +19,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -56,6 +51,7 @@ public class SubmissionController {
 		if (requestBody == null) throw new RequestFormatException("Empty input!");
 
 		try {
+
 			Submission submission = objectMapper.readValue(requestBody, Submission.class);
 			submissionService.populateAsyncFields(submission);
 			submissionService.saveSubmission(submission);
@@ -63,8 +59,8 @@ public class SubmissionController {
 			return submission;
 
 		} catch (JsonProcessingException e) {
-			LOGGER.error("Request format invalid!", e);
-			throw new RequestFormatException(e.getMessage(), e);
+			LOGGER.error("Request format invalid: {}", e.getMessage());
+			throw new RequestFormatException(e.getMessage());
 
 		}
 	}
@@ -76,11 +72,10 @@ public class SubmissionController {
 		LOGGER.info("Parsing request body: " + requestBody);
 		if (requestBody == null) throw new RequestFormatException("Empty input!");
 		try {
+
 			Submission submission = objectMapper.readValue(requestBody, Submission.class);
 			String hash = submissionService.populateSyncFields(submission);
-
 			submissionService.saveSubmission(submission);
-
 			priorityQueueService.enqueue(submission);
 
 			while (!syncWaitingRoom.containsKey(hash)) {
@@ -89,45 +84,66 @@ public class SubmissionController {
 			return syncWaitingRoom.remove(hash);
 
 		} catch (JsonProcessingException | InterruptedException e) {
-			LOGGER.error("Request format invalid!", e);
-			throw new RequestFormatException(e.getMessage(), e);
-
+			LOGGER.error("Request format invalid: {}", e.getMessage());
+			throw new RequestFormatException(e.getMessage());
 		}
 	}
 
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/waitingroom/{hash}")
-	public void WaitingList(HttpEntity<String> httpEntity, @PathVariable("hash") String hash) throws JsonProcessingException {
-//		System.out.println(httpEntity.getBody());
-//		objectMapper.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
-		syncWaitingRoom.put(hash, objectMapper.readValue(Objects.requireNonNull(httpEntity.getBody()), AreteResponse.class));
+	public void WaitingList(HttpEntity<String> httpEntity, @PathVariable("hash") String hash) {
+		try {
+			syncWaitingRoom.put(hash, objectMapper.readValue(Objects.requireNonNull(httpEntity.getBody()), AreteResponse.class));
+		} catch (Exception e) {
+			LOGGER.error("Processing sync job failed: {}", e.getMessage());
+			syncWaitingRoom.put(hash, new AreteResponse("Codera", new Submission(), e.getMessage()));
+		}
 	}
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/image/update/{image}")
-	public void UpdateImage(@PathVariable("image") String image) throws InterruptedException {
+	public String UpdateImage(@PathVariable("image") String image) {
 
-		priorityQueueService.halt();
-		String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
-		DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-				.withDockerHost(dockerHost)
-				.withDockerTlsVerify(false)
-				.build();
-		new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/" + image).pull();
-		priorityQueueService.go();
+		try {
+			priorityQueueService.halt();
+			String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
+			DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+					.withDockerHost(dockerHost)
+					.withDockerTlsVerify(false)
+					.build();
+			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/" + image).pull();
+			priorityQueueService.go();
+			return "Successfully updated image: " + image;
+		} catch (Exception e) {
+			throw new RequestFormatException(e.getMessage());
+		}
+
 	}
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PostMapping("/tests/update/{projectBase}/{project}")
-	public void UpdateTests(@PathVariable("projectBase") String projectBase, @PathVariable("project") String project) throws InterruptedException, GitAPIException, IOException {
+	@PostMapping("/tests/update")
+	public String UpdateTests(HttpEntity<String> httpEntity) {
 
-		priorityQueueService.halt();
-		String pathToTesterFolder = String.format("tests/%s/", project);
-		String pathToTesterRepo = String.format("git@gitlab.cs.ttu.ee:%s/%s.git", project, projectBase);
-		LOGGER.info("Checking for update for tester:");
-		gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
-		priorityQueueService.go();
+		try {
+			String requestBody = httpEntity.getBody();
+			LOGGER.info("Parsing request body: " + requestBody);
+			if (requestBody == null) throw new RequestFormatException("Empty input!");
+			Submission update = objectMapper.readValue(requestBody, Submission.class);
+			submissionService.fixRepo(update);
+			String[] url = update.getGitTestSource().split("[/:]");
+			update.setCourse(url[url.length - 2]);
+
+			priorityQueueService.halt();
+			String pathToTesterFolder = String.format("tests/%s/", update.getCourse());
+			String pathToTesterRepo = update.getGitTestSource();
+			LOGGER.info("Checking for update for tester:");
+			gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
+			priorityQueueService.go();
+			return "Successfully updated tests: " + update.getCourse();
+		} catch (Exception e) {
+			throw new RequestFormatException(e.getMessage());
+		}
 
 	}
 
@@ -135,7 +151,11 @@ public class SubmissionController {
 	@GetMapping("/submissions/{hash}")
 	public List<Submission> GetSubmissionsByHash(@PathVariable("hash") String hash) {
 
-		return submissionService.getSubmissionByHash(hash);
+		try {
+			return submissionService.getSubmissionByHash(hash);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
 
 	}
 
@@ -143,7 +163,23 @@ public class SubmissionController {
 	@GetMapping("/submissions")
 	public List<Submission> GetSubmissions() {
 
-		return submissionService.getSubmissions();
+		try {
+			return submissionService.getSubmissions();
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+
+	}
+
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@GetMapping("/submissions/active")
+	public List<Submission> GetActiveSubmissions() {
+
+		try {
+			return priorityQueueService.getActiveSubmissions();
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
 
 	}
 
@@ -151,11 +187,26 @@ public class SubmissionController {
 	@GetMapping("/submissions/{hash}/logs")
 	public List<List<AreteResponse>> GetSubmissionLogs(@PathVariable("hash") String hash) {
 
-		return submissionService.getSubmissionByHash(hash)
-				.stream()
-				.map(Submission::getResponse)
-				.collect(Collectors.toList());
+		try {
+			return submissionService.getSubmissionByHash(hash)
+					.stream()
+					.map(Submission::getResponse)
+					.collect(Collectors.toList());
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
 
+	}
+
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@GetMapping("/debug/{bool}")
+	public void setDebug(@PathVariable("bool") int bool) {
+
+		try {
+			submissionService.debugMode(bool != 0);
+		} catch (Exception e) {
+			throw new RequestFormatException(e.getMessage());
+		}
 	}
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
@@ -164,7 +215,6 @@ public class SubmissionController {
 
 		try {
 			return Files.readString(Paths.get("logs/spring.log"));
-
 		} catch (Exception e) {
 			throw new RequestFormatException(e.getMessage());
 		}

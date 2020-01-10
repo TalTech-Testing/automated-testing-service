@@ -27,6 +27,8 @@ public class SubmissionServiceImpl implements SubmissionService {
 	@Autowired
 	private SubmissionRepository submissionRepository;
 
+	private Boolean DEBUG = true;
+
 	private static String getRandomHash() {
 		return RandomStringUtils.random(40, true, true).toLowerCase();
 	}
@@ -34,25 +36,12 @@ public class SubmissionServiceImpl implements SubmissionService {
 	@Override
 	public void populateAsyncFields(Submission submission) {
 
-		String repo;
+		String repo; //set OtherDefaults
 		if (submission.getGitStudentRepo() == null) {
 			throw new BadRequestException("Git student repo is needed for async.");
 		} else {
 			fixRepo(submission);
 			repo = submission.getGitStudentRepo().replaceAll(".git", "");
-		}
-
-		if (submission.getPriority() == null) {
-			submission.setPriority(5);
-		}
-
-		if (submission.getTimestamp() == null) {
-			submission.setTimestamp(System.currentTimeMillis());
-		}
-
-		if (submission.getDockerExtra() == null) {
-			submission.setDockerExtra(new HashSet<>());
-			submission.getDockerExtra().add("stylecheck");
 		}
 
 		if (submission.getUniid() == null) {
@@ -69,30 +58,63 @@ public class SubmissionServiceImpl implements SubmissionService {
 			if (repo.contains("/exams/")) {
 				// in case of exams, the course name is the string before "exams" path
 				String[] url = repo.split("[/:]");
-				if (submission.getSlugs() == null) {
-					HashSet<String> slugs = new HashSet<>();
-					if (url[url.length - 1].contains("-")) {
-						slugs.add(url[url.length - 1].split("-")[0]);
-					} else {
-						slugs.add(url[url.length - 1]);
-					}
-					submission.setSlugs(slugs);
-				}
 				submission.setCourse(url[url.length - 3]);
 			} else {
 				String[] url = repo.split("[/:]");
 				submission.setCourse(url[url.length - 1]);
 			}
+		}
+
+		populateDefaultValues(submission);
+
+	}
+
+	@Override
+	public String populateSyncFields(Submission submission) {
+		String hash;
+
+		if (submission.getSource() == null || submission.getSource().size() == 0) {
+			throw new BadRequestException("Source is needed for sync testing.");
+		}
+
+		fixRepo(submission);
+
+		if (submission.getHash() == null) {
+			hash = getRandomHash();
+			submission.setHash(hash);
+			submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", hash));
+		} else {
+			hash = submission.getHash(); //For integration test only.
+		}
+
+		if (submission.getUniid() == null) {
+			submission.setUniid("Codera");
+		}
+
+		if (submission.getSlugs() == null) {
+			String path = submission.getSource().get(0).getPath().split("\\\\")[0];
+			if (path.equals(submission.getSource().get(0).getPath())) {
+				path = submission.getSource().get(0).getPath().split("/")[0];
+			}
+			submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
+		}
+
+		if (submission.getFolder() == null) {
+			String[] url = submission.getGitTestSource().split("[/:]");
+			submission.setFolder(url[url.length - 2]);
+		}
+
+		if (submission.getCourse() == null) {
+			String[] url = submission.getGitTestSource().split("[/:]");
+			submission.setCourse(url[url.length - 2]);
 
 		}
 
-		if (submission.getDockerTimeout() == null) {
-			submission.setDockerTimeout(120); // 120 sec
-		}
+		populateDefaultValues(submission);
 
-		if (submission.getSystemExtra() == null) {
-			submission.setSystemExtra(new HashSet<>());
-		}
+		submission.getSystemExtra().add("noMail");
+
+		return hash;
 	}
 
 	@Override
@@ -121,14 +143,14 @@ public class SubmissionServiceImpl implements SubmissionService {
 		if (submission.getGitTestSource() != null) {
 			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
 				if (submission.getGitTestSource().startsWith("git")) {
-					String fixed = submission.getGitStudentRepo();
+					String fixed = submission.getGitTestSource();
 					fixed = fixed.replaceFirst(":", "/");
 					fixed = fixed.replace("git@", "https://");
 					submission.setGitTestSource(fixed);
 				}
 			} else {
 				if (submission.getGitTestSource().startsWith("http")) {
-					String fixed = submission.getGitStudentRepo();
+					String fixed = submission.getGitTestSource();
 					fixed = fixed.replace("https://", "git@");
 					fixed = fixed.replaceFirst("/", ":");
 					submission.setGitTestSource(fixed);
@@ -141,24 +163,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 	}
 
-	@Override
-	public String populateSyncFields(Submission submission) {
-		String hash;
-
-		if (submission.getSource() == null || submission.getSource().length == 0) {
-			throw new BadRequestException("Source is needed for sync testing.");
-		}
-
-		fixRepo(submission);
-
-		if (submission.getHash() == null) {
-			hash = getRandomHash();
-			submission.setHash(hash);
-			submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", hash));
-		} else {
-			hash = submission.getHash(); //For integration test only.
-		}
-
+	private void populateDefaultValues(Submission submission) {
 		if (submission.getPriority() == null) {
 			submission.setPriority(5);
 		}
@@ -167,46 +172,25 @@ public class SubmissionServiceImpl implements SubmissionService {
 			submission.setTimestamp(System.currentTimeMillis());
 		}
 
+		if (submission.getDockerTimeout() == null) {
+			if (DEBUG) {
+				submission.setDockerTimeout(360); // 360 sec
+			} else {
+				submission.setDockerTimeout(120); // 120 sec
+			}
+		}
+
 		if (submission.getDockerExtra() == null) {
 			submission.setDockerExtra(new HashSet<>());
-			submission.getDockerExtra().add("stylecheck");
-		}
-
-		if (submission.getUniid() == null) {
-			submission.setUniid("Codera");
-		}
-
-		if (submission.getSlugs() == null) {
-			String path = submission.getSource()[0].getPath().split("\\\\")[0];
-			if (path.equals(submission.getSource()[0].getPath())) {
-				path = submission.getSource()[0].getPath().split("/")[0];
+			if (DEBUG) {
+				submission.getDockerExtra().add("stylecheck");
 			}
-			submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
-		}
-
-		if (submission.getFolder() == null) {
-			String[] url = submission.getGitTestSource().split("[/:]");
-			submission.setFolder(url[url.length - 2]);
-		}
-
-		if (submission.getCourse() == null) {
-			String[] url = submission.getGitTestSource().split("[/:]");
-			submission.setCourse(url[url.length - 2]);
-
-		}
-
-		if (submission.getDockerTimeout() == null) {
-			submission.setDockerTimeout(120); // 120 sec
 		}
 
 		if (submission.getSystemExtra() == null) {
 			submission.setSystemExtra(new HashSet<>());
 		}
-		submission.getSystemExtra().add("noMail");
-
-		return hash;
 	}
-
 
 	@Override
 	public List<Submission> getSubmissions() {
@@ -241,4 +225,15 @@ public class SubmissionServiceImpl implements SubmissionService {
 //			}
 //		}
 	}
+
+	@Override
+	public void debugMode(boolean bool) {
+		this.DEBUG = bool;
+	}
+
+	@Override
+	public boolean isDebug() {
+		return DEBUG;
+	}
+
 }

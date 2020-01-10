@@ -19,7 +19,7 @@ public class SubmissionInitializer {
 	private final static String UNIID_GIT = "envomp";
 	private static final String STUDENT_REPO_PYTHON = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git" : "git@gitlab.cs.ttu.ee:envomp/iti0102-2019.git";
 	private static final String STUDENT_REPO = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/envomp/iti0202-2019.git" : "git@gitlab.cs.ttu.ee:envomp/iti0202-2019.git";
-	private static final String STUDENT_REPO_EXAM = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0102-2018/exams/exam1.git" : "git@gitlab.cs.ttu.ee:iti0102-2018/exams/exam1.git";
+	private static final String STUDENT_REPO_EXAM = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0102-2018/exams/exam2-envomp.git" : "git@gitlab.cs.ttu.ee:iti0102-2018/exams/exam2-envomp.git";
 	private static final String PROJECT_PYTHON = "iti0102-2019";
 	private static final String PROJECT = "iti0202-2019";
 	private final static String TESTING_PLATFORM = "java";
@@ -39,13 +39,13 @@ public class SubmissionInitializer {
 				.course(PROJECT_PYTHON)
 				.folder(PROJECT_PYTHON)
 				.token("Token")
-				.hash("fb23ca3217bc9051241b56488a100e6d744201ef")
+				.hash("1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.dockerTimeout(120)
 //				.systemExtra(new HashSet<>())
 				.systemExtra((new HashSet<>(Arrays.asList(
-////						, "noMail"
+						"noMail"
 				))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 				.timestamp(System.currentTimeMillis())
@@ -68,7 +68,7 @@ public class SubmissionInitializer {
 				.dockerTimeout(120)
 //				.systemExtra(new HashSet<>())
 				.systemExtra((new HashSet<>(Arrays.asList(
-////						, "noMail"
+						"noMail"
 				))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 				.timestamp(System.currentTimeMillis())
@@ -90,7 +90,7 @@ public class SubmissionInitializer {
 ////						, "noMail"
 				))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
-				.hash("d3f5510928bb8dacc20d29110e9268756418bef9")
+				.hash("a5462dc0377504e79b25ad76c9d0a4c7ce27f7d4")
 				.build();
 	}
 
@@ -101,10 +101,63 @@ public class SubmissionInitializer {
 				.hash("2448474b6a76ef534660817948dc8b816e40dd48")
 				.testingPlatform(TESTING_PLATFORM)
 				.systemExtra((new HashSet<>(Arrays.asList(
+						"noMail"
+				))))
+				.returnUrl(RETURN_URL)
+				.dockerExtra(EXTRA)
+				.build();
+	}
+
+	public static AreteRequestAsync getFullSubmissionStringControllerEndpointPython() {
+
+		return AreteRequestAsync.builder()
+				.gitStudentRepo(STUDENT_REPO_PYTHON)
+				.hash("1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f")
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.systemExtra((new HashSet<>(Arrays.asList(
+						"noMail"
+				))))
+				.returnUrl(RETURN_URL)
+				.dockerExtra(EXTRA)
+				.build();
+	}
+
+	public static AreteRequestAsync getFullSubmissionStringControllerEndpointPythonLong() {
+
+		return AreteRequestAsync.builder()
+				.gitStudentRepo(STUDENT_REPO_PYTHON)
+				.hash("a932ed61340fbaa08e308f591d5b5791044abc0c")
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.systemExtra((new HashSet<>(Arrays.asList(
 ////						, "noMail"
 				))))
 				.returnUrl(RETURN_URL)
 				.dockerExtra(EXTRA)
+				.dockerTimeout(10)
+				.build();
+	}
+
+	public static AreteRequestAsync getFullSubmissionStringControllerEndpointPythonRecursion() {
+
+		return AreteRequestAsync.builder()
+				.gitStudentRepo("https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git")
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.systemExtra((new HashSet<>(Arrays.asList(
+//						, "noMail"
+				))))
+				.returnUrl(RETURN_URL)
+				.dockerExtra(EXTRA)
+				.priority(10)
+				.build();
+	}
+
+	public static AreteRequestAsync getFullSubmissionStringControllerEndpointPythonCustomConfiguration() {
+
+		return AreteRequestAsync.builder()
+				.gitStudentRepo("https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git")
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.returnUrl(RETURN_URL)
+				.priority(10)
 				.build();
 	}
 
@@ -232,8 +285,8 @@ public class SubmissionInitializer {
 
 
 	public static void assertFullSubmission(Submission submission) {
-		assert submission.getUniid().equals(UNIID_GIT);
-//		assert submission.getHash().length() == 40;
+		assert submission.getUniid() != null;
+//		assert submission.getHash() != null;
 		assert submission.getReturnUrl().equals(RETURN_URL);
 //		assert submission.getTestingPlatform().equals(TESTING_PLATFORM);
 		assert !submission.getDockerExtra().isEmpty();

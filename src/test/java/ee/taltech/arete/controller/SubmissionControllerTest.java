@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.AreteApplication;
 import ee.taltech.arete.api.data.request.AreteRequestAsync;
 import ee.taltech.arete.api.data.request.AreteRequestSync;
+import ee.taltech.arete.api.data.request.AreteTestUpdate;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.domain.Submission;
 import io.restassured.RestAssured;
@@ -55,7 +56,7 @@ public class SubmissionControllerTest {
 	}
 
 	@Test
-	public void addNewSubmissionAsync() {
+	public void addNewSubmissionAsync() throws InterruptedException {
 
 		AreteRequestAsync payload = getFullSubmissionStringControllerEndpoint();
 		Submission submission = given()
@@ -68,12 +69,100 @@ public class SubmissionControllerTest {
 				.body()
 				.as(Submission.class);
 
+		TimeUnit.SECONDS.sleep(10);
 		assertFullSubmission(submission);
 
 		//TODO To actually check if it tests
 
 	}
 
+
+	@Test
+	public void addNewSubmissionAsyncPython() throws InterruptedException, JsonProcessingException {
+
+		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPython();
+		System.out.println(objectMapper.writeValueAsString(payload));
+		Submission submission = given()
+				.when()
+				.body(payload)
+				.post("/test")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(Submission.class);
+
+		TimeUnit.SECONDS.sleep(10);
+		assertFullSubmission(submission);
+
+		//TODO To actually check if it tests
+
+	}
+
+	@Test
+	public void addNewSubmissionAsyncPythonLFS() throws InterruptedException {
+
+		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPythonLong();
+		Submission submission = given()
+				.when()
+				.body(payload)
+				.post("/test")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(Submission.class);
+
+		TimeUnit.SECONDS.sleep(10);
+		assertFullSubmission(submission);
+
+		//TODO To actually check if it tests
+		// Expect timeout
+
+	}
+
+
+	@Test
+	public void addNewSubmissionAsyncPythonRecursion() throws InterruptedException {
+		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPythonRecursion();
+		Submission submission = given()
+				.when()
+				.body(payload)
+				.post("/test")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(Submission.class);
+
+		assertFullSubmission(submission);
+
+		TimeUnit.SECONDS.sleep(10);
+
+		//TODO To actually check if it tests
+
+	}
+
+	@Test
+	public void addNewSubmissionAsyncPythonCustomConfiguration() throws InterruptedException {
+		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPythonCustomConfiguration();
+		Submission submission = given()
+				.when()
+				.body(payload)
+				.post("/test")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(Submission.class);
+
+		assertFullSubmission(submission);
+
+		TimeUnit.SECONDS.sleep(10);
+
+		//TODO To actually check if it tests
+
+	}
 
 	@Test
 	public void addNewSubmissionAsyncExam() throws InterruptedException {
@@ -197,17 +286,17 @@ public class SubmissionControllerTest {
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED));
 
-		// TODO check if image came to be
 	}
 
 	@Test
 	public void updateTests() {
+		AreteTestUpdate update = new AreteTestUpdate("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019");
 		given()
+				.body(update)
 				.when()
-				.post("/tests/update/ex/iti0102-2019")
+				.post("/tests/update")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED));
 
-		// TODO check if folder came to me
 	}
 }

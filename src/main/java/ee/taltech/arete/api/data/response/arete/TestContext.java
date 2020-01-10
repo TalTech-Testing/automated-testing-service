@@ -22,24 +22,35 @@ public class TestContext {
 	@OneToMany(cascade = {CascadeType.ALL})
 	@JsonPropertyDescription("List of unittests tested")
 	List<UnitTest> unitTests;
+
+	@Column(length = 1023)
 	@JsonPropertyDescription("Test name")
 	String name;
+
+	@Column(length = 1023)
 	@JsonPropertyDescription("Test file path")
 	String file;
+
 	@JsonPropertyDescription("Test start time")
 	Long startDate;
+
 	@JsonPropertyDescription("Test end time")
 	Long endDate;
-	//	String mode;
+
+//	String mode;
 //	String welcomeMessage;
 //	Integer identifier;
 //	Integer count;
+
 	@JsonPropertyDescription("Sum of test weights")
 	Integer weight;
+
 	@JsonPropertyDescription("Number of passed tests")
 	Integer passedCount;
+
 	@JsonPropertyDescription("Total grade for this test file")
 	Double grade;
+
 	@JsonIgnore
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class DockerServiceImpl implements DockerService {
@@ -41,15 +40,26 @@ public class DockerServiceImpl implements DockerService {
 	public String runDocker(Submission submission, String slug) throws Exception {
 
 		Docker docker = new Docker(submission, slug);
+		Exception exception = null;
 
 		try {
-			TimeLimitedCodeBlock.runWithTimeout(docker::run, submission.getDockerTimeout(), TimeUnit.SECONDS);
+
+			docker.run();
+
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			exception = e;
+
 		} finally {
 			docker.cleanup();
 		}
 
-		return docker.hostFile;
-	}
+		if (exception == null) {
+			return docker.hostFile;
+		} else {
+			throw exception;
+		}
 
+	}
 
 }

@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @EnableAsync
 public class PriorityQueueServiceImpl implements PriorityQueueService {
 
-	private static final Integer MAX_JOBS = Runtime.getRuntime().availableProcessors();
+	private static final Integer MAX_JOBS = Math.max(Runtime.getRuntime().availableProcessors() / 2, 1);
 	private static Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
 
 	@Autowired
@@ -55,11 +55,15 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 	@Override
 	public void killThread(Submission submission) {
-		submissionService.saveSubmission(submission);
-		activeSubmissions.remove(submission);
-		jobsRan++;
 		activeRunningJobs--;
+		jobsRan++;
+		activeSubmissions.remove(submission);
 		threads.add(submission.getThread());
+		try {
+			submissionService.saveSubmission(submission);
+		} catch (Exception e) {
+			LOGGER.error("Failed to save result to DB: {}", e.getMessage());
+		}
 		LOGGER.info("All done for submission on thread: {}", submission.getThread());
 	}
 
@@ -87,39 +91,42 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	}
 
 	@Override
+	public List<Submission> getActiveSubmissions() {
+		return activeSubmissions;
+	}
+
+	@Override
 	@Async
 	@Scheduled(fixedRate = 100)
 	public void runJob() {
-		if (!halted && getQueueSize() != 0) {
-			if (activeRunningJobs < MAX_JOBS) {
+		if (!halted && getQueueSize() != 0 && activeRunningJobs < MAX_JOBS) {
 
-				Submission job = submissionPriorityQueue.poll();
-				assert job != null;
+			Submission job = submissionPriorityQueue.poll();
+			assert job != null;
 
-				if (job.getPriority() < 8 && activeSubmissions.stream().anyMatch(o -> o.getUniid().equals(job.getUniid()))) {
-					job.setPriority(4); // Mild punish for spam pushers.
+			if (job.getPriority() < 8 && activeSubmissions.stream().anyMatch(o -> o.getUniid().equals(job.getUniid()))) {
+				job.setPriority(4); // Mild punish for spam pushers.
 
-					submissionPriorityQueue.add(job);
-					return;
-				}
-
-				activeRunningJobs++;
-				activeSubmissions.add(job);
-
-				LOGGER.info("active: {}, queue: {}, ran: {}", activeRunningJobs, getQueueSize(), jobsRan);
-
-				LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
-				job.setThread(threads.remove(0));
-
-				try {
-					jobRunnerService.runJob(job);
-				} catch (Exception e) {
-					e.printStackTrace();
-					LOGGER.error("Job failed with message: {}", e.getMessage());
-					killThread(job);
-				}
-
+				submissionPriorityQueue.add(job);
+				return;
 			}
+
+			activeRunningJobs++;
+			activeSubmissions.add(job);
+
+			LOGGER.info("active: {}, queue: {}, ran: {}", activeRunningJobs, getQueueSize(), jobsRan);
+
+			LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
+			job.setThread(threads.remove(0));
+
+			try {
+				jobRunnerService.runJob(job);
+			} catch (Exception e) {
+				LOGGER.error("Job failed with message: {}", e.getMessage());
+			}
+
+			killThread(job);
+
 		}
 	}
 }
