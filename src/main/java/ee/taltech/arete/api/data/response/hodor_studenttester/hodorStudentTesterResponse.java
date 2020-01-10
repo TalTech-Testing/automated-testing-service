@@ -16,6 +16,6 @@ public class hodorStudentTesterResponse {
 	private String contentRoot;
 	private String testRoot;
 	private ArrayList<TestingResult> results;
-	private String extra; // ?
+	private String extra;
 
 }

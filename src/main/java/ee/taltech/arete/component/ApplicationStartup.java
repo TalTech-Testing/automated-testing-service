@@ -70,6 +70,7 @@ public class ApplicationStartup implements ApplicationRunner {
 
 			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/java-tester:latest").pull();
 			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/python-tester:latest").pull();
+			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/prolog-tester:latest").pull();
 		} catch (Exception ignored) {
 		}
 

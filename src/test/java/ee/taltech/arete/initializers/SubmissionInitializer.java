@@ -24,6 +24,7 @@ public class SubmissionInitializer {
 	private static final String PROJECT = "iti0202-2019";
 	private final static String TESTING_PLATFORM = "java";
 	private final static String TESTING_PLATFORM_PYTHON = "python";
+	private final static String TESTING_PLATFORM_PROLOG = "prolog";
 	private static final String PROJECT_GIT = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git" : "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git";
 	private static final String PROJECT_GIT_PYTHON = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0102-2019/ex.git" : "git@gitlab.cs.ttu.ee:iti0102-2019/ex.git";
 	private final static String RETURN_URL = "https://jsonplaceholder.typicode.com/posts";
@@ -116,6 +117,16 @@ public class SubmissionInitializer {
 				.uniid("envomp")
 				.returnUrl(RETURN_URL)
 				.dockerExtra(EXTRA)
+				.build();
+	}
+
+	public static AreteRequestAsync getFullSubmissionStringProlog() {
+
+		return AreteRequestAsync.builder()
+				.gitStudentRepo("https://gitlab.cs.ttu.ee/envomp/iti0211-2019.git")
+				.testingPlatform(TESTING_PLATFORM_PROLOG)
+				.uniid("envomp")
+				.returnUrl(RETURN_URL)
 				.build();
 	}
 

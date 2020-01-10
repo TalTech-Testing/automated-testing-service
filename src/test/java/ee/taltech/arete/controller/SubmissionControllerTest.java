@@ -1,5 +1,6 @@
 package ee.taltech.arete.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.AreteApplication;
 import ee.taltech.arete.api.data.request.AreteRequestAsync;
@@ -95,6 +96,28 @@ public class SubmissionControllerTest {
 
 	}
 
+
+	@Test
+	public void addNewSubmissionProlog() throws InterruptedException {
+
+		AreteRequestAsync payload = getFullSubmissionStringProlog();
+		Submission submission = given()
+				.when()
+				.body(payload)
+				.post("/test")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(Submission.class);
+
+		TimeUnit.SECONDS.sleep(10);
+		assertFullSubmission(submission);
+
+		//TODO To actually check if it tests
+
+	}
+
 	@Test
 	public void addNewSubmissionSync() {
 
@@ -164,11 +187,12 @@ public class SubmissionControllerTest {
 
 	}
 
+
 	@Test
 	public void updateImage() {
 		given()
 				.when()
-				.post("/image/update/java-tester")
+				.post("/image/update/prolog-tester")
 //				.post("/tester/update/python-tester")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED));

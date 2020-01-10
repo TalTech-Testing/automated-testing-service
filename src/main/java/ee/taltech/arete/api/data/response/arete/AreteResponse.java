@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import ee.taltech.arete.api.data.response.hodor_studenttester.*;
+import ee.taltech.arete.api.data.response.legacy.LegacyTestJobResult;
+import ee.taltech.arete.api.data.response.legacy.LegacyTestingResult;
 import ee.taltech.arete.domain.Submission;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -149,16 +151,29 @@ public class AreteResponse {
 
 		}
 
-		for (TestingResult result : response.getResults()) {
-			if (result.getOutput() != null) {
-				output = constructOutput(submission);
-			}
-		}
+		output = constructOutput(submission);
+		fillFromSubmission(slug, submission);
+	}
 
+	public AreteResponse(String slug, Submission submission, LegacyTestJobResult response) {
+
+		for (LegacyTestingResult result : response.getResults()) {
+			TestContext textContext = new TestContext();
+			textContext.name = result.getName();
+			textContext.weight = 1;
+			textContext.grade = result.getPercentage();
+			this.testSuites.add(textContext);
+		}
+		this.output = response.getOutput();
+		this.files = response.getFiles();
+		this.totalGrade = String.valueOf(response.getPercent());
+		fillFromSubmission(slug, submission);
+	}
+
+	private void fillFromSubmission(String slug, Submission submission) {
 		if (!submission.getSystemExtra().contains("noStd")) {
 			consoleOutputs.add(new ConsoleOutput.ConsoleOutputBuilder().content(submission.getResult()).build());
 		}
-
 		if (submission.getResponse() == null) {
 			submission.setResponse(new ArrayList<>());
 		}

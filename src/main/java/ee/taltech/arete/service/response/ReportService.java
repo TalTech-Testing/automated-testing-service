@@ -4,7 +4,7 @@ import ee.taltech.arete.api.data.response.arete.AreteResponse;
 
 public interface ReportService {
 
-	void sendTextMail(String uniid, String text);
+	void sendTextMail(String uniid, String text, Boolean html);
 
 	void sendTextToReturnUrl(String returnUrl, AreteResponse response);
 

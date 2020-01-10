@@ -3,6 +3,7 @@ package ee.taltech.arete.service.runner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
+import ee.taltech.arete.api.data.response.legacy.LegacyTestJobResult;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.docker.DockerService;
 import ee.taltech.arete.service.git.GitPullService;
@@ -91,21 +92,26 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		AreteResponse areteResponse; // Sent to Moodle
 		String message; // Sent to student
+		boolean html = false;
 
 		try {
 			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
-//			System.out.println(json);
 			JSONObject jsonObject = new JSONObject(json);
-
 
 			try {
 				if ("hodor_studenttester".equals(jsonObject.get("type"))) {
+					html = true;
 					hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
+					areteResponse = new AreteResponse(slug, submission, response);
+				} else if ("hodor_legacy".equals(jsonObject.get("type"))) {
+					LegacyTestJobResult response = objectMapper.readValue(json, LegacyTestJobResult.class);
 					areteResponse = new AreteResponse(slug, submission, response);
 				} else {
 					areteResponse = new AreteResponse(slug, submission, "Unsupported tester type.");
 				}
 			} catch (Exception e1) {
+				html = false;
+				e1.printStackTrace();
 				if (jsonObject.get("output") != null) {
 					areteResponse = new AreteResponse(slug, submission, jsonObject.get("output").toString());
 				} else {
@@ -121,7 +127,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			throw new UnexpectedTypeException(e.getMessage());
 		}
 
-		reportSubmission(submission, areteResponse, message);
+		reportSubmission(submission, areteResponse, message, html);
 
 	}
 
@@ -134,10 +140,10 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
 		}
 
-		reportSubmission(submission, areteResponse, message);
+		reportSubmission(submission, areteResponse, message, false);
 	}
 
-	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message) {
+	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, Boolean html) {
 		try {
 			reportService.sendTextToReturnUrl(submission.getReturnUrl(), areteResponse);
 			LOGGER.info("Reported to return url");
@@ -147,7 +153,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		if (!submission.getSystemExtra().contains("noMail")) {
 			try {
-				reportService.sendTextMail(submission.getUniid(), message);
+				reportService.sendTextMail(submission.getUniid(), message, html);
 				LOGGER.info("Reported to student mailbox");
 			} catch (Exception e1) {
 				LOGGER.error("Malformed mail: {}", e1.getMessage());

@@ -33,7 +33,7 @@ public class ReportServiceImpl implements ReportService {
 
 	@Async
 	@Override
-	public void sendTextMail(String uniid, String text) { // For exceptions
+	public void sendTextMail(String uniid, String text, Boolean html) { // For exceptions
 
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
@@ -41,7 +41,7 @@ public class ReportServiceImpl implements ReportService {
 			helper.setFrom("automatedTestingService@taltech.ee");
 			helper.setTo(String.format("%s@taltech.ee", uniid));
 			helper.setSubject("Test results");
-			helper.setText(text, true);
+			helper.setText(text, html);
 			javaMailSender.send(message);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -52,6 +52,7 @@ public class ReportServiceImpl implements ReportService {
 	public void sendTextToReturnUrl(String returnUrl, AreteResponse response) {
 
 		try {
+			System.out.println(objectMapper.writeValueAsString(response));
 			post(returnUrl, objectMapper.writeValueAsString(response));
 		} catch (IOException | InterruptedException e) {
 			throw new RequestFormatException("Malformed returnUrl");

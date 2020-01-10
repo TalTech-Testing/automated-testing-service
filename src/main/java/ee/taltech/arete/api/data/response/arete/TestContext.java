@@ -39,7 +39,7 @@ public class TestContext {
 	@JsonPropertyDescription("Number of passed tests")
 	Integer passedCount;
 	@JsonPropertyDescription("Total grade for this test file")
-	Integer grade;
+	Double grade;
 	@JsonIgnore
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

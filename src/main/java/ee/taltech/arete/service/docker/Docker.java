@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
 import static com.github.dockerjava.api.model.AccessMode.rw;
@@ -125,7 +126,6 @@ public class Docker {
 				LOGGER.error("Failed to copy files from tester folder to temp folder.");
 				throw new IOException(e.getMessage());
 			}
-
 			mapper.writeValue(new java.io.File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getDockerExtra())));
 
 			container = dockerClient.createContainerCmd(imageId)
