@@ -28,7 +28,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+
+//Return true = success, false = failure.
 
 @Service
 public class GitPullServiceImpl implements GitPullService {
@@ -50,6 +53,7 @@ public class GitPullServiceImpl implements GitPullService {
 			if (submission.getSlugs() == null) {
 				submission.setSlugs(getChangedFolders(pathToStudentFolder));
 			}
+
 		} catch (IOException | GitAPIException e) {
 			LOGGER.error("Failed to read student repository.");
 		}
@@ -106,7 +110,7 @@ public class GitPullServiceImpl implements GitPullService {
 			}
 			LOGGER.info("Cloned to folder: {}", pathToFolder);
 
-			if (submission.isPresent()) {
+			if (submission.isPresent()) { // verify and fill fields
 				return SafePull(pathToFolder, submission);
 			}
 
@@ -124,6 +128,7 @@ public class GitPullServiceImpl implements GitPullService {
 						.setURI(pathToRepo)
 						.setDirectory(new File(pathToFolder))
 						.call();
+				git.close();
 
 			} else {
 				Git git = Git.cloneRepository()
@@ -131,6 +136,7 @@ public class GitPullServiceImpl implements GitPullService {
 						.setURI(pathToRepo)
 						.setDirectory(new File(pathToFolder))
 						.call();
+				git.close();
 			}
 			return true;
 		} catch (Exception e) {
@@ -156,9 +162,9 @@ public class GitPullServiceImpl implements GitPullService {
 	}
 
 	private boolean SafePull(String pathToFolder, Optional<Submission> submission) {
-
+		Git git = null;
 		try {
-			Git git = Git.open(new File(pathToFolder));
+			git = Git.open(new File(pathToFolder));
 			if (submission.isPresent()) {
 				Submission user = submission.get();
 
@@ -167,7 +173,8 @@ public class GitPullServiceImpl implements GitPullService {
 					try {
 						fetch(git);
 						reset(git, user);
-
+						RevCommit latest = getLatestCommit(git);
+						user.setCommitMessage(latest.getFullMessage());
 						LOGGER.info("Pulled specific hash {} for user {}", user.getHash(), user.getUniid());
 					} catch (Exception e) {
 						try {
@@ -176,6 +183,7 @@ public class GitPullServiceImpl implements GitPullService {
 							reset(git, user);
 						} catch (Exception e1) {
 							LOGGER.info("Failed to fetch and reset.");
+							git.close();
 							return false;
 						}
 					}
@@ -183,17 +191,23 @@ public class GitPullServiceImpl implements GitPullService {
 				} else {
 
 					SafePull(git);
-					user.setHash(getLatestHash(git));
+					RevCommit latest = getLatestCommit(git);
+					user.setHash(latest.name());
+					user.setCommitMessage(latest.getFullMessage());
 					LOGGER.info("Pulled for user {} and set hash {}", user.getUniid(), user.getHash());
 				}
 
 			} else {
 
 				SafePull(git);
-				LOGGER.info("Pulled to {} with hash {}", pathToFolder, getLatestHash(git));
+				LOGGER.info("Pulled to {} with hash {}", pathToFolder, getLatestCommit(git).name());
 			}
+			git.close();
 			return true;
 		} catch (Exception e) {
+			if (git != null) {
+				git.close();
+			}
 			submission.ifPresent(value -> value.setResult(e.getMessage()));
 			LOGGER.error("Pull failed with message: {}", e.getMessage());
 			return false;
@@ -235,7 +249,7 @@ public class GitPullServiceImpl implements GitPullService {
 		}
 	}
 
-	private String getLatestHash(Git git) throws GitAPIException, IOException {
+	private RevCommit getLatestCommit(Git git) throws GitAPIException, IOException {
 		RevCommit youngestCommit = null;
 		List<Ref> branches = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
 		try (RevWalk walk = new RevWalk(git.getRepository())) {
@@ -248,7 +262,7 @@ public class GitPullServiceImpl implements GitPullService {
 		}
 
 		assert youngestCommit != null;
-		return youngestCommit.name();
+		return youngestCommit;
 	}
 
 	private void fixHash(Git git, Submission user) throws GitAPIException, IOException {
@@ -277,20 +291,32 @@ public class GitPullServiceImpl implements GitPullService {
 		RevWalk rw = new RevWalk(repository);
 		ObjectId head = repository.resolve(Constants.HEAD);
 		RevCommit commit = rw.parseCommit(head);
-		RevCommit parent = rw.parseCommit(commit.getParent(0).getId());
-		DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
-		df.setRepository(repository);
-		df.setDiffComparator(RawTextComparator.DEFAULT);
-		df.setDetectRenames(true);
-		List<DiffEntry> diffs = df.scan(parent.getTree(), commit.getTree());
-		for (DiffEntry diff : diffs) {
-			if (TESTABLES.contains(diff.getChangeType().name())) {
-				String potentialSlug = diff.getNewPath().split("/")[0];
+		try {
+			RevCommit parent = rw.parseCommit(commit.getParent(0).getId());
+			DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
+			df.setRepository(repository);
+			df.setDiffComparator(RawTextComparator.DEFAULT);
+			df.setDetectRenames(true);
+			List<DiffEntry> diffs = df.scan(parent.getTree(), commit.getTree());
+			for (DiffEntry diff : diffs) {
+
+				if (TESTABLES.contains(diff.getChangeType().name())) {
+					String potentialSlug = diff.getNewPath().split("/")[0];
+					if (potentialSlug.matches("[a-zA-Z0-9_]*")) {
+						repoMainFolders.add(potentialSlug);
+					}
+				}
+
+			}
+			return repoMainFolders;
+		} catch (Exception e) { // first commit, no parent. Get all slugs
+			for (File file : Objects.requireNonNull(new File(pathToStudentFolder).listFiles())) {
+				String potentialSlug = file.getPath().replace(pathToStudentFolder.replace("/", "\\"), "");
 				if (potentialSlug.matches("[a-zA-Z0-9_]*")) {
 					repoMainFolders.add(potentialSlug);
 				}
 			}
+			return repoMainFolders;
 		}
-		return repoMainFolders;
 	}
 }

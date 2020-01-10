@@ -20,9 +20,13 @@ public class ConsoleOutput {
 	@JsonPropertyDescription("Std message")
 	@Column(columnDefinition = "TEXT")
 	String content;
+
 	@JsonIgnore
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
+	public ConsoleOutput(String content) {
+		this.content = content;
+	}
 }

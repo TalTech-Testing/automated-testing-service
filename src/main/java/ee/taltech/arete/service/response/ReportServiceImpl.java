@@ -25,6 +25,7 @@ import java.net.http.HttpResponse;
 public class ReportServiceImpl implements ReportService {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(ReportService.class);
+
 	@Autowired
 	private JavaMailSender javaMailSender;
 
@@ -33,15 +34,15 @@ public class ReportServiceImpl implements ReportService {
 
 	@Async
 	@Override
-	public void sendTextMail(String uniid, String text, Boolean html) { // For exceptions
+	public void sendTextMail(String uniid, String text, String header) { // For exceptions
 
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
 			helper.setFrom("automatedTestingService@taltech.ee");
 			helper.setTo(String.format("%s@taltech.ee", uniid));
-			helper.setSubject("Test results");
-			helper.setText(text, html);
+			helper.setSubject(header);
+			helper.setText(text, true);
 			javaMailSender.send(message);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -52,7 +53,6 @@ public class ReportServiceImpl implements ReportService {
 	public void sendTextToReturnUrl(String returnUrl, AreteResponse response) {
 
 		try {
-			System.out.println(objectMapper.writeValueAsString(response));
 			post(returnUrl, objectMapper.writeValueAsString(response));
 		} catch (IOException | InterruptedException e) {
 			throw new RequestFormatException("Malformed returnUrl");
@@ -70,8 +70,6 @@ public class ReportServiceImpl implements ReportService {
 
 		HttpResponse<String> response = client.send(request,
 				HttpResponse.BodyHandlers.ofString());
-
-//		System.out.println(response.body());
 
 	}
 }

@@ -8,8 +8,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @ToString
 @Entity
@@ -26,40 +26,65 @@ public class Submission {
 	private long id;
 
 	@NotNull
+	@Column(length = 1023)
 	private String testingPlatform;
 
+	@Column(length = 1023)
 	private String returnUrl;
 
+	@Column(length = 1023)
 	private String gitStudentRepo;
 	//  or
-	@Transient
-	private File[] source;
+	@OneToMany(cascade = {CascadeType.ALL})
+	private List<File> source;
 	//  and
+	@Column(length = 1023)
 	private String gitTestSource;
 
+	@Column(length = 1023)
 	private String hash;
 
+	@Column(length = 1023)
 	private String uniid;
 
+	@Column(length = 1023)
 	private String course;
 
+	@Column(length = 1023)
 	private String folder;
 
-	@Transient
-	private HashSet<String> slugs;
+	@ElementCollection
+	@CollectionTable(name = "slugs", joinColumns = @JoinColumn(name = "id"))
+	@Column(length = 1023)
+	private Set<String> slugs;
+
+	@Column(length = 1023)
+	private String commitMessage;
 
 	@Transient
+	@JsonIgnore
 	private String result;
 
-	private HashSet<String> dockerExtra;
-	private HashSet<String> systemExtra;
+	@ElementCollection
+	@CollectionTable(name = "docker_extra", joinColumns = @JoinColumn(name = "id"))
+	@Column(length = 1023)
+	private Set<String> dockerExtra;
+
+	@ElementCollection
+	@CollectionTable(name = "system_extra", joinColumns = @JoinColumn(name = "id"))
+	@Column(length = 1023)
+	private Set<String> systemExtra;
+
 	private Integer dockerTimeout;
 
 	private Long timestamp;
 
 	private Integer priority;
+
+	@Transient
 	private Integer thread;
 
+	@Transient
 	private String token;
 
 	@OneToMany(cascade = {CascadeType.ALL})

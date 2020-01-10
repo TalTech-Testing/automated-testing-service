@@ -22,13 +22,19 @@ public class Error {
 	String message;
 
 	@JsonPropertyDescription("Error kind(styleError, compilationError, other)")
+	@Column(length = 1023)
 	String kind;
+
 	@JsonPropertyDescription("File, where error occured")
+	@Column(length = 1023)
 	String fileName;
+
 	@JsonPropertyDescription("Line, where error occured")
 	Integer lineNo;
+
 	@JsonPropertyDescription("Column, where error occured")
 	Integer columnNo;
+
 	@JsonPropertyDescription("Hint, to fix the error")
 	@Column(columnDefinition = "TEXT")
 	String hint;
