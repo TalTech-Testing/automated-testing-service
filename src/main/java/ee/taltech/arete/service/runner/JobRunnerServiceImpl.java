@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.arete.ConsoleOutput;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
+import ee.taltech.arete.api.data.response.legacy.LegacyTestJobResult;
+import ee.taltech.arete.api.data.response.legacy.LegacyTestingResult;
 import ee.taltech.arete.domain.DefaultParameters;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.docker.DockerService;
@@ -112,6 +114,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		AreteResponse areteResponse; // Sent to Moodle
 		String message; // Sent to student
+		boolean html = false;
 
 		try {
 			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
@@ -119,17 +122,23 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 			try {
 				if ("hodor_studenttester".equals(jsonObject.get("type"))) {
+					html = true;
 					hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
 					areteResponse = new AreteResponse(slug, submission, response);
 				} else if ("arete".equals(jsonObject.get("type"))) {
+					html = true;
 					areteResponse = objectMapper.readValue(json, AreteResponse.class);
 					List<ConsoleOutput> outs = new ArrayList<>();
 					outs.add(new ConsoleOutput(submission.getResult()));
 					areteResponse.setConsoleOutputs(outs);
+				} else if ("hodor_legacy".equals(jsonObject.get("type"))) {
+					LegacyTestJobResult response = objectMapper.readValue(json, LegacyTestJobResult.class);
+					areteResponse = new AreteResponse(slug, submission, response);
 				} else {
 					areteResponse = new AreteResponse(slug, submission, "Unsupported tester type.");
 				}
 			} catch (Exception e1) {
+				html = false;
 				LOGGER.error(e1.getMessage());
 				if (jsonObject.get("output") != null) {
 					areteResponse = new AreteResponse(slug, submission, jsonObject.get("output").toString());
@@ -152,7 +161,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			areteResponse = new AreteResponse(slug, submission, e.getMessage());
 		}
 
-		reportSubmission(submission, areteResponse, message, slug);
+		reportSubmission(submission, areteResponse, message, slug, html);
 
 	}
 
@@ -165,10 +174,10 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
 		}
 
-		reportSubmission(submission, areteResponse, message, "Failed submission");
+		reportSubmission(submission, areteResponse, message, "Failed submission", false);
 	}
 
-	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, String header) {
+	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, String header, Boolean html) {
 		try {
 			reportService.sendTextToReturnUrl(submission.getReturnUrl(), areteResponse);
 			LOGGER.info("Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
@@ -178,7 +187,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		if (!submission.getSystemExtra().contains("noMail")) {
 			try {
-				reportService.sendTextMail(submission.getUniid(), message, header);
+				reportService.sendTextMail(submission.getUniid(), message, header, html);
 				LOGGER.info("Reported to student mailbox");
 			} catch (Exception e1) {
 				LOGGER.error("Malformed mail: {}", e1.getMessage());
@@ -187,7 +196,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		if (!System.getenv().containsKey("GITLAB_PASSWORD") && submissionService.isDebug()) {
 			try {
-				reportService.sendTextMail("envomp", message, header);
+				reportService.sendTextMail("envomp", message, header, html);
 				LOGGER.info("Reported to student mailbox");
 			} catch (Exception e1) {
 				LOGGER.error("Malformed mail: {}", e1.getMessage());

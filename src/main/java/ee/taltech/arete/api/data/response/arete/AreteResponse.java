@@ -193,11 +193,14 @@ public class AreteResponse {
 			textContext.name = result.getName();
 			textContext.weight = 1;
 			textContext.grade = result.getPercentage();
+			this.totalGrade = String.valueOf(result.getPercentage());
 			this.testSuites.add(textContext);
 		}
 		this.output = response.getOutput();
 		this.files = response.getFiles();
-		this.totalGrade = String.valueOf(response.getPercent());
+		if (response.getPercent() != null) {
+			this.totalGrade = String.valueOf(response.getPercent());
+		}
 		fillFromSubmission(slug, submission);
 	}
 

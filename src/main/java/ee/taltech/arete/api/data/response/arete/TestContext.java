@@ -49,7 +49,7 @@ public class TestContext {
 	Integer passedCount;
 
 	@JsonPropertyDescription("Total grade for this test file")
-	Integer grade;
+	Double grade;
 
 	@JsonIgnore
 	@Id
