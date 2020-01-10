@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.AreteApplication;
 import ee.taltech.arete.api.data.request.AreteRequestAsync;
 import ee.taltech.arete.api.data.request.AreteRequestSync;
+import ee.taltech.arete.api.data.request.AreteTestUpdate;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.domain.Submission;
 import io.restassured.RestAssured;
@@ -122,7 +123,7 @@ public class SubmissionControllerTest {
 
 
 	@Test
-	public void addNewSubmissionAsyncPythonReccursion() throws InterruptedException {
+	public void addNewSubmissionAsyncPythonRecursion() throws InterruptedException {
 		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPythonRecursion();
 		Submission submission = given()
 				.when()
@@ -262,17 +263,17 @@ public class SubmissionControllerTest {
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED));
 
-		// TODO check if image came to be
 	}
 
 	@Test
 	public void updateTests() {
+		AreteTestUpdate update = new AreteTestUpdate("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019");
 		given()
+				.body(update)
 				.when()
-				.post("/tests/update/ex/iti0102-2019")
+				.post("/tests/update")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED));
 
-		// TODO check if folder came to me
 	}
 }

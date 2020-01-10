@@ -6,7 +6,7 @@ Schemas can be generated from arete/api/data ```/request``` and ```/response```
 * post
     * /test
     * /test/sync
-    * /tests/update/{project_base}/{project}
+    * /tests/update
     * /image/update/{image_name}
         * java-tester
         * python-tester

@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "id": "urn:jsonschema:ee:taltech:arete:api:data:request:AreteTestUpdate",
+  "properties": {
+    "gitTestSource": {
+      "type": "string",
+      "description": "URL or ssh for test repository."
+    },
+    "course": {
+      "type": "string",
+      "description": "Default is second from the end in url. https://gitlab.cs.ttu.ee/iti0102-2019/ex.git > course = iti0102-2019. Specify course, if its not second from end"
+    }
+  }
+}
