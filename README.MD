@@ -13,6 +13,7 @@ Schemas can be generated from arete/api/data ```/request``` and ```/response```
 
 * get
     * /submissions
+    * /submissions/{amount}
     * /submissions/{hash}
     * /submissions/{hash}/logs
     * /submissions/active

@@ -6,6 +6,7 @@ import ee.taltech.arete.AreteApplication;
 import ee.taltech.arete.api.data.request.AreteRequestAsync;
 import ee.taltech.arete.api.data.request.AreteRequestSync;
 import ee.taltech.arete.api.data.request.AreteTestUpdate;
+import ee.taltech.arete.api.data.request.Repository;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.domain.Submission;
 import io.restassured.RestAssured;
@@ -290,7 +291,7 @@ public class SubmissionControllerTest {
 
 	@Test
 	public void updateTests() {
-		AreteTestUpdate update = new AreteTestUpdate("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019");
+		AreteTestUpdate update = new AreteTestUpdate(new Repository("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019"), "");
 		given()
 				.body(update)
 				.when()

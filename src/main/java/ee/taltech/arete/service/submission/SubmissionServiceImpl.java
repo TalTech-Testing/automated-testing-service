@@ -120,47 +120,33 @@ public class SubmissionServiceImpl implements SubmissionService {
 	@Override
 	public void fixRepo(Submission submission) {
 		if (submission.getGitStudentRepo() != null) {
-			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
-				if (submission.getGitStudentRepo().startsWith("git")) {
-					String fixed = submission.getGitStudentRepo();
-					fixed = fixed.replaceFirst(":", "/");
-					fixed = fixed.replace("git@", "https://");
-					submission.setGitStudentRepo(fixed);
-				}
-			} else {
-				if (submission.getGitStudentRepo().startsWith("http")) {
-					String fixed = submission.getGitStudentRepo();
-					fixed = fixed.replace("https://", "git@");
-					fixed = fixed.replaceFirst("/", ":");
-					submission.setGitStudentRepo(fixed);
-				}
-			}
-			if (!submission.getGitStudentRepo().endsWith(".git")) {
-				submission.setGitStudentRepo(submission.getGitStudentRepo() + ".git");
-			}
+			submission.setGitStudentRepo(fixRepository(submission.getGitStudentRepo()));
 		}
 
 		if (submission.getGitTestSource() != null) {
-			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
-				if (submission.getGitTestSource().startsWith("git")) {
-					String fixed = submission.getGitTestSource();
-					fixed = fixed.replaceFirst(":", "/");
-					fixed = fixed.replace("git@", "https://");
-					submission.setGitTestSource(fixed);
-				}
-			} else {
-				if (submission.getGitTestSource().startsWith("http")) {
-					String fixed = submission.getGitTestSource();
-					fixed = fixed.replace("https://", "git@");
-					fixed = fixed.replaceFirst("/", ":");
-					submission.setGitTestSource(fixed);
-				}
-			}
-			if (!submission.getGitTestSource().endsWith(".git")) {
-				submission.setGitTestSource(submission.getGitTestSource() + ".git");
-			}
+			submission.setGitTestSource(fixRepository(submission.getGitTestSource()));
 		}
 
+	}
+
+	@Override
+	public String fixRepository(String url) {
+		if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+			if (url.startsWith("git")) {
+				url = url.replaceFirst(":", "/");
+				url = url.replace("git@", "https://");
+			}
+
+		} else {
+			if (url.startsWith("http")) {
+				url = url.replace("https://", "git@");
+				url = url.replaceFirst("/", ":");
+			}
+		}
+		if (!url.endsWith(".git")) {
+			return url + ".git";
+		}
+		return url;
 	}
 
 	private void populateDefaultValues(Submission submission) {

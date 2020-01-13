@@ -13,6 +13,8 @@ public interface SubmissionService {
 
 	void fixRepo(Submission submission);
 
+	String fixRepository(String url);
+
 	List<Submission> getSubmissions();
 
 	List<Submission> getSubmissionByHash(String hash);

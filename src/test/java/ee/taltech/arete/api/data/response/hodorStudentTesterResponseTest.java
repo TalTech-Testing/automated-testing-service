@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import ee.taltech.arete.api.data.request.AreteRequestAsync;
 import ee.taltech.arete.api.data.request.AreteRequestSync;
-import ee.taltech.arete.api.data.request.AreteTestUpdate;
+import ee.taltech.arete.api.data.request.Repository;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
 import ee.taltech.arete.domain.Submission;
@@ -85,7 +85,7 @@ public class hodorStudentTesterResponseTest {
 
 		ObjectMapper jacksonObjectMapper = new ObjectMapper();
 		JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(jacksonObjectMapper);
-		JsonSchema schema = schemaGen.generateSchema(AreteTestUpdate.class);
+		JsonSchema schema = schemaGen.generateSchema(Repository.class);
 		String schemaString = jacksonObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
 		System.out.println(schemaString);
 
@@ -96,7 +96,7 @@ public class hodorStudentTesterResponseTest {
 //		getJsonSchemaForRequest();
 //		getJsonSchemaForResponseAsync();
 //		getJsonSchemaForResponseSync();
-		getJsonSchemaForUpdateTest();
+//		getJsonSchemaForUpdateTest();
 	}
 
 	@Test
