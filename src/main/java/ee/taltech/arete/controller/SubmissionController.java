@@ -149,7 +149,7 @@ public class SubmissionController {
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @GetMapping("/submissions/{hash}")
+    @GetMapping("/submission/{hash}")
     public List<Submission> GetSubmissionsByHash(@PathVariable("hash") String hash) {
 
         try {
@@ -210,7 +210,7 @@ public class SubmissionController {
 	}
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @GetMapping("/submissions/{hash}/logs")
+    @GetMapping("/submission/{hash}/logs")
     public List<List<AreteResponse>> GetSubmissionLogs(@PathVariable("hash") String hash) {
 
         try {
