@@ -36,98 +36,95 @@ public class SubmissionServiceImpl implements SubmissionService {
 	@Override
 	public void populateAsyncFields(Submission submission) {
 
-		String repo; //set OtherDefaults
-		if (submission.getGitStudentRepo() == null) {
-			throw new BadRequestException("Git student repo is needed for async.");
-		} else {
-			fixRepo(submission);
-			repo = submission.getGitStudentRepo().replaceAll(".git", "");
-		}
-
-		if (submission.getUniid() == null) {
-			String[] url = repo.split("[/:]");
-			submission.setUniid(url[url.length - 2]);
-		}
-
-		if (submission.getFolder() == null) {
-			String[] url = repo.split("[/:]");
-			submission.setFolder(url[url.length - 1]);
-		}
-
-		if (submission.getCourse() == null) {
-			if (repo.contains("/exams/")) {
-				// in case of exams, the course name is the string before "exams" path
-				String[] url = repo.split("[/:]");
-				submission.setCourse(url[url.length - 3]);
-			} else {
-				String[] url = repo.split("[/:]");
-				submission.setCourse(url[url.length - 1]);
-			}
-		}
-
+		populateTesterRelatedFields(submission);
+		populateStudentRelatedFields(submission);
 		populateDefaultValues(submission);
 
 	}
 
 	@Override
 	public String populateSyncFields(Submission submission) {
-		String hash;
-
-		if (submission.getSource() == null || submission.getSource().size() == 0) {
-			throw new BadRequestException("Source is needed for sync testing.");
-		}
-
-		fixRepo(submission);
 
 		if (submission.getHash() == null) {
-			hash = getRandomHash();
-			submission.setHash(hash);
-			submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", hash));
-		} else {
-			hash = submission.getHash(); //For integration test only.
+			submission.setHash(getRandomHash());
+			submission.setWaitingroom(getRandomHash());
 		}
+		submission.setReturnUrl(String.format("localhost:8098/waitingroom/%s", submission.getWaitingroom()));
 
-		if (submission.getUniid() == null) {
-			submission.setUniid("Codera");
-		}
-
-		if (submission.getSlugs() == null) {
-			String path = submission.getSource().get(0).getPath().split("\\\\")[0];
-			if (path.equals(submission.getSource().get(0).getPath())) {
-				path = submission.getSource().get(0).getPath().split("/")[0];
-			}
-			submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
-		}
-
-		if (submission.getFolder() == null) {
-			String[] url = submission.getGitTestSource().split("[/:]");
-			submission.setFolder(url[url.length - 2]);
-		}
-
-		if (submission.getCourse() == null) {
-			String[] url = submission.getGitTestSource().split("[/:]");
-			submission.setCourse(url[url.length - 2]);
-
-		}
-
+		populateTesterRelatedFields(submission);
+		populateStudentRelatedFields(submission);
 		populateDefaultValues(submission);
 
 		submission.getSystemExtra().add("noMail");
 
-		return hash;
+		return submission.getWaitingroom();
 	}
 
-	@Override
-	public void fixRepo(Submission submission) {
+	private void populateStudentRelatedFields(Submission submission) {
 		if (submission.getGitStudentRepo() != null) {
 			submission.setGitStudentRepo(fixRepository(submission.getGitStudentRepo()));
-		}
+			String repo; //set OtherDefaults
 
+			repo = submission.getGitStudentRepo().replaceAll(".git", "");
+
+
+			if (submission.getUniid() == null) {
+				String[] url = repo.split("[/:]");
+				submission.setUniid(url[url.length - 2]);
+			}
+
+			if (submission.getFolder() == null) {
+				String[] url = repo.split("[/:]");
+				submission.setFolder(url[url.length - 1]);
+			}
+
+			if (submission.getCourse() == null) {
+				if (repo.contains("/exams/")) {
+					// in case of exams, the course name is the string before "exams" path
+					String[] url = repo.split("[/:]");
+					submission.setCourse(url[url.length - 3]);
+				} else {
+					String[] url = repo.split("[/:]");
+					submission.setCourse(url[url.length - 1]);
+				}
+			}
+		} else if (submission.getSource() != null){
+			if (submission.getSlugs() == null) {
+				String path = submission.getSource().get(0).getPath().split("\\\\")[0];
+				if (path.equals(submission.getSource().get(0).getPath())) {
+					path = submission.getSource().get(0).getPath().split("/")[0];
+				}
+				submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
+			}
+
+			if (submission.getFolder() == null) {
+				String[] url = submission.getGitTestSource().split("[/:]");
+				submission.setFolder(url[url.length - 2]);
+			}
+
+			if (submission.getCourse() == null) {
+				String[] url = submission.getGitTestSource().split("[/:]");
+				submission.setCourse(url[url.length - 2]);
+
+			}
+		} else {
+			throw new BadRequestException("Git student repo or student source is needed.");
+		}
+	}
+
+	private void populateTesterRelatedFields(Submission submission) {
 		if (submission.getGitTestSource() != null) {
 			submission.setGitTestSource(fixRepository(submission.getGitTestSource()));
+		} else if (submission.getTestSource() != null){
+			if (submission.getTestSource().size() == 0) {
+				throw new BadRequestException("Git test source is needed size non zero.");
+			}
+		} else {
+//			throw new BadRequestException("Git test repo or test source is needed.");
+			// maybe check, if tests exist.. Nah. doesnt change anything. Only creates more chaos
 		}
-
 	}
+
 
 	@Override
 	public String fixRepository(String url) {

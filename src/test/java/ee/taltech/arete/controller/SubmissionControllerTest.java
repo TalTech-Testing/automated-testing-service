@@ -3,10 +3,8 @@ package ee.taltech.arete.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.AreteApplication;
-import ee.taltech.arete.api.data.request.AreteRequestAsync;
-import ee.taltech.arete.api.data.request.AreteRequestSync;
+import ee.taltech.arete.api.data.request.AreteRequest;
 import ee.taltech.arete.api.data.request.AreteTestUpdate;
-import ee.taltech.arete.api.data.request.Repository;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.domain.Submission;
 import io.restassured.RestAssured;
@@ -35,10 +33,10 @@ import static org.hamcrest.Matchers.is;
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SubmissionControllerTest {
 
-	private AreteRequestSync submission;
-	private AreteRequestSync submissionNoStd;
-	private AreteRequestSync submissionNoTester;
-	private AreteRequestSync submissionNoStyle;
+	private AreteRequest submission;
+	private AreteRequest submissionNoStd;
+	private AreteRequest submissionNoTester;
+	private AreteRequest submissionNoStyle;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -59,7 +57,7 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmissionAsync() throws InterruptedException {
 
-		AreteRequestAsync payload = getFullSubmissionStringControllerEndpoint();
+		AreteRequest payload = getFullSubmissionStringControllerEndpoint();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -81,7 +79,7 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmissionAsyncPython() throws InterruptedException, JsonProcessingException {
 
-		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPython();
+		AreteRequest payload = getFullSubmissionStringControllerEndpointPython();
 		System.out.println(objectMapper.writeValueAsString(payload));
 		Submission submission = given()
 				.when()
@@ -103,7 +101,7 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmissionAsyncPythonLFS() throws InterruptedException {
 
-		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPythonLong();
+		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonLong();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -124,12 +122,12 @@ public class SubmissionControllerTest {
 
 
 	@Test
-	public void addNewSubmissionAsyncPythonRecursion() throws InterruptedException {
-		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPythonRecursion();
+	public void addNewSubmissionSyncPythonRecursion() throws InterruptedException {
+		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonRecursion();
 		Submission submission = given()
 				.when()
 				.body(payload)
-				.post("/test")
+				.post("/test/sync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
@@ -146,7 +144,7 @@ public class SubmissionControllerTest {
 
 	@Test
 	public void addNewSubmissionAsyncPythonCustomConfiguration() throws InterruptedException {
-		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPythonCustomConfiguration();
+		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonCustomConfiguration();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -168,7 +166,7 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmissionAsyncExam() throws InterruptedException {
 
-		AreteRequestAsync payload = getFullSubmissionStringExamControllerEndpoint();
+		AreteRequest payload = getFullSubmissionStringExamControllerEndpoint();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -186,11 +184,32 @@ public class SubmissionControllerTest {
 
 	}
 
+	@Test
+	public void addNewSubmissionSyncExam() {
+
+		AreteRequest payload = getFullSubmissionStringExamControllerEndpoint();
+		AreteResponse response = given()
+				.when()
+				.body(payload)
+				.post("/test/sync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		assert response.getOutput() != null;
+		System.out.println(response);
+
+		//TODO To actually check if it tests
+
+	}
+
 
 	@Test
 	public void addNewSubmissionProlog() throws InterruptedException {
 
-		AreteRequestAsync payload = getFullSubmissionStringProlog();
+		AreteRequest payload = getFullSubmissionStringProlog();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -291,7 +310,7 @@ public class SubmissionControllerTest {
 
 	@Test
 	public void updateTests() {
-		AreteTestUpdate update = new AreteTestUpdate(new Repository("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019"), "");
+		AreteTestUpdate update = new AreteTestUpdate(new AreteTestUpdate.Repository("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019"), "");
 		given()
 				.body(update)
 				.when()

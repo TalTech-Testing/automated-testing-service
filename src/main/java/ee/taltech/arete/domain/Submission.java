@@ -37,9 +37,12 @@ public class Submission {
 	//  or
 	@OneToMany(cascade = {CascadeType.ALL})
 	private List<File> source;
-	//  and
+
 	@Column(length = 1023)
 	private String gitTestSource;
+	// or
+	@OneToMany(cascade = {CascadeType.ALL})
+	private List<File> testSource;
 
 	@Column(length = 1023)
 	private String hash;
@@ -86,6 +89,9 @@ public class Submission {
 
 	@Transient
 	private String token;
+
+	@Transient
+	private String waitingroom;
 
 	@OneToMany(cascade = {CascadeType.ALL})
 	@JsonIgnore

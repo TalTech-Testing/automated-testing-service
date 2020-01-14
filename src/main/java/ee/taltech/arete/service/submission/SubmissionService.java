@@ -11,8 +11,6 @@ public interface SubmissionService {
 
 	String populateSyncFields(Submission submission);
 
-	void fixRepo(Submission submission);
-
 	String fixRepository(String url);
 
 	List<Submission> getSubmissions();
