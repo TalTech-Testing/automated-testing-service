@@ -37,6 +37,8 @@ public class SubmissionControllerTest {
 	private AreteRequest submissionNoStd;
 	private AreteRequest submissionNoTester;
 	private AreteRequest submissionNoStyle;
+	private AreteRequest submissionRecursion;
+	private AreteRequest submissionSyncExam;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -48,6 +50,8 @@ public class SubmissionControllerTest {
 	public void init() throws IOException {
 		RestAssured.baseURI = "http://localhost";
 		RestAssured.port = port;
+		submissionSyncExam = getFullSubmissionStringExamControllerEndpoint(String.format("http://localhost:%s", port));
+		submissionRecursion = getFullSubmissionStringControllerEndpointPythonRecursion(String.format("http://localhost:%s", port));
 		submission = getFullSubmissionStringSync(String.format("http://localhost:%s", port));
 		submissionNoStd = getFullSubmissionStringPythonSyncNoStdout(String.format("http://localhost:%s", port));
 		submissionNoTester = getFullSubmissionStringPythonSyncNoTesterFiles(String.format("http://localhost:%s", port));
@@ -123,20 +127,19 @@ public class SubmissionControllerTest {
 
 	@Test
 	public void addNewSubmissionSyncPythonRecursion() throws InterruptedException {
-		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonRecursion();
-		Submission submission = given()
+		AreteResponse response = given()
 				.when()
-				.body(payload)
+				.body(submissionRecursion)
 				.post("/test/sync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
 				.body()
-				.as(Submission.class);
+				.as(AreteResponse.class);
 
-		assertFullSubmission(submission);
+		assert response.getOutput() != null;
 
-		TimeUnit.SECONDS.sleep(10);
+//		assertFullSubmission(submission);
 
 		//TODO To actually check if it tests
 
@@ -187,10 +190,9 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmissionSyncExam() {
 
-		AreteRequest payload = getFullSubmissionStringExamControllerEndpoint();
 		AreteResponse response = given()
 				.when()
-				.body(payload)
+				.body(submissionSyncExam)
 				.post("/test/sync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))

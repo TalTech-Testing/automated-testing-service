@@ -136,15 +136,16 @@ public class SubmissionInitializer {
 				.build();
 	}
 
-	public static AreteRequest getFullSubmissionStringControllerEndpointPythonRecursion() {
-
+	public static AreteRequest getFullSubmissionStringControllerEndpointPythonRecursion(String base) {
+		String hash = getRandomHash();
 		return AreteRequest.builder()
 				.gitStudentRepo("https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.systemExtra((new HashSet<>(Arrays.asList(
 //						, "noMail"
 				))))
-				.returnUrl(RETURN_URL)
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.hash(hash)
 				.dockerExtra(EXTRA)
 				.priority(10)
 				.build();
@@ -157,6 +158,19 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.priority(10)
+				.build();
+	}
+
+	public static AreteRequest getFullSubmissionStringExamControllerEndpoint(String base) {
+		String hash = getRandomHash();
+		return AreteRequest.builder()
+				.gitStudentRepo(STUDENT_REPO_EXAM)
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.systemExtra((new HashSet<>(Arrays.asList("noStd", "noFeedback", "noMail"))))
+//				.uniid("envomp")
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.hash(hash)
+				.dockerExtra(EXTRA)
 				.build();
 	}
 

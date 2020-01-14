@@ -48,8 +48,12 @@ public class SubmissionServiceImpl implements SubmissionService {
 		if (submission.getHash() == null) {
 			submission.setHash(getRandomHash());
 			submission.setWaitingroom(getRandomHash());
+		} else {
+			submission.setWaitingroom(submission.getHash()); // for integration tests
 		}
-		submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
+		if (submission.getReturnUrl() == null) {
+			submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
+		}
 
 		populateTesterRelatedFields(submission);
 		populateStudentRelatedFields(submission);
