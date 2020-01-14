@@ -49,7 +49,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 			submission.setHash(getRandomHash());
 			submission.setWaitingroom(getRandomHash());
 		}
-		submission.setReturnUrl(String.format("localhost:8098/waitingroom/%s", submission.getWaitingroom()));
+		submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
 
 		populateTesterRelatedFields(submission);
 		populateStudentRelatedFields(submission);
