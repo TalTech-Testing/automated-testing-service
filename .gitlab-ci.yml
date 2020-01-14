@@ -61,9 +61,12 @@ deploy:
   before_script:
     - docker images
     - docker container ls
+    - docker-compose -f docker-compose-deploy.yml down --remove-orphans -v -f
+    - docker images -a | grep "arete" | awk '{print $3}' | xargs docker rmi
   script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-    - docker-compose -f docker-compose-deploy.yml up -d --build --force-recreate --no-deps
+    - docker rename arete-build arete
+    - docker-compose -f docker-compose-deploy.yml up -d --no-deps
   after_script:
     - docker container ls
     - docker images
