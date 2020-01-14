@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
 
-  back:
+  back-test:
     container_name: arete-test
     image: arete-test:latest
     restart: unless-stopped

@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
 
-  db:
+  db-build:
     container_name: postgres
     image: postgres:11.5
     restart: unless-stopped
@@ -13,20 +13,20 @@ services:
     ports:
       - "5432:5432"
 
-  adminer:
+  adminer-build:
     container_name: adminer
     image: adminer
     restart: unless-stopped
     ports:
       - "8090:8080"
 
-  back:
-    container_name: arete
+  back-build:
+    container_name: arete-build
     image: arete:latest
     restart: unless-stopped
     privileged: true
     depends_on:
-      - db
+      - db-build
     build:
       args:
         - ARETE_HOME=/arete

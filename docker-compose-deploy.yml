@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
 
-  db:
+  db-deploy:
     container_name: postgres
     image: postgres:11.5
     restart: unless-stopped
@@ -13,14 +13,14 @@ services:
     ports:
       - "5432:5432"
 
-  adminer:
+  adminer-deploy:
     container_name: adminer
     image: adminer
     restart: unless-stopped
     ports:
       - "8090:8080"
 
-  back:
+  back-deploy:
     container_name: arete
     #    entrypoint: ["sh", "-c", "sleep infinity"]
     image: ${DOCKER_USER}/arete:latest

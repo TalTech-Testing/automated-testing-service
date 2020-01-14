@@ -201,7 +201,6 @@ public class SubmissionControllerTest {
 				.as(AreteResponse.class);
 
 		assert response.getOutput() != null;
-		System.out.println(response);
 
 		//TODO To actually check if it tests
 

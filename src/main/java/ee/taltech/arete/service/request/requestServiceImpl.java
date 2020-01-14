@@ -126,8 +126,7 @@ public class requestServiceImpl implements RequestService {
             if (requestBody == null) throw new RequestFormatException("Empty input!");
             AreteTestUpdate update = objectMapper.readValue(requestBody, AreteTestUpdate.class);
             update.getRepository().setUrl(submissionService.fixRepository(update.getRepository().getUrl()));
-            String[] url = update.getRepository().getUrl().split("[/:]");
-            update.setCourse(url[url.length - 2]);
+            update.setCourse(update.getRepository().getName());
 
             priorityQueueService.halt();
             String pathToTesterFolder = String.format("tests/%s/", update.getCourse());
