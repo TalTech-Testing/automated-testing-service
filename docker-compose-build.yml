@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
 
-  db-build:
+  db:
     container_name: postgres
     image: postgres:11.5
     restart: unless-stopped
@@ -13,7 +13,7 @@ services:
     ports:
       - "5432:5432"
 
-  adminer-build:
+  adminer:
     container_name: adminer
     image: adminer
     restart: unless-stopped
