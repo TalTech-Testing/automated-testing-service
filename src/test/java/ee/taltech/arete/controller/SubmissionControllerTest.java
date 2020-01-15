@@ -3,8 +3,7 @@ package ee.taltech.arete.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.AreteApplication;
-import ee.taltech.arete.api.data.request.AreteRequestAsync;
-import ee.taltech.arete.api.data.request.AreteRequestSync;
+import ee.taltech.arete.api.data.request.AreteRequest;
 import ee.taltech.arete.api.data.request.AreteTestUpdate;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.domain.Submission;
@@ -34,10 +33,12 @@ import static org.hamcrest.Matchers.is;
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SubmissionControllerTest {
 
-	private AreteRequestSync submission;
-	private AreteRequestSync submissionNoStd;
-	private AreteRequestSync submissionNoTester;
-	private AreteRequestSync submissionNoStyle;
+	private AreteRequest submission;
+	private AreteRequest submissionNoStd;
+	private AreteRequest submissionNoTester;
+	private AreteRequest submissionNoStyle;
+	private AreteRequest submissionRecursion;
+	private AreteRequest submissionSyncExam;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -49,6 +50,8 @@ public class SubmissionControllerTest {
 	public void init() throws IOException {
 		RestAssured.baseURI = "http://localhost";
 		RestAssured.port = port;
+		submissionSyncExam = getFullSubmissionStringExamControllerEndpoint(String.format("http://localhost:%s", port));
+		submissionRecursion = getFullSubmissionStringControllerEndpointPythonRecursion(String.format("http://localhost:%s", port));
 		submission = getFullSubmissionStringSync(String.format("http://localhost:%s", port));
 		submissionNoStd = getFullSubmissionStringPythonSyncNoStdout(String.format("http://localhost:%s", port));
 		submissionNoTester = getFullSubmissionStringPythonSyncNoTesterFiles(String.format("http://localhost:%s", port));
@@ -58,7 +61,7 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmissionAsync() throws InterruptedException {
 
-		AreteRequestAsync payload = getFullSubmissionStringControllerEndpoint();
+		AreteRequest payload = getFullSubmissionStringControllerEndpoint();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -80,7 +83,7 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmissionAsyncPython() throws InterruptedException, JsonProcessingException {
 
-		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPython();
+		AreteRequest payload = getFullSubmissionStringControllerEndpointPython();
 		System.out.println(objectMapper.writeValueAsString(payload));
 		Submission submission = given()
 				.when()
@@ -102,7 +105,7 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmissionAsyncPythonLFS() throws InterruptedException {
 
-		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPythonLong();
+		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonLong();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -123,21 +126,20 @@ public class SubmissionControllerTest {
 
 
 	@Test
-	public void addNewSubmissionAsyncPythonRecursion() throws InterruptedException {
-		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPythonRecursion();
-		Submission submission = given()
+	public void addNewSubmissionSyncPythonRecursion() throws InterruptedException {
+		AreteResponse response = given()
 				.when()
-				.body(payload)
-				.post("/test")
+				.body(submissionRecursion)
+				.post("/test/sync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
 				.body()
-				.as(Submission.class);
+				.as(AreteResponse.class);
 
-		assertFullSubmission(submission);
+		assert response.getOutput() != null;
 
-		TimeUnit.SECONDS.sleep(10);
+//		assertFullSubmission(submission);
 
 		//TODO To actually check if it tests
 
@@ -145,7 +147,7 @@ public class SubmissionControllerTest {
 
 	@Test
 	public void addNewSubmissionAsyncPythonCustomConfiguration() throws InterruptedException {
-		AreteRequestAsync payload = getFullSubmissionStringControllerEndpointPythonCustomConfiguration();
+		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonCustomConfiguration();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -167,7 +169,7 @@ public class SubmissionControllerTest {
 	@Test
 	public void addNewSubmissionAsyncExam() throws InterruptedException {
 
-		AreteRequestAsync payload = getFullSubmissionStringExamControllerEndpoint();
+		AreteRequest payload = getFullSubmissionStringExamControllerEndpoint();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -185,11 +187,30 @@ public class SubmissionControllerTest {
 
 	}
 
+	@Test
+	public void addNewSubmissionSyncExam() {
+
+		AreteResponse response = given()
+				.when()
+				.body(submissionSyncExam)
+				.post("/test/sync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		assert response.getOutput() != null;
+
+		//TODO To actually check if it tests
+
+	}
+
 
 	@Test
 	public void addNewSubmissionProlog() throws InterruptedException {
 
-		AreteRequestAsync payload = getFullSubmissionStringProlog();
+		AreteRequest payload = getFullSubmissionStringProlog();
 		Submission submission = given()
 				.when()
 				.body(payload)
@@ -290,7 +311,7 @@ public class SubmissionControllerTest {
 
 	@Test
 	public void updateTests() {
-		AreteTestUpdate update = new AreteTestUpdate("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019");
+		AreteTestUpdate update = new AreteTestUpdate(new AreteTestUpdate.Repository("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019"), "");
 		given()
 				.body(update)
 				.when()

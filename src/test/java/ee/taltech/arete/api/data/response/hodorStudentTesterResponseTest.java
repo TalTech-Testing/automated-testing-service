@@ -3,8 +3,7 @@ package ee.taltech.arete.api.data.response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
-import ee.taltech.arete.api.data.request.AreteRequestAsync;
-import ee.taltech.arete.api.data.request.AreteRequestSync;
+import ee.taltech.arete.api.data.request.AreteRequest;
 import ee.taltech.arete.api.data.request.AreteTestUpdate;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
@@ -56,26 +55,12 @@ public class hodorStudentTesterResponseTest {
 
 		ObjectMapper jacksonObjectMapper = new ObjectMapper();
 		JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(jacksonObjectMapper);
-		JsonSchema schema = schemaGen.generateSchema(AreteRequestAsync.class);
+		JsonSchema schema = schemaGen.generateSchema(AreteRequest.class);
 		String schemaString = jacksonObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
 		System.out.println(schemaString);
 
 	}
 
-	private static void getJsonSchemaForResponseSync() throws IOException {
-
-//		ObjectMapper mapper = new ObjectMapper();
-//		JsonSchema schema = mapper.generateJsonSchema(AreteResponse.class);
-//		System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema));
-
-		ObjectMapper jacksonObjectMapper = new ObjectMapper();
-		JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(jacksonObjectMapper);
-		JsonSchema schema = schemaGen.generateSchema(AreteRequestSync.class);
-		String schemaString = jacksonObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
-		System.out.println(schemaString);
-
-
-	}
 
 	private static void getJsonSchemaForUpdateTest() throws IOException {
 
@@ -95,8 +80,7 @@ public class hodorStudentTesterResponseTest {
 	public static void main(String[] args) throws IOException {
 //		getJsonSchemaForRequest();
 //		getJsonSchemaForResponseAsync();
-//		getJsonSchemaForResponseSync();
-		getJsonSchemaForUpdateTest();
+//		getJsonSchemaForUpdateTest();
 	}
 
 	@Test
