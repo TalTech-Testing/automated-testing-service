@@ -36,8 +36,8 @@ class SubmissionServiceTest {
 	void fixRepo() {
 		Submission submission = new Submission();
 		submission.setGitStudentRepo("https://gitlab.cs.ttu.ee/envomp/iti0102-2019");
-		submissionService.fixRepo(submission);
-		assert submission.getGitStudentRepo().equals("git@gitlab.cs.ttu.ee:envomp/iti0102-2019.git") || submission.getGitStudentRepo().equals("https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git");
+		String fixed = submissionService.fixRepository(submission.getGitStudentRepo());
+		assert fixed.equals("git@gitlab.cs.ttu.ee:envomp/iti0102-2019.git") || fixed.equals("https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git");
 
 	}
 

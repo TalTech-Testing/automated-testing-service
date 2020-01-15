@@ -31,121 +31,121 @@ import java.util.List;
 @Service
 public class JobRunnerServiceImpl implements JobRunnerService {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(JobRunnerService.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(JobRunnerService.class);
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	@Autowired
-	PriorityQueueService priorityQueueService;
+    @Autowired
+    PriorityQueueService priorityQueueService;
 
-	@Autowired
-	DockerService dockerService;
+    @Autowired
+    DockerService dockerService;
 
-	@Autowired
-	GitPullService gitPullService;
+    @Autowired
+    GitPullService gitPullService;
 
-	@Autowired
-	ReportService reportService;
+    @Autowired
+    ReportService reportService;
 
-	@Autowired
-	SubmissionService submissionService;
+    @Autowired
+    SubmissionService submissionService;
 
-	@Override
-	public void runJob(Submission submission) {
+    @Override
+    public void runJob(Submission submission) {
 
-		if (submission.getSource() == null) {
-			try {
-				if (!gitPullService.repositoryMaintenance(submission)) {
-					reportFailedSubmission(submission, new RuntimeException(submission.getResult()));
-					return;
-				}
-			} catch (Exception e) {
-				LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
-				reportFailedSubmission(submission, e);
-				return;
-			}
-		}
+        if (submission.getGitStudentRepo() != null) {
+            try {
+                if (!gitPullService.repositoryMaintenance(submission)) {
+                    reportFailedSubmission(submission, new RuntimeException(submission.getResult()));
+                    return;
+                }
+            } catch (Exception e) {
+                LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
+                reportFailedSubmission(submission, e);
+                return;
+            }
+        }
 
-		LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
+        LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
 
-		for (String slug : submission.getSlugs()) {
+        for (String slug : submission.getSlugs()) {
 
-			try {
-				objectMapper
-						.readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class)
-						.overrideDefaults(submission);
-				LOGGER.debug("Overrode default parameters");
-			} catch (Exception e) {
-				LOGGER.debug("Using default parameters");
-			}
+            try {
+                objectMapper
+                        .readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class)
+                        .overrideDefaults(submission);
+                LOGGER.debug("Overrode default parameters");
+            } catch (Exception e) {
+                LOGGER.debug("Using default parameters");
+            }
 
-			String output;
-			try {
-				output = dockerService.runDocker(submission, slug);
-				LOGGER.info("Job {} has been ran for user {}", slug, submission.getUniid());
+            String output;
+            try {
+                output = dockerService.runDocker(submission, slug);
+                LOGGER.info("Job {} has been ran for user {}", slug, submission.getUniid());
 
-			} catch (Exception e) {
-				LOGGER.error("job {} has failed for user {} with exception: {}", slug, submission.getUniid(), e.getMessage());
+            } catch (Exception e) {
+                LOGGER.error("job {} has failed for user {} with exception: {}", slug, submission.getUniid(), e.getMessage());
 
-				reportFailedSubmission(submission, e);
-				continue;
-			}
+                reportFailedSubmission(submission, e);
+                continue;
+            }
 
-			reportSuccessfulSubmission(slug, submission, output);
+            reportSuccessfulSubmission(slug, submission, output);
 
-			try {
-				new PrintWriter(output).close(); // clears output file
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage());
-			}
+            try {
+                new PrintWriter(output).close(); // clears output file
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage());
+            }
 
-			try {
-				new PrintWriter(String.format("input_and_output/%s/host/input.json", submission.getThread())).close(); // clears input file
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage());
-			}
+            try {
+                new PrintWriter(String.format("input_and_output/%s/host/input.json", submission.getThread())).close(); // clears input file
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage());
+            }
 
-		}
+        }
 
-	}
+    }
 
-	private void reportSuccessfulSubmission(String slug, Submission submission, String output) {
+    private void reportSuccessfulSubmission(String slug, Submission submission, String output) {
 
-		AreteResponse areteResponse; // Sent to Moodle
-		String message; // Sent to student
-		boolean html = false;
+        AreteResponse areteResponse; // Sent to Moodle
+        String message; // Sent to student
+        boolean html = false;
 
-		try {
-			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
-			JSONObject jsonObject = new JSONObject(json);
+        try {
+            String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
+            JSONObject jsonObject = new JSONObject(json);
 
-			try {
-				if ("hodor_studenttester".equals(jsonObject.get("type"))) {
-					html = true;
-					hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
-					areteResponse = new AreteResponse(slug, submission, response);
-				} else if ("arete".equals(jsonObject.get("type"))) {
-					html = true;
-					areteResponse = objectMapper.readValue(json, AreteResponse.class);
-					List<ConsoleOutput> outs = new ArrayList<>();
-					outs.add(new ConsoleOutput(submission.getResult()));
-					areteResponse.setConsoleOutputs(outs);
-				} else if ("hodor_legacy".equals(jsonObject.get("type"))) {
-					LegacyTestJobResult response = objectMapper.readValue(json, LegacyTestJobResult.class);
-					areteResponse = new AreteResponse(slug, submission, response);
-				} else {
-					areteResponse = new AreteResponse(slug, submission, "Unsupported tester type.");
-				}
-			} catch (Exception e1) {
-				html = false;
-				LOGGER.error(e1.getMessage());
-				if (jsonObject.get("output") != null) {
-					areteResponse = new AreteResponse(slug, submission, jsonObject.get("output").toString());
-				} else {
-					areteResponse = new AreteResponse(slug, submission, e1.getMessage());
-				}
-			}
+            try {
+                if ("hodor_studenttester".equals(jsonObject.get("type"))) {
+                    html = true;
+                    hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
+                    areteResponse = new AreteResponse(slug, submission, response);
+                } else if ("arete".equals(jsonObject.get("type"))) {
+                    html = true;
+                    areteResponse = objectMapper.readValue(json, AreteResponse.class);
+                    List<ConsoleOutput> outs = new ArrayList<>();
+                    outs.add(new ConsoleOutput(submission.getResult()));
+                    areteResponse.setConsoleOutputs(outs);
+                } else if ("hodor_legacy".equals(jsonObject.get("type"))) {
+                    LegacyTestJobResult response = objectMapper.readValue(json, LegacyTestJobResult.class);
+                    areteResponse = new AreteResponse(slug, submission, response);
+                } else {
+                    areteResponse = new AreteResponse(slug, submission, "Unsupported tester type.");
+                }
+            } catch (Exception e1) {
+                html = false;
+                LOGGER.error(e1.getMessage());
+                if (jsonObject.get("output") != null) {
+                    areteResponse = new AreteResponse(slug, submission, jsonObject.get("output").toString());
+                } else {
+                    areteResponse = new AreteResponse(slug, submission, e1.getMessage());
+                }
+            }
 
 //			if (areteResponse.getTotalGrade().equals("0.0")) {
 ////				LOGGER.error("--------------------------------------------------------------------------");
@@ -153,54 +153,54 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 ////				LOGGER.error("--------------------------------------------------------------------------");
 //			}
 
-			message = areteResponse.getOutput();
+            message = areteResponse.getOutput();
 
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			message = e.getMessage();
-			areteResponse = new AreteResponse(slug, submission, e.getMessage());
-		}
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            message = e.getMessage();
+            areteResponse = new AreteResponse(slug, submission, e.getMessage());
+        }
 
-		reportSubmission(submission, areteResponse, message, slug, html);
+        reportSubmission(submission, areteResponse, message, slug, html);
 
-	}
+    }
 
-	private void reportFailedSubmission(Submission submission, Exception e) {
-		String message = String.format("Testing failed with message: %s", e.getMessage()); // Sent to student
-		AreteResponse areteResponse;
-		if (submission.getSlugs() == null) {
-			areteResponse = new AreteResponse("undefined", submission, message); // Sent to Moodle
-		} else {
-			areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
-		}
+    private void reportFailedSubmission(Submission submission, Exception e) {
+        String message = String.format("Testing failed with message: %s", e.getMessage()); // Sent to student
+        AreteResponse areteResponse;
+        if (submission.getSlugs() == null) {
+            areteResponse = new AreteResponse("undefined", submission, message); // Sent to Moodle
+        } else {
+            areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
+        }
 
-		reportSubmission(submission, areteResponse, message, "Failed submission", false);
-	}
+        reportSubmission(submission, areteResponse, message, "Failed submission", false);
+    }
 
-	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, String header, Boolean html) {
-		try {
-			reportService.sendTextToReturnUrl(submission.getReturnUrl(), areteResponse);
-			LOGGER.info("Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
-		} catch (Exception e1) {
-			LOGGER.error("Malformed returnUrl: {}", e1.getMessage());
-		}
+    private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, String header, Boolean html) {
+        try {
+            reportService.sendTextToReturnUrl(submission.getReturnUrl(), areteResponse);
+            LOGGER.info("Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
+        } catch (Exception e1) {
+            LOGGER.error("Malformed returnUrl: {}", e1.getMessage());
+        }
 
-		if (!submission.getSystemExtra().contains("noMail")) {
-			try {
-				reportService.sendTextMail(submission.getUniid(), message, header, html);
-				LOGGER.info("Reported to student mailbox");
-			} catch (Exception e1) {
-				LOGGER.error("Malformed mail: {}", e1.getMessage());
-			}
-		}
+        if (!submission.getSystemExtra().contains("noMail")) {
+            try {
+                reportService.sendTextMail(submission.getUniid(), message, header, html);
+                LOGGER.info("Reported to student mailbox");
+            } catch (Exception e1) {
+                LOGGER.error("Malformed mail: {}", e1.getMessage());
+            }
+        }
 
-		if (!System.getenv().containsKey("GITLAB_PASSWORD") && submissionService.isDebug()) {
-			try {
-				reportService.sendTextMail("envomp", message, header, html);
-				LOGGER.info("Reported to student mailbox");
-			} catch (Exception e1) {
-				LOGGER.error("Malformed mail: {}", e1.getMessage());
-			}
-		}
-	}
+        if (!System.getenv().containsKey("GITLAB_PASSWORD") && submissionService.isDebug()) {
+            try {
+                reportService.sendTextMail("envomp", message, header, html);
+                LOGGER.info("Reported to student mailbox");
+            } catch (Exception e1) {
+                LOGGER.error("Malformed mail: {}", e1.getMessage());
+            }
+        }
+    }
 }

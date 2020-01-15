@@ -76,33 +76,33 @@ public class ApplicationStartup implements ApplicationRunner {
 
 		try {
 
-			List<String> projects;
-			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
-				projects = Arrays.asList("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "https://gitlab.cs.ttu.ee/iti0102-2018/ex.git", "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git");
-				log.info("Set testers through https");
-			} else {
-				projects = Arrays.asList("git@gitlab.cs.ttu.ee:iti0102-2019/ex.git"
-//						, "git@gitlab.cs.ttu.ee:iti0102-2018/ex.git"
-//						, "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git"
-				);
-				log.info("Set testers through ssh");
-			}
-
-			List<String> projectsFolders = Arrays.asList("iti0102-2019", "iti0102-2018", "iti0202-2019");
-
-			for (int i = 0; i < projects.size(); i++) {
-				String project = projects.get(i);
-				String projectsFolder = projectsFolders.get(i);
-				String pathToTesterFolder = String.format("tests/%s/", projectsFolder);
-				String pathToTesterRepo = String.format("%s", project);
-				log.info(String.format("pre setting %s", project));
-				try {
-					gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
-
-				} catch (Exception e) {
-					log.info(String.format("pre setting %s failed with an exception: %s", project, e.getMessage()));
-				}
-			}
+//			List<String> projects;
+//			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+//				projects = Arrays.asList("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "https://gitlab.cs.ttu.ee/iti0102-2018/ex.git", "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git");
+//				log.info("Set testers through https");
+//			} else {
+//				projects = Arrays.asList("git@gitlab.cs.ttu.ee:iti0102-2019/ex.git"
+////						, "git@gitlab.cs.ttu.ee:iti0102-2018/ex.git"
+////						, "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git"
+//				);
+//				log.info("Set testers through ssh");
+//			}
+//
+//			List<String> projectsFolders = Arrays.asList("iti0102-2019", "iti0102-2018", "iti0202-2019");
+//
+//			for (int i = 0; i < projects.size(); i++) {
+//				String project = projects.get(i);
+//				String projectsFolder = projectsFolders.get(i);
+//				String pathToTesterFolder = String.format("tests/%s/", projectsFolder);
+//				String pathToTesterRepo = String.format("%s", project);
+//				log.info(String.format("pre setting %s", project));
+//				try {
+//					gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
+//
+//				} catch (Exception e) {
+//					log.info(String.format("pre setting %s failed with an exception: %s", project, e.getMessage()));
+//				}
+//			}
 		} catch (Exception ignored) {
 		}
 
