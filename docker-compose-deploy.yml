@@ -20,7 +20,7 @@ services:
     ports:
       - "8090:8080"
 
-  back-deploy:
+  back:
     container_name: arete
     #    entrypoint: ["sh", "-c", "sleep infinity"]
     image: ${DOCKER_USER}/arete:latest

@@ -20,8 +20,8 @@ services:
     ports:
       - "8090:8080"
 
-  back-build:
-    container_name: arete-build
+  back:
+    container_name: arete
     image: arete:latest
     restart: unless-stopped
     privileged: true
