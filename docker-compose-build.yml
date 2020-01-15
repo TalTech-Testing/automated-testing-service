@@ -23,7 +23,6 @@ services:
   back:
     container_name: arete
     image: arete:latest
-    restart: unless-stopped
     privileged: true
     depends_on:
       - db
