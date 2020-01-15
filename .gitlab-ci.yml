@@ -61,6 +61,7 @@ deploy:
   before_script:
     - docker images
     - docker container ls
+    - docker container stop $(docker container ls -q --filter name=arete) -f || true
     - docker images -a | grep "arete" | awk '{print $3}' | xargs docker rmi -f || true
   script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
