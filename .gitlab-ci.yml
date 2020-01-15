@@ -61,7 +61,7 @@ deploy:
   before_script:
     - docker images
     - docker container ls
-    - docker images -a | grep "arete" | awk '{print $3}' | xargs docker rmi
+    - docker images -a | grep "arete" | awk '{print $3}' | xargs docker rmi -f || true
   script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker rename arete-build arete
