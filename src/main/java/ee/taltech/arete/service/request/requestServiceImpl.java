@@ -128,13 +128,13 @@ public class requestServiceImpl implements RequestService {
             if (update.getUrl() != null) {
                 update.setUrl(submissionService.fixRepository(update.getUrl()));
             } else {
-                assert update.getRepository().getUrl() != null;
-                update.setUrl(submissionService.fixRepository(update.getRepository().getUrl()));
+                assert update.getProject().getUrl() != null;
+                update.setUrl(submissionService.fixRepository(update.getProject().getUrl()));
             }
 
             if (update.getCourse() == null) {
-                assert update.getRepository().getNamespace() != null;
-                update.setCourse(update.getRepository().getNamespace());
+                assert update.getProject().getNamespace() != null;
+                update.setCourse(update.getProject().getNamespace());
             }
 
             priorityQueueService.halt();

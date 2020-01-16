@@ -308,7 +308,7 @@ public class SubmissionControllerTest {
 
 	@Test
 	public void updateTests() {
-		AreteTestUpdate update = new AreteTestUpdate(new AreteTestUpdate.Repository("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019"), null, null);
+		AreteTestUpdate update = new AreteTestUpdate(new AreteTestUpdate.Project("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019"), null, null);
 		given()
 				.body(update)
 				.when()

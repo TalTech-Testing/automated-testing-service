@@ -14,7 +14,7 @@ public class AreteTestUpdate {
 
     @NotNull
     @JsonPropertyDescription("Git hook repository")
-    private Repository repository;
+    private Project project;
 
     @JsonPropertyDescription("Folder where tests are saved")
     private String course;
@@ -23,13 +23,12 @@ public class AreteTestUpdate {
     @JsonPropertyDescription("URL or ssh for test repository.")
     private String url;
 
-
     @Getter
     @Setter
     @ToString
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Repository {
+    public static class Project {
 
         @NotNull
         @JsonPropertyDescription("URL or ssh for test repository.")
