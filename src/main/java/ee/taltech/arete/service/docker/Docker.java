@@ -89,7 +89,6 @@ public class Docker {
             String student;
 
             student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getFolder(), slug);
-
             String tempStudent = String.format("input_and_output/%s/student", submission.getThread());
 
             Volume volumeStudent = new Volume("/student");

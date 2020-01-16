@@ -61,7 +61,6 @@ public class hodorStudentTesterResponseTest {
 
 	}
 
-
 	private static void getJsonSchemaForUpdateTest() throws IOException {
 
 //		ObjectMapper mapper = new ObjectMapper();
@@ -85,71 +84,56 @@ public class hodorStudentTesterResponseTest {
 
 	@Test
 	public void JavaParsingFullResponse() throws IOException {
-		String json = Files.readString(Paths.get(home + "/src/test/java/ee/taltech/arete/api/data/response/java2.json"), StandardCharsets.UTF_8);
-		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
-//		System.out.println(objectMapper.writeValueAsString(response));
-		Submission test = getFullSubmissionJava();
-		AreteResponse areteResponse = new AreteResponse("ex", test, response);
-		assert test.getResponse().size() > 0;
-		assert areteResponse.getOutput() != null;
-		assert areteResponse.getErrors() != null;
-		assert areteResponse.getConsoleOutputs() != null;
-		assert areteResponse.getFiles() != null;
-		assert areteResponse.getTestFiles() != null;
-		assert areteResponse.getId() >= 0;
-//		System.out.println(objectMapper.writeValueAsString(test.getResponse()));
-//		System.out.println(objectMapper.writeValueAsString(areteResponse.getOutput()));
-	}
+        String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java2.json");
+        hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
+        Submission test = getFullSubmissionJava();
+        AreteResponse areteResponse = new AreteResponse("ex", test, response);
+        assertSuccessfulParsing(test, areteResponse);
+    }
 
 	@Test
 	public void JavaExamParsing() throws IOException {
-		String json = Files.readString(Paths.get(home + "/src/test/java/ee/taltech/arete/api/data/response/java.json"), StandardCharsets.UTF_8);
-		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
-		Submission test = getFullSubmissionJava();
-		AreteResponse areteResponse = new AreteResponse("ex", test, response);
-		assert test.getResponse().size() > 0;
-		assert areteResponse.getOutput() != null;
-		assert areteResponse.getErrors() != null;
-		assert areteResponse.getConsoleOutputs() != null;
-		assert areteResponse.getFiles() != null;
-		assert areteResponse.getTestFiles() != null;
-		assert areteResponse.getId() >= 0;
-//		System.out.println(objectMapper.writeValueAsString(test.getResponse()));
-//		System.out.println(objectMapper.writeValueAsString(areteResponse.getOutput()));
-	}
+        // given
+        String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java.json");
+        hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
+        Submission test = getFullSubmissionJava();
 
-	@Test
-	public void JavaDoesntCompile() throws IOException {
-		String json = Files.readString(Paths.get(home + "/src/test/java/ee/taltech/arete/api/data/response/java3.json"), StandardCharsets.UTF_8);
-		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
-		Submission test = getFullSubmissionJava();
-		AreteResponse areteResponse = new AreteResponse("ex", test, response);
-		assert test.getResponse().size() > 0;
-		assert areteResponse.getOutput() != null;
-		assert areteResponse.getErrors() != null;
-		assert areteResponse.getConsoleOutputs() != null;
-		assert areteResponse.getFiles() != null;
-		assert areteResponse.getTestFiles() != null;
-		assert areteResponse.getId() >= 0;
-//		System.out.println(objectMapper.writeValueAsString(test.getResponse()));
-//		System.out.println(objectMapper.writeValueAsString(areteResponse.getOutput()));
-	}
+        // when
+        AreteResponse areteResponse = new AreteResponse("ex", test, response);
 
-	@Test
-	public void PythonParsing() throws IOException {
-		String json = Files.readString(Paths.get(home + "/src/test/java/ee/taltech/arete/api/data/response/python.json"), StandardCharsets.UTF_8);
-		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
-//		System.out.println(objectMapper.writeValueAsString(response));
-		Submission test = getFullSubmissionJava();
-		AreteResponse areteResponse = new AreteResponse("ex", test, response);
-		assert test.getResponse().size() > 0;
-		assert areteResponse.getOutput() != null;
-		assert areteResponse.getErrors() != null;
-		assert areteResponse.getConsoleOutputs() != null;
-		assert areteResponse.getFiles() != null;
-		assert areteResponse.getTestFiles() != null;
-		assert areteResponse.getId() >= 0;
-//		System.out.println(objectMapper.writeValueAsString(test.getResponse()));
-//		System.out.println(objectMapper.writeValueAsString(areteResponse.getOutput()));
-	}
+        // then
+        assertSuccessfulParsing(test, areteResponse);
+    }
+
+    @Test
+    public void JavaDoesntCompile() throws IOException {
+        String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java3.json");
+        hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
+        Submission test = getFullSubmissionJava();
+        AreteResponse areteResponse = new AreteResponse("ex", test, response);
+        assertSuccessfulParsing(test, areteResponse);
+    }
+
+    private String getJavaJson(String s) throws IOException {
+        return Files.readString(Paths.get(home + s), StandardCharsets.UTF_8);
+    }
+
+    @Test
+    public void PythonParsing() throws IOException {
+        String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/python.json");
+        hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
+        Submission test = getFullSubmissionJava();
+        AreteResponse areteResponse = new AreteResponse("ex", test, response);
+        assertSuccessfulParsing(test, areteResponse);
+    }
+
+    private void assertSuccessfulParsing(Submission test, AreteResponse areteResponse) {
+        assert test.getResponse().size() > 0;
+        assert areteResponse.getOutput() != null;
+        assert areteResponse.getErrors() != null;
+        assert areteResponse.getConsoleOutputs() != null;
+        assert areteResponse.getFiles() != null;
+        assert areteResponse.getTestFiles() != null;
+        assert areteResponse.getId() >= 0;
+    }
 }

@@ -7,7 +7,6 @@ import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import ee.taltech.arete.api.data.request.AreteTestUpdate;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
-import ee.taltech.arete.controller.SubmissionController;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.exception.RequestFormatException;
 import ee.taltech.arete.service.docker.ImageCheck;
@@ -125,12 +124,22 @@ public class requestServiceImpl implements RequestService {
             LOGGER.info("Parsing request body: " + requestBody);
             if (requestBody == null) throw new RequestFormatException("Empty input!");
             AreteTestUpdate update = objectMapper.readValue(requestBody, AreteTestUpdate.class);
-            update.getRepository().setUrl(submissionService.fixRepository(update.getRepository().getUrl()));
-            update.setCourse(update.getRepository().getName());
+
+            if (update.getUrl() != null) {
+                update.setUrl(submissionService.fixRepository(update.getUrl()));
+            } else {
+                assert update.getRepository().getUrl() != null;
+                update.setUrl(submissionService.fixRepository(update.getRepository().getUrl()));
+            }
+
+            if (update.getCourse() == null) {
+                assert update.getRepository().getNamespace() != null;
+                update.setCourse(update.getRepository().getNamespace());
+            }
 
             priorityQueueService.halt();
             String pathToTesterFolder = String.format("tests/%s/", update.getCourse());
-            String pathToTesterRepo = update.getRepository().getUrl();
+            String pathToTesterRepo = update.getUrl();
             LOGGER.info("Checking for update for tester:");
             gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
             priorityQueueService.go();

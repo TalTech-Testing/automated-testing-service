@@ -59,8 +59,6 @@ public class SubmissionServiceImpl implements SubmissionService {
 		populateStudentRelatedFields(submission);
 		populateDefaultValues(submission);
 
-		submission.getSystemExtra().add("noMail");
-
 		return submission.getWaitingroom();
 	}
 
@@ -69,30 +67,19 @@ public class SubmissionServiceImpl implements SubmissionService {
 			submission.setGitStudentRepo(fixRepository(submission.getGitStudentRepo()));
 			String repo; //set OtherDefaults
 
-			repo = submission.getGitStudentRepo().replaceAll(".git", "");
-
+			repo = submission.getGitStudentRepo().replaceAll("\\.git", "");
+			String[] url = repo.replace("://", "").split("[/:]");
 
 			if (submission.getUniid() == null) {
-				String[] url = repo.split("[/:]");
-				submission.setUniid(url[url.length - 2]);
+				submission.setUniid(url[1]); // user identificator - this is 100% unique
 			}
 
 			if (submission.getFolder() == null) {
-				String[] url = repo.split("[/:]");
-				submission.setFolder(url[url.length - 1]);
+				submission.setFolder(url[url.length - 1]); // Just the folder where file is saved - user cant have multiple of those
 			}
 
-			if (submission.getCourse() == null) {
-				if (repo.contains("/exams/")) {
-					// in case of exams, the course name is the string before "exams" path
-					String[] url = repo.split("[/:]");
-					submission.setCourse(url[url.length - 3]);
-				} else {
-					String[] url = repo.split("[/:]");
-					submission.setCourse(url[url.length - 1]);
-				}
-			}
 		} else if (submission.getSource() != null){
+
 			if (submission.getSlugs() == null) {
 				String path = submission.getSource().get(0).getPath().split("\\\\")[0];
 				if (path.equals(submission.getSource().get(0).getPath())) {
@@ -101,16 +88,6 @@ public class SubmissionServiceImpl implements SubmissionService {
 				submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
 			}
 
-			if (submission.getFolder() == null) {
-				String[] url = submission.getGitTestSource().split("[/:]");
-				submission.setFolder(url[url.length - 2]);
-			}
-
-			if (submission.getCourse() == null) {
-				String[] url = submission.getGitTestSource().split("[/:]");
-				submission.setCourse(url[url.length - 2]);
-
-			}
 		} else {
 			throw new BadRequestException("Git student repo or student source is needed.");
 		}
@@ -119,16 +96,23 @@ public class SubmissionServiceImpl implements SubmissionService {
 	private void populateTesterRelatedFields(Submission submission) {
 		if (submission.getGitTestSource() != null) {
 			submission.setGitTestSource(fixRepository(submission.getGitTestSource()));
+
+			String repo = submission.getGitTestSource().replaceAll("\\.git", "");
+			if (submission.getCourse() == null) {
+				String[] url = repo.replace("://", "").split("[/:]");
+				submission.setCourse(url[1]);
+			}
+
 		} else if (submission.getTestSource() != null){
+
 			if (submission.getTestSource().size() == 0) {
 				throw new BadRequestException("Git test source is needed size non zero.");
 			}
+
 		} else {
-//			throw new BadRequestException("Git test repo or test source is needed.");
-			// maybe check, if tests exist.. Nah. doesnt change anything. Only creates more chaos
+			throw new BadRequestException("Git test repo or test source is needed.");
 		}
 	}
-
 
 	@Override
 	public String fixRepository(String url) {
@@ -176,6 +160,10 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 		if (submission.getSystemExtra() == null) {
 			submission.setSystemExtra(new HashSet<>());
+		}
+
+		if (submission.getUniid() == null) {
+			submission.getSystemExtra().add("noMail");
 		}
 	}
 

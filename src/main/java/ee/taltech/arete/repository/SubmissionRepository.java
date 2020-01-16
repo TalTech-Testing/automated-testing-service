@@ -12,5 +12,4 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
 
 	ArrayList<Submission> findByHash(@Param("hash") String hash);
 
-
 }

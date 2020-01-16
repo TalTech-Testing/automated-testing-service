@@ -34,7 +34,7 @@ public class ReportServiceImpl implements ReportService {
 
 	@Async
 	@Override
-	public void sendTextMail(String uniid, String text, String header, Boolean html) { // For exceptions
+	public void sendTextMail(String uniid, String text, String header, Boolean html) {
 
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
