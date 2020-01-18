@@ -5,7 +5,6 @@ import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.arete.ConsoleOutput;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
 import ee.taltech.arete.api.data.response.legacy.LegacyTestJobResult;
-import ee.taltech.arete.api.data.response.legacy.LegacyTestingResult;
 import ee.taltech.arete.domain.DefaultParameters;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.docker.DockerService;
@@ -146,12 +145,6 @@ public class JobRunnerServiceImpl implements JobRunnerService {
                     areteResponse = new AreteResponse(slug, submission, e1.getMessage());
                 }
             }
-
-//			if (areteResponse.getTotalGrade().equals("0.0")) {
-////				LOGGER.error("--------------------------------------------------------------------------");
-////				LOGGER.error(json);
-////				LOGGER.error("--------------------------------------------------------------------------");
-//			}
 
             message = areteResponse.getOutput();
 
