@@ -1,6 +1,5 @@
 package ee.taltech.arete.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.AreteApplication;
 import ee.taltech.arete.api.data.request.AreteRequest;
@@ -59,13 +58,13 @@ public class SubmissionControllerTest {
 	}
 
 	@Test
-	public void addNewSubmissionAsync() throws InterruptedException {
+	public void addNewSubmissionAsyncReturnsFullSubmission() throws InterruptedException {
 
 		AreteRequest payload = getFullSubmissionStringControllerEndpoint();
 		Submission submission = given()
 				.when()
 				.body(payload)
-				.post("/test")
+				.post(":testAsync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
@@ -81,14 +80,13 @@ public class SubmissionControllerTest {
 
 
 	@Test
-	public void addNewSubmissionAsyncPython() throws InterruptedException, JsonProcessingException {
+	public void addNewSubmissionAsyncPythonReturnsFullSubmission() throws InterruptedException {
 
 		AreteRequest payload = getFullSubmissionStringControllerEndpointPython();
-		System.out.println(objectMapper.writeValueAsString(payload));
 		Submission submission = given()
 				.when()
 				.body(payload)
-				.post("/test")
+				.post(":testAsync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
@@ -98,18 +96,16 @@ public class SubmissionControllerTest {
 		TimeUnit.SECONDS.sleep(10);
 		assertFullSubmission(submission);
 
-		//TODO To actually check if it tests
-
 	}
 
 	@Test
-	public void addNewSubmissionAsyncPythonLFS() throws InterruptedException {
+	public void addNewSubmissionAsyncPythonLFSReturnsFullSubmission() throws InterruptedException {
 
 		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonLong();
 		Submission submission = given()
 				.when()
 				.body(payload)
-				.post("/test")
+				.post(":testAsync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
@@ -118,19 +114,15 @@ public class SubmissionControllerTest {
 
 		TimeUnit.SECONDS.sleep(10);
 		assertFullSubmission(submission);
-
-		//TODO To actually check if it tests
-		// Expect timeout
-
 	}
 
 
 	@Test
-	public void addNewSubmissionSyncPythonRecursion() {
+	public void addNewSubmissionSyncPythonRecursionReturnsOutput() {
 		AreteResponse response = given()
 				.when()
 				.body(submissionRecursion)
-				.post("/test/sync")
+				.post(":testSync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
@@ -138,20 +130,15 @@ public class SubmissionControllerTest {
 				.as(AreteResponse.class);
 
 		assert response.getOutput() != null;
-
-//		assertFullSubmission(submission);
-
-		//TODO To actually check if it tests
-
 	}
 
 	@Test
-	public void addNewSubmissionAsyncPythonCustomConfiguration() throws InterruptedException {
+	public void addNewSubmissionAsyncPythonCustomConfigurationReturnsFullSubmission() throws InterruptedException {
 		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonCustomConfiguration();
 		Submission submission = given()
 				.when()
 				.body(payload)
-				.post("/test")
+				.post(":testAsync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
@@ -162,18 +149,16 @@ public class SubmissionControllerTest {
 
 		TimeUnit.SECONDS.sleep(10);
 
-		//TODO To actually check if it tests
-
 	}
 
 	@Test
-	public void addNewSubmissionAsyncExam() throws InterruptedException {
+	public void addNewSubmissionAsyncExamReturnsFullSubmission() throws InterruptedException {
 
 		AreteRequest payload = getFullSubmissionStringExamControllerEndpoint();
 		Submission submission = given()
 				.when()
 				.body(payload)
-				.post("/test")
+				.post(":testAsync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
@@ -183,17 +168,15 @@ public class SubmissionControllerTest {
 		TimeUnit.SECONDS.sleep(10);
 		assertFullSubmission(submission);
 
-		//TODO To actually check if it tests
-
 	}
 
 	@Test
-	public void addNewSubmissionSyncExam() {
+	public void addNewSubmissionSyncExamReturnsOutput() {
 
 		AreteResponse response = given()
 				.when()
 				.body(submissionSyncExam)
-				.post("/test/sync")
+				.post(":testSync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
@@ -227,12 +210,12 @@ public class SubmissionControllerTest {
 //	}
 
 	@Test
-	public void addNewSubmissionSync() {
+	public void addNewSubmissionSyncReturnsOutput() {
 
 		AreteResponse answer = given()
 				.when()
 				.body(submission)
-				.post("/test/sync")
+				.post(":testSync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
@@ -243,12 +226,12 @@ public class SubmissionControllerTest {
 	}
 
 	@Test
-	public void addNewSubmissionSyncNoTests() {
+	public void addNewSubmissionSyncNoTestsDoesntReturnTestFiles() {
 
 		AreteResponse answer = given()
 				.when()
 				.body(submissionNoTester)
-				.post("/test/sync")
+				.post(":testSync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
@@ -261,12 +244,12 @@ public class SubmissionControllerTest {
 
 
 	@Test
-	public void addNewSubmissionSyncNoStd() {
+	public void addNewSubmissionSyncNoStdReturnsNoStd() {
 
 		AreteResponse answer = given()
 				.when()
 				.body(submissionNoStd)
-				.post("/test/sync")
+				.post(":testSync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
@@ -279,12 +262,12 @@ public class SubmissionControllerTest {
 
 
 	@Test
-	public void addNewSubmissionSyncNoStyle() {
+	public void addNewSubmissionSyncNoStyleReturnsStyle100() {
 
 		AreteResponse answer = given()
 				.when()
 				.body(submissionNoStyle)
-				.post("/test/sync")
+				.post(":testSync")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
@@ -300,7 +283,7 @@ public class SubmissionControllerTest {
 	public void updateImage() {
 		given()
 				.when()
-				.post("/image/update/prolog-tester")
+				.put("/image/prolog-tester")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED));
 
@@ -312,7 +295,7 @@ public class SubmissionControllerTest {
 		given()
 				.body(update)
 				.when()
-				.post("/tests/update")
+				.put("/tests")
 				.then()
 				.statusCode(is(HttpStatus.SC_ACCEPTED));
 

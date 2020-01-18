@@ -18,3 +18,11 @@ services:
       - ${ARETE_HOME}/arete-test/input_and_output:${ARETE_HOME}/arete-test/input_and_output
       - ${ARETE_HOME}/arete-test/students:${ARETE_HOME}/arete-test/students
       - ${ARETE_HOME}/arete-test/tests:${ARETE_HOME}/arete-test/tests
+
+
+
+
+
+
+
+

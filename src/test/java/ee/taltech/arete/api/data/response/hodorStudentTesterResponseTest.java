@@ -92,7 +92,7 @@ public class hodorStudentTesterResponseTest {
     }
 
 	@Test
-	public void JavaExamParsing() throws IOException {
+    public void JavaExamParsingParsesWithoutExceptionsAndFillsRequiredFields() throws IOException {
         // given
         String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java.json");
         hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
