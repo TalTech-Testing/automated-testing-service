@@ -79,8 +79,8 @@ public class hodorStudentTesterResponseTest {
 	public static void main(String[] args) throws IOException {
 //		getJsonSchemaForRequest();
 //		getJsonSchemaForResponseAsync();
-//		getJsonSchemaForUpdateTest();
-	}
+        getJsonSchemaForUpdateTest();
+    }
 
 	@Test
 	public void JavaParsingFullResponse() throws IOException {

@@ -1,20 +1,26 @@
-package ee.taltech.arete.api.data.request;
+package ee.taltech.arete.domain;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.sun.istack.NotNull;
 import lombok.*;
 
+@ToString
 @Getter
 @Setter
-@Builder
-@ToString
-@NoArgsConstructor
+@Builder()
 @AllArgsConstructor
-public class AreteTestUpdate {
-
+@NoArgsConstructor
+public class TestUpdate {
     @NotNull
     @JsonPropertyDescription("Git hook project")
     private Project project;
+
+    @JsonPropertyDescription("Folder where tests are saved")
+    private String course;
+
+    @NotNull
+    @JsonPropertyDescription("URL or ssh for test repository.")
+    private String url;
 
     @Getter
     @Setter

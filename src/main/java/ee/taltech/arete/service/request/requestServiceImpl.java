@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
-import ee.taltech.arete.api.data.request.AreteTestUpdate;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.domain.Submission;
+import ee.taltech.arete.domain.TestUpdate;
 import ee.taltech.arete.exception.RequestFormatException;
 import ee.taltech.arete.service.docker.ImageCheck;
 import ee.taltech.arete.service.git.GitPullService;
@@ -123,7 +123,7 @@ public class requestServiceImpl implements RequestService {
             String requestBody = httpEntity.getBody();
             LOGGER.info("Parsing request body: " + requestBody);
             if (requestBody == null) throw new RequestFormatException("Empty input!");
-            AreteTestUpdate update = objectMapper.readValue(requestBody, AreteTestUpdate.class);
+            TestUpdate update = objectMapper.readValue(requestBody, TestUpdate.class);
 
             if (update.getUrl() != null) {
                 update.setUrl(submissionService.fixRepository(update.getUrl()));

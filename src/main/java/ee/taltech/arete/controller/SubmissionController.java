@@ -31,13 +31,13 @@ public class SubmissionController {
     private PriorityQueueService priorityQueueService;
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PostMapping({"/test", ":testAsync"})
+    @PostMapping({"/test", "/:testAsync"})
     public Submission Test(HttpEntity<String> httpEntity) {
         return requestService.testAsync(httpEntity);
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PostMapping({"/test/sync", ":testSync"})
+    @PostMapping({"/test/sync", "/:testSync"})
     public AreteResponse TestSync(HttpEntity<String> httpEntity) {
 
         return requestService.testSync(httpEntity);
@@ -52,14 +52,6 @@ public class SubmissionController {
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/image/{image}")
-    public String UpdateImageViaWebhook(@PathVariable("image") String image) {
-
-        return requestService.updateImage(image);
-
-    }
-
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @PostMapping("/image/{image}:update")
     public String UpdateImage(@PathVariable("image") String image) {
 
         return requestService.updateImage(image);
@@ -67,8 +59,16 @@ public class SubmissionController {
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
+    @PostMapping("/image/{image}:update")
+    public String UpdateImageViaWebhook(@PathVariable("image") String image) {
+
+        return requestService.updateImage(image);
+
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/tests")
-    public String UpdateTestsViaWebhook(HttpEntity<String> httpEntity) {
+    public String UpdateTests(HttpEntity<String> httpEntity) {
 
         return requestService.updateTests(httpEntity);
 
@@ -76,7 +76,7 @@ public class SubmissionController {
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping("/tests:update")
-    public String UpdateTests(HttpEntity<String> httpEntity) {
+    public String UpdateTestsViaWebhook(HttpEntity<String> httpEntity) {
 
         return requestService.updateTests(httpEntity);
 
