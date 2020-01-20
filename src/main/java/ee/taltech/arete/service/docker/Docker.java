@@ -38,7 +38,6 @@ public class Docker {
 
     private DockerClient dockerClient;
     private CreateContainerResponse container;
-    private String imageId;
     private String containerName;
     private String image;
 
@@ -50,12 +49,9 @@ public class Docker {
     public Docker(Submission submission, String slug) {
         this.submission = submission;
         this.slug = slug;
-
         this.containerName = String.format("%s_%s_%s", submission.getHash().substring(0, 16).toLowerCase(), submission.getThread(), 100000 + Math.abs(new Random().nextInt()) * 900000);
         this.hostFile = String.format("input_and_output/%s/host/output.json", submission.getThread());
-        TestingPlatforms testingPlatforms = TestingPlatforms.BY_LABEL.get(submission.getTestingPlatform());
-        TestingPlatforms.correctTesterInput(submission);
-        this.image = testingPlatforms.image;
+        this.image = String.format("automatedtestingservice/%s-tester", submission.getTestingPlatform());
     }
 
     public void run() {
@@ -73,7 +69,7 @@ public class Docker {
 
             dockerClient = DockerClientBuilder.getInstance(config).build();
 
-            imageId = getImage(dockerClient, image);
+            String imageId = getImage(dockerClient, image);
 
             LOGGER.info("Got image with id: {}", imageId);
 
