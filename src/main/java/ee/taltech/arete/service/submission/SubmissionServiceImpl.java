@@ -97,10 +97,11 @@ public class SubmissionServiceImpl implements SubmissionService {
 		if (submission.getGitTestSource() != null) {
 			submission.setGitTestSource(fixRepository(submission.getGitTestSource()));
 
-			String repo = submission.getGitTestSource().replaceAll("\\.git", "");
 			if (submission.getCourse() == null) {
-				String[] url = repo.replace("://", "").split("[/:]");
-				submission.setCourse(url[1]);
+				submission.setCourse(submission.getGitTestSource()
+						.replace(".git", "")
+						.replace("https://gitlab.cs.ttu.ee/", "")
+						.replace("git@gitlab.cs.ttu.ee:", ""));
 			}
 
 		} else if (submission.getTestSource() != null){

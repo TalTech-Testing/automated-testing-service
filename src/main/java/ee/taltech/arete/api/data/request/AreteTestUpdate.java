@@ -27,5 +27,8 @@ public class AreteTestUpdate {
         @JsonPropertyDescription("URL or ssh for test repository.")
         private String url;
 
+        @JsonPropertyDescription("Default is first after gitlab.cs.ttu.ee. https://gitlab.cs.ttu.ee/iti0102-2019/ex.git > path_with_namespace = iti0102-2019/ex. Specify course, if its not first after gitlab.cs.ttu.ee")
+        private String path_with_namespace;
+
     }
 }

@@ -125,20 +125,17 @@ public class requestServiceImpl implements RequestService {
             if (requestBody == null) throw new RequestFormatException("Empty input!");
             TestUpdate update = objectMapper.readValue(requestBody, TestUpdate.class);
 
+            assert update.getProject().getPath_with_namespace() != null;
             assert update.getProject().getUrl() != null;
             update.getProject().setUrl(submissionService.fixRepository(update.getProject().getUrl()));
 
-            String repo = update.getProject().getUrl().replaceAll("\\.git", "");
-            String[] url = repo.replace("://", "").split("[/:]");
-            String course = url[1];
-
             priorityQueueService.halt();
-            String pathToTesterFolder = String.format("tests/%s/", course);
+            String pathToTesterFolder = String.format("tests/%s/", update.getProject().getPath_with_namespace());
             String pathToTesterRepo = update.getProject().getUrl();
             LOGGER.info("Checking for update for tester:");
             gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
             priorityQueueService.go();
-            return "Successfully updated tests: " + course;
+            return "Successfully updated tests: " + update.getProject().getPath_with_namespace();
         } catch (Exception e) {
             throw new RequestFormatException(e.getMessage());
         }
