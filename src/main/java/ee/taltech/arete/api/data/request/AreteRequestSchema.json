@@ -65,7 +65,7 @@
     },
     "systemExtra": {
       "type": "array",
-      "description": "No defaults. You can add (noMail, noTesterFiles, noStd, noFeedback)",
+      "description": "No defaults. You can add (noMail, noTesterFiles, noStd, noFeedback, minimalFeedback)",
       "items": {
         "type": "string"
       }

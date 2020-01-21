@@ -178,7 +178,7 @@ public class SubmissionInitializer {
 				.gitStudentRepo(STUDENT_REPO_EXAM)
 				.gitTestSource(TESTER_REPO_EXAM)
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.systemExtra((new HashSet<>(Arrays.asList("noStd", "noFeedback", "noMail"))))
+				.systemExtra((new HashSet<>(Arrays.asList("noStd", "noMail"))))
 				.uniid("envomp")
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.hash(hash)

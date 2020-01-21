@@ -2,12 +2,15 @@
 # Currently supported endpoints
 
 Schemas can be generated from arete/api/data ```/request``` and ```/response```
+* put
+    * /image/{image}
+    * /tests
 
 * post
-    * /test
-    * /test/sync
-    * /tests/update
-    * /image/update/{image_name}
+    * /:testAsync
+    * /:testSync
+    * /tests:update
+    * /image/{image_name}:update
         * java-tester
         * python-tester
 
