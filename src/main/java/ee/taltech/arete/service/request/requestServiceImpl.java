@@ -125,25 +125,20 @@ public class requestServiceImpl implements RequestService {
             if (requestBody == null) throw new RequestFormatException("Empty input!");
             TestUpdate update = objectMapper.readValue(requestBody, TestUpdate.class);
 
-            if (update.getUrl() != null) {
-                update.setUrl(submissionService.fixRepository(update.getUrl()));
-            } else {
-                assert update.getProject().getUrl() != null;
-                update.setUrl(submissionService.fixRepository(update.getProject().getUrl()));
-            }
+            assert update.getProject().getUrl() != null;
+            update.getProject().setUrl(submissionService.fixRepository(update.getProject().getUrl()));
 
-            if (update.getCourse() == null) {
-                assert update.getProject().getNamespace() != null;
-                update.setCourse(update.getProject().getNamespace());
-            }
+            String repo = update.getProject().getUrl().replaceAll("\\.git", "");
+            String[] url = repo.replace("://", "").split("[/:]");
+            String course = url[1];
 
             priorityQueueService.halt();
-            String pathToTesterFolder = String.format("tests/%s/", update.getCourse());
-            String pathToTesterRepo = update.getUrl();
+            String pathToTesterFolder = String.format("tests/%s/", course);
+            String pathToTesterRepo = update.getProject().getUrl();
             LOGGER.info("Checking for update for tester:");
             gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
             priorityQueueService.go();
-            return "Successfully updated tests: " + update.getCourse();
+            return "Successfully updated tests: " + course;
         } catch (Exception e) {
             throw new RequestFormatException(e.getMessage());
         }

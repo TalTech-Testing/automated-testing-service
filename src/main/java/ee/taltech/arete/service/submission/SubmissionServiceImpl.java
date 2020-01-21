@@ -153,9 +153,6 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 		if (submission.getDockerExtra() == null) {
 			submission.setDockerExtra(new HashSet<>());
-			if (DEBUG) {
-				submission.getDockerExtra().add("stylecheck");
-			}
 		}
 
 		if (submission.getSystemExtra() == null) {

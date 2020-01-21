@@ -38,6 +38,7 @@ public class Docker {
 
     private DockerClient dockerClient;
     private CreateContainerResponse container;
+    private String imageId;
     private String containerName;
     private String image;
 
@@ -69,7 +70,7 @@ public class Docker {
 
             dockerClient = DockerClientBuilder.getInstance(config).build();
 
-            String imageId = getImage(dockerClient, image);
+            imageId = getImage(dockerClient, image);
 
             LOGGER.info("Got image with id: {}", imageId);
 
