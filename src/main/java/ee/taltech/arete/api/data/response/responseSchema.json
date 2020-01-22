@@ -179,7 +179,7 @@
             "description": "Number of passed tests"
           },
           "grade": {
-            "type": "integer",
+            "type": "number",
             "description": "Total grade for this test file"
           }
         }
@@ -217,9 +217,25 @@
       "type": "string",
       "description": "Slug ran for student. for example pr01_something"
     },
-    "token": {
+    "hash": {
       "type": "string",
-      "description": "Security Token"
+      "description": "Commit hash from gitlab"
+    },
+    "uniid": {
+      "type": "string",
+      "description": "Students uniid"
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "Testing timestamp"
+    },
+    "commitMessage": {
+      "type": "string",
+      "description": "Commit message for student repository"
+    },
+    "returnExtra": {
+      "type": "any",
+      "description": "values that are returned the same way they were given in"
     }
   }
 }

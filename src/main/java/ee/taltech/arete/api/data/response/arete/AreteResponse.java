@@ -2,7 +2,9 @@ package ee.taltech.arete.api.data.response.arete;
 
 import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.databind.JsonNode;
 import ee.taltech.arete.api.data.response.hodor_studenttester.*;
 import ee.taltech.arete.api.data.response.legacy.LegacyTestJobResult;
 import ee.taltech.arete.api.data.response.legacy.LegacyTestingResult;
@@ -71,9 +73,10 @@ public class AreteResponse {
     @JsonPropertyDescription("Slug ran for student. for example pr01_something")
     String slug;
 
-    @Column(length = 1023)
-    @JsonPropertyDescription("Security Token")
-    String token;
+    @Transient
+    @JsonPropertyDescription("values that are returned the same way they were given in")
+    @JsonProperty("returnExtra")
+    private JsonNode returnExtra;
 
     @JsonPropertyDescription("Commit hash from gitlab")
     String hash;
@@ -110,7 +113,7 @@ public class AreteResponse {
         }
 
         submission.getResponse().add(this);
-        this.token = submission.getToken();
+        this.returnExtra = submission.getReturnExtra();
         this.slug = slug;
     }
 
@@ -234,7 +237,7 @@ public class AreteResponse {
             submission.setResponse(new ArrayList<>());
         }
         submission.getResponse().add(this);
-        this.token = submission.getToken();
+        this.returnExtra = submission.getReturnExtra();
         this.slug = slug;
         this.hash = submission.getHash();
         this.uniid = submission.getUniid();

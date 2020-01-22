@@ -28,163 +28,180 @@ import static org.hamcrest.Matchers.is;
 @AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
 @SpringBootTest(
-		classes = AreteApplication.class,
-		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+        classes = AreteApplication.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SubmissionControllerTest {
 
-	private AreteRequest submission;
-	private AreteRequest submissionNoStd;
-	private AreteRequest submissionNoTester;
-	private AreteRequest submissionNoStyle;
-	private AreteRequest submissionRecursion;
-	private AreteRequest submissionSyncExam;
+    private AreteRequest submission;
+    private AreteRequest submissionNoStd;
+    private AreteRequest submissionNoTester;
+    private AreteRequest submissionNoStyle;
+    private AreteRequest submissionRecursion;
+    private AreteRequest submissionSyncExam;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	@LocalServerPort
-	private int port;
+    @LocalServerPort
+    private int port;
 
-	@Before
-	public void init() throws IOException {
-		RestAssured.baseURI = "http://localhost";
-		RestAssured.port = port;
-		submissionSyncExam = getFullSubmissionStringExamControllerEndpoint(String.format("http://localhost:%s", port));
-		submissionRecursion = getFullSubmissionStringControllerEndpointPythonRecursion(String.format("http://localhost:%s", port));
-		submission = getFullSubmissionStringSync(String.format("http://localhost:%s", port));
-		submissionNoStd = getFullSubmissionStringPythonSyncNoStdout(String.format("http://localhost:%s", port));
-		submissionNoTester = getFullSubmissionStringPythonSyncNoTesterFiles(String.format("http://localhost:%s", port));
-		submissionNoStyle = getFullSubmissionStringPythonSyncNoStyle(String.format("http://localhost:%s", port));
-	}
+    @Before
+    public void init() throws IOException {
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = port;
+        submissionSyncExam = getFullSubmissionStringExamControllerEndpoint(String.format("http://localhost:%s", port));
+        submissionRecursion = getFullSubmissionStringControllerEndpointPythonRecursion(String.format("http://localhost:%s", port));
+        submission = getFullSubmissionStringSync(String.format("http://localhost:%s", port));
+        submissionNoStd = getFullSubmissionStringPythonSyncNoStdout(String.format("http://localhost:%s", port));
+        submissionNoTester = getFullSubmissionStringPythonSyncNoTesterFiles(String.format("http://localhost:%s", port));
+        submissionNoStyle = getFullSubmissionStringPythonSyncNoStyle(String.format("http://localhost:%s", port));
+    }
 
-	@Test
-	public void addNewSubmissionAsyncReturnsFullSubmission() throws InterruptedException {
+    @Test
+    public void addNewSubmissionAsyncReturnsFullSubmission() throws InterruptedException {
 
-		AreteRequest payload = getFullSubmissionStringControllerEndpoint();
-		Submission submission = given()
-				.when()
-				.body(payload)
-				.post(":testAsync")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED))
-				.extract()
-				.body()
-				.as(Submission.class);
+        AreteRequest payload = getFullSubmissionStringControllerEndpoint();
+        Submission submission = given()
+                .when()
+                .body(payload)
+                .post(":testAsync")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(Submission.class);
 
-		TimeUnit.SECONDS.sleep(10);
-		assertFullSubmission(submission);
+        TimeUnit.SECONDS.sleep(10);
 
-		//TODO To actually check if it tests
-
-	}
-
-
-	@Test
-	public void addNewSubmissionAsyncPythonReturnsFullSubmission() throws InterruptedException {
-
-		AreteRequest payload = getFullSubmissionStringControllerEndpointPython();
-		Submission submission = given()
-				.when()
-				.body(payload)
-				.post(":testAsync")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED))
-				.extract()
-				.body()
-				.as(Submission.class);
-
-		TimeUnit.SECONDS.sleep(10);
-		assertFullSubmission(submission);
-
-	}
-
-	@Test
-	public void addNewSubmissionAsyncPythonLFSReturnsFullSubmission() throws InterruptedException {
-
-		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonLong();
-		Submission submission = given()
-				.when()
-				.body(payload)
-				.post(":testAsync")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED))
-				.extract()
-				.body()
-				.as(Submission.class);
-
-		TimeUnit.SECONDS.sleep(10);
-		assertFullSubmission(submission);
-	}
+        // then
+        assertFullSubmission(submission);
+    }
 
 
-	@Test
-	public void addNewSubmissionSyncPythonRecursionReturnsOutput() {
-		AreteResponse response = given()
-				.when()
-				.body(submissionRecursion)
-				.post(":testSync")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED))
-				.extract()
-				.body()
-				.as(AreteResponse.class);
+    @Test
+    public void addNewSubmissionAsyncPythonReturnsFullSubmission() throws InterruptedException {
 
-		assert response.getOutput() != null;
-	}
+        AreteRequest payload = getFullSubmissionStringControllerEndpointPython();
+        Submission submission = given()
+                .when()
+                .body(payload)
+                .post(":testAsync")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(Submission.class);
 
-	@Test
-	public void addNewSubmissionAsyncPythonCustomConfigurationReturnsFullSubmission() throws InterruptedException {
-		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonCustomConfiguration();
-		Submission submission = given()
-				.when()
-				.body(payload)
-				.post(":testAsync")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED))
-				.extract()
-				.body()
-				.as(Submission.class);
+        TimeUnit.SECONDS.sleep(10);
 
-		assertFullSubmission(submission);
+        // then
+        assertFullSubmission(submission);
 
-		TimeUnit.SECONDS.sleep(10);
+    }
 
-	}
+    @Test
+    public void addNewSubmissionAsyncPythonLFSReturnsFullSubmission() throws InterruptedException {
 
-	@Test
-	public void addNewSubmissionAsyncExamReturnsFullSubmission() throws InterruptedException {
+        AreteRequest payload = getFullSubmissionStringControllerEndpointPythonLong();
+        Submission submission = given()
+                .when()
+                .body(payload)
+                .post(":testAsync")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(Submission.class);
 
-		AreteRequest payload = getFullSubmissionStringExamControllerEndpoint();
-		Submission submission = given()
-				.when()
-				.body(payload)
-				.post(":testAsync")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED))
-				.extract()
-				.body()
-				.as(Submission.class);
+        // then
+        assertFullSubmission(submission);
+    }
 
-		TimeUnit.SECONDS.sleep(10);
-		assertFullSubmission(submission);
 
-	}
+    @Test
+    public void addNewSubmissionSyncPythonRecursionReturnsOutput() {
+        AreteResponse response = given()
+                .when()
+                .body(submissionRecursion)
+                .post(":testSync")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(AreteResponse.class);
 
-	@Test
-	public void addNewSubmissionSyncExamReturnsOutput() {
+        // then
+        assert response.getOutput() != null;
+    }
 
-		AreteResponse response = given()
-				.when()
-				.body(submissionSyncExam)
-				.post(":testSync")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED))
-				.extract()
-				.body()
-				.as(AreteResponse.class);
+    @Test
+    public void addNewSubmissionAsyncPythonCustomConfigurationReturnsFullSubmission() throws InterruptedException {
+        AreteRequest payload = getFullSubmissionStringControllerEndpointPythonCustomConfiguration();
+        Submission submission = given()
+                .when()
+                .body(payload)
+                .post(":testAsync")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(Submission.class);
 
-		assert response.getOutput() != null;
-	}
+        // then
+        assertFullSubmission(submission);
+    }
+
+    @Test
+    public void addNewSubmissionFromStringParsesCorrectly() throws InterruptedException {
+        Submission submission = given()
+                .when()
+                .body("{\"testingPlatform\":\"python\",\"returnUrl\":\"https://jsonplaceholder.typicode.com/posts\",\"gitStudentRepo\":\"https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git\",\"source\":null,\"gitTestSource\":\"https://gitlab.cs.ttu.ee/iti0102-2019/ex.git\",\"testSource\":null,\"hash\":null,\"uniid\":null,\"project\":null,\"dockerExtra\":null,\"systemExtra\":null,\"dockerTimeout\":null,\"priority\":10,\"returnExtra\":{\"some\":\"stuff\"}}")
+                .post(":testAsync")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(Submission.class);
+
+        // then
+        assertFullSubmission(submission);
+        assert submission.getReturnExtra().get("some").toString().equals("\"stuff\"");
+    }
+
+    @Test
+    public void addNewSubmissionAsyncExamReturnsFullSubmission() throws InterruptedException {
+
+        AreteRequest payload = getFullSubmissionStringExamControllerEndpoint();
+        Submission submission = given()
+                .when()
+                .body(payload)
+                .post(":testAsync")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(Submission.class);
+
+        // then
+        assertFullSubmission(submission);
+    }
+
+    @Test
+    public void addNewSubmissionSyncExamReturnsOutput() {
+
+        AreteResponse response = given()
+                .when()
+                .body(submissionSyncExam)
+                .post(":testSync")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(AreteResponse.class);
+
+        // then
+        assert response.getOutput() != null;
+    }
 
 
 //	@Test
@@ -209,95 +226,95 @@ public class SubmissionControllerTest {
 //
 //	}
 
-	@Test
-	public void addNewSubmissionSyncReturnsOutput() {
+    @Test
+    public void addNewSubmissionSyncReturnsOutput() {
 
-		AreteResponse answer = given()
-				.when()
-				.body(submission)
-				.post(":testSync")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED))
-				.extract()
-				.body()
-				.as(AreteResponse.class);
+        AreteResponse answer = given()
+                .when()
+                .body(submission)
+                .post(":testSync")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(AreteResponse.class);
 
-		assert answer.getOutput() != null;
-	}
+        assert answer.getOutput() != null;
+    }
 
-	@Test
-	public void addNewSubmissionSyncNoTestsDoesntReturnTestFiles() {
+    @Test
+    public void addNewSubmissionSyncNoTestsDoesntReturnTestFiles() {
 
-		AreteResponse answer = given()
-				.when()
-				.body(submissionNoTester)
-				.post(":testSync")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED))
-				.extract()
-				.body()
-				.as(AreteResponse.class);
+        AreteResponse answer = given()
+                .when()
+                .body(submissionNoTester)
+                .post(":testSync")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(AreteResponse.class);
 
-		assert answer.getTestFiles().size() == 0;
+        assert answer.getTestFiles().size() == 0;
 
-	}
-
-
-	@Test
-	public void addNewSubmissionSyncNoStdReturnsNoStd() {
-
-		AreteResponse answer = given()
-				.when()
-				.body(submissionNoStd)
-				.post(":testSync")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED))
-				.extract()
-				.body()
-				.as(AreteResponse.class);
-
-		assert answer.getConsoleOutputs().size() == 0;
-
-	}
+    }
 
 
-	@Test
-	public void addNewSubmissionSyncNoStyleReturnsStyle100() {
+    @Test
+    public void addNewSubmissionSyncNoStdReturnsNoStd() {
 
-		AreteResponse answer = given()
-				.when()
-				.body(submissionNoStyle)
-				.post(":testSync")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED))
-				.extract()
-				.body()
-				.as(AreteResponse.class);
+        AreteResponse answer = given()
+                .when()
+                .body(submissionNoStd)
+                .post(":testSync")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(AreteResponse.class);
 
-		assert answer.getStyle() == 100;
+        assert answer.getConsoleOutputs().size() == 0;
 
-	}
+    }
 
 
-	@Test
-	public void updateImage() {
-		given()
-				.when()
-				.put("/image/prolog-tester")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED));
+    @Test
+    public void addNewSubmissionSyncNoStyleReturnsStyle100() {
 
-	}
+        AreteResponse answer = given()
+                .when()
+                .body(submissionNoStyle)
+                .post(":testSync")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(AreteResponse.class);
 
-	@Test
-	public void updateTests() {
-		AreteTestUpdate update = new AreteTestUpdate(new AreteTestUpdate.Project("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019/ex"));
-		given()
-				.body(update)
-				.when()
-				.put("/tests")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED));
+        assert answer.getStyle() == 100;
 
-	}
+    }
+
+
+    @Test
+    public void updateImage() {
+        given()
+                .when()
+                .put("/image/prolog-tester")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED));
+
+    }
+
+    @Test
+    public void updateTests() {
+        AreteTestUpdate update = new AreteTestUpdate(new AreteTestUpdate.Project("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019/ex"));
+        given()
+                .body(update)
+                .when()
+                .put("/tests")
+                .then()
+                .statusCode(is(HttpStatus.SC_ACCEPTED));
+
+    }
 }

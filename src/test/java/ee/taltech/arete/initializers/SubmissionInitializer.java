@@ -41,7 +41,6 @@ public class SubmissionInitializer {
 				.gitTestSource(TESTER_REPO_PYTHON)
 				.course(PROJECT_PYTHON)
 				.folder(PROJECT_PYTHON)
-				.token("Token")
 				.hash("1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
@@ -65,7 +64,6 @@ public class SubmissionInitializer {
 				.gitTestSource(TESTER_REPO_JAVA)
 				.course(PROJECT)
 				.folder(PROJECT)
-				.token("Token")
 				.hash("8133c4fb0dbcda3709d9f8ced953f5ef5af4e0ca")
 				.testingPlatform(TESTING_PLATFORM_JAVA)
 				.returnUrl(RETURN_URL)
@@ -88,7 +86,6 @@ public class SubmissionInitializer {
 				.gitTestSource(TESTER_REPO_PYTHON)
 				.course(PROJECT_PYTHON)
 				.folder(PROJECT_PYTHON)
-				.token("Token")
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.systemExtra((new HashSet<>(Arrays.asList(
@@ -162,7 +159,6 @@ public class SubmissionInitializer {
 	}
 
 	public static AreteRequest getFullSubmissionStringControllerEndpointPythonCustomConfiguration() {
-
 		return AreteRequest.builder()
 				.gitStudentRepo(STUDENT_REPO_PYTHON)
 				.gitTestSource(TESTER_REPO_PYTHON)
@@ -321,7 +317,7 @@ public class SubmissionInitializer {
 //		assert submission.getHash() != null;
 		assert submission.getReturnUrl().equals(RETURN_URL);
 //		assert submission.getTestingPlatform().equals(TESTING_PLATFORM);
-		assert !submission.getDockerExtra().isEmpty();
+//		assert !submission.getDockerExtra().isEmpty();
 	}
 
 	public static void endTest() {

@@ -28,15 +28,23 @@ class SubmissionServiceTest {
 
 	@Test
 	void getSubmissionByHash() {
+		// given, when
 		submissionService.saveSubmission(submission);
+
+		// then
 		assert submissionService.getSubmissionByHash(submission.getHash()).get(0).getUniid().equals(submission.getUniid());
 	}
 
 	@Test
 	void fixRepo() {
+		// given
 		Submission submission = new Submission();
 		submission.setGitStudentRepo("https://gitlab.cs.ttu.ee/envomp/iti0102-2019");
+
+		// when
 		String fixed = submissionService.fixRepository(submission.getGitStudentRepo());
+
+		// then
 		assert fixed.equals("git@gitlab.cs.ttu.ee:envomp/iti0102-2019.git") || fixed.equals("https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git");
 
 	}

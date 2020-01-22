@@ -27,37 +27,37 @@ import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmiss
 @SpringBootTest
 public class hodorStudentTesterResponseTest {
 
-	private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
+    private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
 
-	@Autowired
-	private ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	private static void getJsonSchemaForRequest() throws IOException {
-
-//		ObjectMapper mapper = new ObjectMapper();
-//		JsonSchema schema = mapper.generateJsonSchema(AreteResponse.class);
-//		System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema));
-
-		ObjectMapper jacksonObjectMapper = new ObjectMapper();
-		JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(jacksonObjectMapper);
-		JsonSchema schema = schemaGen.generateSchema(AreteResponse.class);
-		String schemaString = jacksonObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
-		System.out.println(schemaString);
-
-
-	}
-
-	private static void getJsonSchemaForResponseAsync() throws IOException {
+    private static void getJsonSchemaForResponse() throws IOException {
 
 //		ObjectMapper mapper = new ObjectMapper();
 //		JsonSchema schema = mapper.generateJsonSchema(AreteResponse.class);
 //		System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema));
 
-		ObjectMapper jacksonObjectMapper = new ObjectMapper();
-		JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(jacksonObjectMapper);
-		JsonSchema schema = schemaGen.generateSchema(AreteRequest.class);
-		String schemaString = jacksonObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
-		System.out.println(schemaString);
+        ObjectMapper jacksonObjectMapper = new ObjectMapper();
+        JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(jacksonObjectMapper);
+        JsonSchema schema = schemaGen.generateSchema(AreteResponse.class);
+        String schemaString = jacksonObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
+        System.out.println(schemaString);
+
+
+    }
+
+    private static void getJsonSchemaForAreteRequest() throws IOException {
+
+//		ObjectMapper mapper = new ObjectMapper();
+//		JsonSchema schema = mapper.generateJsonSchema(AreteResponse.class);
+//		System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema));
+
+        ObjectMapper jacksonObjectMapper = new ObjectMapper();
+        JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(jacksonObjectMapper);
+        JsonSchema schema = schemaGen.generateSchema(AreteRequest.class);
+        String schemaString = jacksonObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
+        System.out.println(schemaString);
 
 	}
 
@@ -78,16 +78,21 @@ public class hodorStudentTesterResponseTest {
 
 	public static void main(String[] args) throws IOException {
 //		getJsonSchemaForRequest();
-//		getJsonSchemaForResponseAsync();
-        getJsonSchemaForUpdateTest();
+        getJsonSchemaForAreteRequest();
+//        getJsonSchemaForUpdateTest();
     }
 
 	@Test
 	public void JavaParsingFullResponse() throws IOException {
+        // given
         String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java2.json");
         hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
         Submission test = getFullSubmissionJava();
+
+        // when
         AreteResponse areteResponse = new AreteResponse("ex", test, response);
+
+        // then
         assertSuccessfulParsing(test, areteResponse);
     }
 
@@ -107,10 +112,15 @@ public class hodorStudentTesterResponseTest {
 
     @Test
     public void JavaDoesntCompile() throws IOException {
+        // given
         String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java3.json");
         hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
         Submission test = getFullSubmissionJava();
+
+        // when
         AreteResponse areteResponse = new AreteResponse("ex", test, response);
+
+        // then
         assertSuccessfulParsing(test, areteResponse);
     }
 
@@ -120,10 +130,15 @@ public class hodorStudentTesterResponseTest {
 
     @Test
     public void PythonParsing() throws IOException {
+        // given
         String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/python.json");
         hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
         Submission test = getFullSubmissionJava();
+
+        // when
         AreteResponse areteResponse = new AreteResponse("ex", test, response);
+
+        // then
         assertSuccessfulParsing(test, areteResponse);
     }
 

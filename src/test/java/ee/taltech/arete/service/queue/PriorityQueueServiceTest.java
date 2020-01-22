@@ -23,16 +23,20 @@ class PriorityQueueServiceTest {
 
 	@Test
 	void enqueue() {
+		// given, when
 		priorityQueueService.enqueue(getFullSubmissionJava());
 //		priorityQueueService.enqueue(getFullSubmissionPython());
+
+		// then
 		assert priorityQueueService.getQueueSize() == 1;
 	}
 
 	@Test
 	void runJob() throws InterruptedException {
-
+		// given
 		int jobSets = 3;
 
+		// when
 		for (int i = 0; i < jobSets; i++) {
 			Submission submission = getFullSubmissionPython();
 			priorityQueueService.enqueue(submission);

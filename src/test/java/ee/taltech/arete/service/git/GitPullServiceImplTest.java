@@ -20,10 +20,11 @@ class GitPullServiceImplTest {
 
 	@Test
 	void pullJob() {
+		// given, when
 		Submission submission = getGitPullEndpointSubmission();
-		assert gitPullService.repositoryMaintenance(submission);
 
-		//TODO actually check if folder was created
+		// then
+		assert gitPullService.repositoryMaintenance(submission);
 
 //		String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
 //		String tester = String.format("%s/tests/%s/%s", home, "iti0102-2019", "ex02_binary");

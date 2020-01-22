@@ -1,6 +1,8 @@
 package ee.taltech.arete.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.istack.NotNull;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.arete.File;
@@ -88,7 +90,8 @@ public class Submission {
 	private Integer thread;
 
 	@Transient
-	private String token;
+	@JsonProperty("returnExtra")
+	private JsonNode returnExtra; // private stuff here
 
 	@Transient
 	private String waitingroom;

@@ -78,9 +78,9 @@
       "type": "integer",
       "description": "Default priority is 5"
     },
-    "token": {
-      "type": "string",
-      "description": "Security measurement"
+    "returnExtra": {
+      "type": "any",
+      "description": "values that are returned the same way they were given in"
     }
   }
 }
