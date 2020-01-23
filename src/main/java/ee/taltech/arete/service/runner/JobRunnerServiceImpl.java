@@ -24,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 
 
 @Service
@@ -128,16 +127,20 @@ public class JobRunnerServiceImpl implements JobRunnerService {
                 } else if ("arete".equals(jsonObject.get("type"))) {
                     html = true;
                     areteResponse = objectMapper.readValue(json, AreteResponse.class);
-                    List<ConsoleOutput> outs = new ArrayList<>();
-                    outs.add(new ConsoleOutput(submission.getResult())); // if noStd, list is empty
-                    areteResponse.setConsoleOutputs(outs);
+
+                    if (!submission.getSystemExtra().contains("noStd")) {
+                        areteResponse.getConsoleOutputs().add(new ConsoleOutput(submission.getResult()));
+                    }
+
                     if (submission.getSystemExtra().contains("noFiles")) {
                         areteResponse.setFiles(new ArrayList<>());
                         areteResponse.setTestFiles(new ArrayList<>());
                     }
+
                     if (submission.getSystemExtra().contains("noTesterFiles")) {
                         areteResponse.setTestFiles(new ArrayList<>());
                     }
+
                     if (submission.getSystemExtra().contains("noStudentFiles")) {
                         areteResponse.setFiles(new ArrayList<>());
                     }
