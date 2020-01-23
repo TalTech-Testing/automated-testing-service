@@ -41,6 +41,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 			.comparingInt(Submission::getPriority)
 			.reversed()
 			.thenComparing(Submission::getTimestamp));
+	private Integer stuckQueue = 300; // just some protection against stuck queue
 
 	public PriorityQueueServiceImpl() {
 		for (int i = 1; i <= MAX_JOBS; i++) {
@@ -80,8 +81,20 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	@Override
 	public void halt() throws InterruptedException {
 		halted = true;
-		while (activeRunningJobs != 0) {
+		int antiStuck = 30;
+		while (activeRunningJobs != 0 && antiStuck != 0) {
 			TimeUnit.SECONDS.sleep(1);
+			antiStuck--;
+		}
+	}
+
+	@Override
+	public void halt(int maxAllowedJobs) throws InterruptedException {
+		halted = true;
+		int antiStuck = 30;
+		while (activeRunningJobs > maxAllowedJobs && antiStuck != 0) {
+			TimeUnit.SECONDS.sleep(1);
+			antiStuck--;
 		}
 	}
 
@@ -99,6 +112,17 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	@Async
 	@Scheduled(fixedRate = 100)
 	public void runJob() {
+
+		if (halted) {
+			stuckQueue--;
+		} else {
+			stuckQueue = 300;
+		}
+
+		if (stuckQueue <= 0) {
+			halted = false;
+		}
+
 		if (!halted && getQueueSize() != 0 && activeRunningJobs < MAX_JOBS) {
 
 			Submission job = submissionPriorityQueue.poll();

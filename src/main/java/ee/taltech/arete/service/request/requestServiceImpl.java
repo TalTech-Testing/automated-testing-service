@@ -129,12 +129,14 @@ public class requestServiceImpl implements RequestService {
             assert update.getProject().getUrl() != null;
             update.getProject().setUrl(submissionService.fixRepository(update.getProject().getUrl()));
 
-            priorityQueueService.halt();
             String pathToTesterFolder = String.format("tests/%s/", update.getProject().getPath_with_namespace());
             String pathToTesterRepo = update.getProject().getUrl();
+
+            priorityQueueService.halt();
             LOGGER.info("Checking for update for tester:");
             gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
             priorityQueueService.go();
+
             return "Successfully updated tests: " + update.getProject().getPath_with_namespace();
         } catch (Exception e) {
             throw new RequestFormatException(e.getMessage());

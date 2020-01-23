@@ -3,7 +3,6 @@ package ee.taltech.arete.service.request;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.domain.Submission;
 import org.springframework.http.HttpEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 
 public interface RequestService {
 

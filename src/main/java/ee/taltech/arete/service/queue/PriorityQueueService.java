@@ -18,6 +18,8 @@ public interface PriorityQueueService {
 
 	void halt() throws InterruptedException;
 
+	void halt(int maxAllowedJobs) throws InterruptedException;
+
 	void go();
 
 	List<Submission> getActiveSubmissions();

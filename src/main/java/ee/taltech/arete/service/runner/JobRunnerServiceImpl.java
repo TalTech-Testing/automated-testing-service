@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Optional;
 
 
 @Service
@@ -52,18 +53,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
     @Override
     public void runJob(Submission submission) {
 
-        if (submission.getGitStudentRepo() != null) {
-            try {
-                if (!gitPullService.repositoryMaintenance(submission)) {
-                    reportFailedSubmission(submission, new RuntimeException(submission.getResult()));
-                    return;
-                }
-            } catch (Exception e) {
-                LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
-                reportFailedSubmission(submission, e);
-                return;
-            }
-        }
+        if (folderMaitenence(submission)) return; // if error, done
 
         LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
 
@@ -106,6 +96,51 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
         }
 
+    }
+
+    private boolean folderMaitenence(Submission submission) {
+        if (submission.getGitTestSource() != null) {
+            try {
+                String pathToTesterFolder = String.format("tests/%s/", submission.getCourse());
+                String pathToTesterRepo = submission.getGitTestSource();
+                File f = new File(pathToTesterFolder);
+
+                if (!f.exists()) {
+                    LOGGER.info("Checking for update for tester: {}", pathToTesterFolder);
+                    priorityQueueService.halt(1); // only allow this job.. then continue to pull tests
+
+                    if (gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty())) {
+                        priorityQueueService.go();
+                    } else {
+                        priorityQueueService.go();
+                        reportFailedSubmission(submission, new RuntimeException("No test files"));
+                        return true;
+                    }
+                }
+
+            } catch (Exception e) {
+                priorityQueueService.go();
+                LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
+                reportFailedSubmission(submission, e);
+                return true;
+            }
+        }
+
+        if (submission.getGitStudentRepo() != null) {
+            try {
+
+                if (!gitPullService.repositoryMaintenance(submission)) {
+                    reportFailedSubmission(submission, new RuntimeException(submission.getResult()));
+                    return true;
+                }
+
+            } catch (Exception e) {
+                LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
+                reportFailedSubmission(submission, e);
+                return true;
+            }
+        }
+        return false;
     }
 
     private void reportSuccessfulSubmission(String slug, Submission submission, String output) {

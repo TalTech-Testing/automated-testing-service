@@ -1,6 +1,5 @@
 package ee.taltech.arete.service.submission;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.exception.RequestFormatException;
 import ee.taltech.arete.repository.SubmissionRepository;
@@ -21,192 +20,196 @@ import java.util.List;
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SubmissionService.class);
-	@Autowired
-	private ObjectMapper jacksonObjectMapper;
-	@Autowired
-	private SubmissionRepository submissionRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
-	private Boolean DEBUG = true;
+    @Autowired
+    private SubmissionRepository submissionRepository;
 
-	private static String getRandomHash() {
-		return RandomStringUtils.random(40, true, true).toLowerCase();
-	}
+    private Boolean DEBUG = true;
 
-	@Override
-	public void populateAsyncFields(Submission submission) {
+    private static String getRandomHash() {
+        return RandomStringUtils.random(40, true, true).toLowerCase();
+    }
 
-		populateTesterRelatedFields(submission);
-		populateStudentRelatedFields(submission);
-		populateDefaultValues(submission);
+    @Override
+    public void populateAsyncFields(Submission submission) {
 
-	}
+        populateTesterRelatedFields(submission);
+        populateStudentRelatedFields(submission);
+        populateDefaultValues(submission);
 
-	@Override
-	public String populateSyncFields(Submission submission) {
+    }
 
-		if (submission.getHash() == null) {
-			submission.setHash(getRandomHash());
-			submission.setWaitingroom(getRandomHash());
-		} else {
-			submission.setWaitingroom(submission.getHash()); // for integration tests
-		}
-		if (submission.getReturnUrl() == null) {
-			submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
-		}
+    @Override
+    public String populateSyncFields(Submission submission) {
 
-		populateTesterRelatedFields(submission);
-		populateStudentRelatedFields(submission);
-		populateDefaultValues(submission);
+        if (submission.getHash() == null) {
+            submission.setHash(getRandomHash());
+            submission.setWaitingroom(getRandomHash());
+        } else {
+            submission.setWaitingroom(submission.getHash()); // for integration tests
+        }
+        if (submission.getReturnUrl() == null) {
+            submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
+        }
 
-		return submission.getWaitingroom();
-	}
+        populateTesterRelatedFields(submission);
+        populateStudentRelatedFields(submission);
+        populateDefaultValues(submission);
 
-	private void populateStudentRelatedFields(Submission submission) {
-		if (submission.getGitStudentRepo() != null) {
-			submission.setGitStudentRepo(fixRepository(submission.getGitStudentRepo()));
-			String repo; //set OtherDefaults
+        return submission.getWaitingroom();
+    }
 
-			repo = submission.getGitStudentRepo().replaceAll("\\.git", "");
-			String[] url = repo.replace("://", "").split("[/:]");
+    private void populateStudentRelatedFields(Submission submission) {
+        if (submission.getGitStudentRepo() != null) {
+            submission.setGitStudentRepo(fixRepository(submission.getGitStudentRepo()));
+            String repo; //set OtherDefaults
 
-			if (submission.getUniid() == null) {
-				submission.setUniid(url[1]); // user identificator - this is 100% unique
-			}
+            repo = submission.getGitStudentRepo().replaceAll("\\.git", "");
+            String[] url = repo.replace("://", "").split("[/:]");
 
-			if (submission.getFolder() == null) {
-				submission.setFolder(url[url.length - 1]); // Just the folder where file is saved - user cant have multiple of those
-			}
+            if (submission.getUniid() == null) {
+                submission.setUniid(url[1]); // user identificator - this is 100% unique
+            }
 
-		} else if (submission.getSource() != null){
+            if (submission.getFolder() == null) {
+                submission.setFolder(url[url.length - 1]); // Just the folder where file is saved - user cant have multiple of those
+            }
 
-			if (submission.getSlugs() == null) {
-				String path = submission.getSource().get(0).getPath().split("\\\\")[0];
-				if (path.equals(submission.getSource().get(0).getPath())) {
-					path = submission.getSource().get(0).getPath().split("/")[0];
-				}
-				submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
-			}
+        } else if (submission.getSource() != null) {
 
-		} else {
-			throw new BadRequestException("Git student repo or student source is needed.");
-		}
-	}
+            if (submission.getSlugs() == null) {
+                String path = submission.getSource().get(0).getPath().split("\\\\")[0];
+                if (path.equals(submission.getSource().get(0).getPath())) {
+                    path = submission.getSource().get(0).getPath().split("/")[0];
+                }
+                submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
+            }
 
-	private void populateTesterRelatedFields(Submission submission) {
-		if (submission.getGitTestSource() != null) {
-			submission.setGitTestSource(fixRepository(submission.getGitTestSource()));
+        } else {
+            throw new BadRequestException("Git student repo or student source is needed.");
+        }
+    }
 
-			if (submission.getCourse() == null) {
-				submission.setCourse(submission.getGitTestSource()
-						.replace(".git", "")
-						.replace("https://gitlab.cs.ttu.ee/", "")
-						.replace("git@gitlab.cs.ttu.ee:", ""));
-			}
+    private void populateTesterRelatedFields(Submission submission) {
+        if (submission.getGitTestSource() != null) {
+            try {
+                submission.setGitTestSource(fixRepository(submission.getGitTestSource()));
+                String namespace = submission.getGitTestSource()
+                        .replace(".git", "")
+                        .replace("https://gitlab.cs.ttu.ee/", "")
+                        .replace("git@gitlab.cs.ttu.ee:", "");
 
-		} else if (submission.getTestSource() != null){
+                if (submission.getCourse() == null) {
+                    submission.setCourse(namespace);
+                }
 
-			if (submission.getTestSource().size() == 0) {
-				throw new BadRequestException("Git test source is needed size non zero.");
-			}
+            } catch (Exception e) {
+                throw new BadRequestException(e.getMessage());
+            }
+        } else if (submission.getTestSource() != null) {
 
-		} else {
-			throw new BadRequestException("Git test repo or test source is needed.");
-		}
-	}
+            if (submission.getTestSource().size() == 0) {
+                throw new BadRequestException("Git test source is needed size non zero.");
+            }
 
-	@Override
-	public String fixRepository(String url) {
-		if (System.getenv().containsKey("GITLAB_PASSWORD")) {
-			if (url.startsWith("git")) {
-				url = url.replaceFirst(":", "/");
-				url = url.replace("git@", "https://");
-			}
+        } else {
+            throw new BadRequestException("Git test repo or test source is needed.");
+        }
+    }
 
-		} else {
-			if (url.startsWith("http")) {
-				url = url.replace("https://", "git@");
-				url = url.replaceFirst("/", ":");
-			}
-		}
-		if (!url.endsWith(".git")) {
-			return url + ".git";
-		}
-		return url;
-	}
+    @Override
+    public String fixRepository(String url) {
+        if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+            if (url.startsWith("git")) {
+                url = url.replaceFirst(":", "/");
+                url = url.replace("git@", "https://");
+            }
 
-	private void populateDefaultValues(Submission submission) {
-		if (submission.getPriority() == null) {
-			submission.setPriority(5);
-		}
+        } else {
+            if (url.startsWith("http")) {
+                url = url.replace("https://", "git@");
+                url = url.replaceFirst("/", ":");
+            }
+        }
+        if (!url.endsWith(".git")) {
+            return url + ".git";
+        }
+        return url;
+    }
 
-		if (submission.getTimestamp() == null) {
-			submission.setTimestamp(System.currentTimeMillis());
-		}
+    private void populateDefaultValues(Submission submission) {
+        if (submission.getPriority() == null) {
+            submission.setPriority(5);
+        }
 
-		if (submission.getDockerTimeout() == null) {
-			if (DEBUG) {
-				submission.setDockerTimeout(360); // 360 sec
-			} else {
-				submission.setDockerTimeout(120); // 120 sec
-			}
-		}
+        if (submission.getTimestamp() == null) {
+            submission.setTimestamp(System.currentTimeMillis());
+        }
 
-		if (submission.getDockerExtra() == null) {
-			submission.setDockerExtra(new HashSet<>());
-		}
+        if (submission.getDockerTimeout() == null) {
+            if (DEBUG) {
+                submission.setDockerTimeout(360); // 360 sec
+            } else {
+                submission.setDockerTimeout(120); // 120 sec
+            }
+        }
 
-		if (submission.getSystemExtra() == null) {
-			submission.setSystemExtra(new HashSet<>());
-		}
+        if (submission.getDockerExtra() == null) {
+            submission.setDockerExtra(new HashSet<>());
+        }
 
-		if (submission.getUniid() == null) {
-			submission.getSystemExtra().add("noMail");
-		}
-	}
+        if (submission.getSystemExtra() == null) {
+            submission.setSystemExtra(new HashSet<>());
+        }
 
-	@Override
-	public List<Submission> getSubmissions() {
-		LOG.info("Reading all Submissions from database.");
-		return submissionRepository.findAll();
-	}
+        if (submission.getUniid() == null) {
+            submission.getSystemExtra().add("noMail");
+        }
+    }
 
-	@Override
-	public List<Submission> getSubmissionByHash(String hash) {
-		ArrayList<Submission> submissions = submissionRepository.findByHash(hash);
-		LOG.info("Reading Submission hash " + hash + " from database.");
-		if (submissions.size() > 0) {
-			return submissions;
-		}
-		LOG.error(String.format("Submission with hash %s was not found.", hash));
-		throw new RequestFormatException(String.format("No Submission with hash: %s was not found", hash));
-	}
+    @Override
+    public List<Submission> getSubmissions() {
+        LOGGER.info("Reading all Submissions from database.");
+        return submissionRepository.findAll();
+    }
 
-	@Override
-	public void saveSubmission(Submission submission) {
-		submissionRepository.saveAndFlush(submission);
-		LOG.info("Submission with hash {} successfully saved into DB", submission.getHash());
-	}
+    @Override
+    public List<Submission> getSubmissionByHash(String hash) {
+        ArrayList<Submission> submissions = submissionRepository.findByHash(hash);
+        LOGGER.info("Reading Submission hash " + hash + " from database.");
+        if (submissions.size() > 0) {
+            return submissions;
+        }
+        LOGGER.error(String.format("Submission with hash %s was not found.", hash));
+        throw new RequestFormatException(String.format("No Submission with hash: %s was not found", hash));
+    }
 
-	@Override
-	@Scheduled(cron = "0 4 4 * * ?")
-	public void deleteSubmissionsAutomatically() {
+    @Override
+    public void saveSubmission(Submission submission) {
+        submissionRepository.saveAndFlush(submission);
+        LOGGER.info("Submission with hash {} successfully saved into DB", submission.getHash());
+    }
+
+    @Override
+    @Scheduled(cron = "0 4 4 * * ?")
+    public void deleteSubmissionsAutomatically() {
 //		for (Submission submission : submissionRepository.findAll()) {
 //			if (System.currentTimeMillis() - submission.getTimestamp() > (1000 * 60 * 60 * 24 * 7)) { // if it has been a week
 //				submissionRepository.delete(submission);
 //				LOG.info("Deleted old submission from DB: {}", submission);
 //			}
 //		}
-	}
+    }
 
-	@Override
-	public void debugMode(boolean bool) {
-		this.DEBUG = bool;
-	}
+    @Override
+    public void debugMode(boolean bool) {
+        this.DEBUG = bool;
+    }
 
-	@Override
-	public boolean isDebug() {
-		return DEBUG;
-	}
+    @Override
+    public boolean isDebug() {
+        return DEBUG;
+    }
 
 }
