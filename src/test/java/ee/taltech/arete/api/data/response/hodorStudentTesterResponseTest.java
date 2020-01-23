@@ -77,8 +77,8 @@ public class hodorStudentTesterResponseTest {
 	}
 
 	public static void main(String[] args) throws IOException {
-//		getJsonSchemaForRequest();
-        getJsonSchemaForAreteRequest();
+//        getJsonSchemaForResponse();
+//        getJsonSchemaForAreteRequest();
 //        getJsonSchemaForUpdateTest();
     }
 
@@ -108,6 +108,7 @@ public class hodorStudentTesterResponseTest {
 
         // then
         assertSuccessfulParsing(test, areteResponse);
+        System.out.println(objectMapper.writeValueAsString(areteResponse));
     }
 
     @Test

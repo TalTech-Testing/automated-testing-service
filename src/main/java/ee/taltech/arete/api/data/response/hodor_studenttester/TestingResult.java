@@ -1,6 +1,4 @@
 package ee.taltech.arete.api.data.response.hodor_studenttester;
-
-import ee.taltech.arete.api.data.response.arete.TestContext;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -17,7 +15,7 @@ public class TestingResult {
 	ArrayList<StyleError> errors;
 	ArrayList<HodorFile> files;
 	ArrayList<Diagnostic> diagnosticList;
-	ArrayList<TestContext> testContexts;
+	ArrayList<HodorTestContext> TestContexts;
 	String identifier;
 	String output;
 	String result;

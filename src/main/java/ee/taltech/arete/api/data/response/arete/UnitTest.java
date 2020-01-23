@@ -25,8 +25,14 @@ public class UnitTest {
 	List<String> groupsDependedUpon;
 
 	@Column(length = 1023)
-	@JsonPropertyDescription("One of the following (success, partial_success, passed, skipped, not_run, failiure, failed, not_set, unknown")
-	String status;
+	@JsonPropertyDescription("Status of the unittest")
+	TestStatus status;
+
+	enum TestStatus {
+		PASSED,
+		FAILED,
+		SKIPPED
+	}
 
 	@JsonPropertyDescription("Test weight")
 	Integer weight;

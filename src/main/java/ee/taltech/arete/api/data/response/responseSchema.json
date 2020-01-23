@@ -88,7 +88,12 @@
                 },
                 "status": {
                   "type": "string",
-                  "description": "One of the following (success, partial_success, passed, skipped, not_run, failiure, failed, not_set, unknown"
+                  "description": "Status of the unittest",
+                  "enum": [
+                    "PASSED",
+                    "FAILED",
+                    "SKIPPED"
+                  ]
                 },
                 "weight": {
                   "type": "integer",
