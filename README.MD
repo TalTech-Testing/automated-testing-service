@@ -1,5 +1,7 @@
+# Automated testing service
 
-# Currently supported endpoints
+Currently supported endpoints
+----
 
 Schemas can be generated from arete/api/data ```/request``` and ```/response```
 * put
@@ -23,6 +25,7 @@ Schemas can be generated from arete/api/data ```/request``` and ```/response```
 
 
 Some useful curl commands
+----
 ```shell script
 Force an update on a test:
 curl -d '{"project":{"url":"git@gitlab.cs.ttu.ee:iti0102-2019/ex.git","path_with_namespace":"iti0211-2019/ex"}}' -X POST -H "Content-Type: application/json" localhost:8098/tests:update
@@ -31,31 +34,48 @@ Force an update on a image
 curl -X POST -H "Content-Type: application/json" localhost:8098/tests/python-tester:update
 
 Test something sync
-curl -d '{"testingPlatform":"prolog","gitStudentRepo":"https://gitlab.cs.ttu.ee/envomp/iti0211-2019.git","uniid":"envomp","hash":"Fill me if you want to test a specific hash"}' -X POST -H "Content-Type: application/json" localhost:8098/:testSync
+curl -d '{"testingPlatform":"prolog","gitTestSource":"https://gitlab.cs.ttu.ee/iti0211-2019/tests","gitStudentRepo":"https://gitlab.cs.ttu.ee/envomp/iti0211-2019.git","uniid":"envomp"}' -X POST -H "Content-Type: application/json" localhost:8098/:testSync
 ```
 
 Template to add to new test repositories as user manual:
+----
 
 ````
 Kui teie ülesandel on vaja mingeid lisaparameetreid testimiseks, siis lisage enda ülesande kausta fail nimega arete.json, mis näeb välja järgmiselt:
 
 {"dockerTimeout":120,"dockerExtra":["stylecheck"],"systemExtra":["noMail","noTesterFiles","noStd","noFeedback","minimalFeedback"]}
 
+````
+
+````
 dockerTimeout - Kui kogu ülesande testimine võtab kaueb, kui 120 sekundit, siis muutke väärtus sobivaks.
+````
 
-stylecheck - stiilikontroll
+dockerExtra: saadetakse alamtesterisse. Kui soovid teada sobivaid parameetreid, vaata alamtesteri repot.
 
-noMail - tudengile ei saadeta meili
+````
+stylecheck - stiilikontroll pythoni testeri jaoks
+````
 
-noTesterFiles - charon'isse ei jõua testi failid
+systemExtra:
 
-noStd - charonisse ei jõua stdout ja stderr
+````
+noMail - tudengile ei saadeta meili.
 
-noFeedback - tudeng ei näe läbikukkunud testide põhjuseid
+noFiles - mingeid faile ei saadeta.
 
-minimalFeedback - tudeng ei näe assertion errorite põhjuseid
+noTesterFiles - charon'isse ei jõua testi failid.
 
-Näited:
+noStudentFiles - tudengi faile ei saadeta.
+
+noStd - charonisse ei jõua stdout ja stderr.
+
+noFeedback - tudeng ei näe läbikukkunud testide põhjuseid.
+
+minimalFeedback - tudeng ei näe assertion errorite põhjuseid.
+
+noFun - tudeng ei näe lõbusaid asju. Lisatakse hooajaliselt.
+````
 
 ilma noFeedback ja minimalFeedback parameetrita: - kasutada lihtsamate ülesannetega
 
@@ -71,7 +91,6 @@ noFeedback: - kasutada xp ja eksami ülesannetega
 
 
 stylecheck las olla sees iga ülesandega, kus pole kasutatud mingit raamistikku. Kui on django ülesanne, siis stylecheck las olla väljas.
-````
 
 Getting Started
 ----
