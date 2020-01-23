@@ -49,6 +49,7 @@ public class ReportServiceImpl implements ReportService {
 		}
 	}
 
+	@Async
 	@Override
 	public void sendTextToReturnUrl(String returnUrl, AreteResponse response) {
 
