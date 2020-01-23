@@ -39,7 +39,7 @@ public class ReportServiceImpl implements ReportService {
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
-			helper.setFrom("automatedTestingService@taltech.ee");
+			helper.setFrom("automated_testing_service@taltech.ee");
 			helper.setTo(String.format("%s@taltech.ee", uniid));
 			helper.setSubject(header);
 			helper.setText(text, html);

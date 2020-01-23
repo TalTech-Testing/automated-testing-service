@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.istack.NotNull;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Builder
@@ -51,10 +51,10 @@ public class AreteRequest {
     private String project;
 
     @JsonPropertyDescription("No defaults. You can add (stylecheck) or something. It is sent to smaller tester. Look the possibilities from the small tester repository for more details.")
-    private HashSet<String> dockerExtra;
+    private Set<String> dockerExtra;
 
-    @JsonPropertyDescription("No defaults. You can add (noMail, noTesterFiles, noStd, noFeedback, minimalFeedback)")
-    private HashSet<String> systemExtra;
+    @JsonPropertyDescription("No defaults. You can add (noMail, noFiles, noTesterFiles, noStudentFiles, noStd, noFeedback, minimalFeedback, noFun)")
+    private Set<String> systemExtra;
 
     @JsonPropertyDescription("Default docker timeout is 120 seconds")
     private Integer dockerTimeout;

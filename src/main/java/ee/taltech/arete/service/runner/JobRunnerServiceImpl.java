@@ -124,12 +124,24 @@ public class JobRunnerServiceImpl implements JobRunnerService {
                     html = true;
                     hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
                     areteResponse = new AreteResponse(slug, submission, response);
+
                 } else if ("arete".equals(jsonObject.get("type"))) {
                     html = true;
                     areteResponse = objectMapper.readValue(json, AreteResponse.class);
                     List<ConsoleOutput> outs = new ArrayList<>();
-                    outs.add(new ConsoleOutput(submission.getResult()));
+                    outs.add(new ConsoleOutput(submission.getResult())); // if noStd, list is empty
                     areteResponse.setConsoleOutputs(outs);
+                    if (submission.getSystemExtra().contains("noFiles")) {
+                        areteResponse.setFiles(new ArrayList<>());
+                        areteResponse.setTestFiles(new ArrayList<>());
+                    }
+                    if (submission.getSystemExtra().contains("noTesterFiles")) {
+                        areteResponse.setTestFiles(new ArrayList<>());
+                    }
+                    if (submission.getSystemExtra().contains("noStudentFiles")) {
+                        areteResponse.setFiles(new ArrayList<>());
+                    }
+
                 } else if ("hodor_legacy".equals(jsonObject.get("type"))) {
                     LegacyTestJobResult response = objectMapper.readValue(json, LegacyTestJobResult.class);
                     areteResponse = new AreteResponse(slug, submission, response);
