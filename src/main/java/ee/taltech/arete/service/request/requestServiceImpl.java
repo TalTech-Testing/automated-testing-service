@@ -96,7 +96,7 @@ public class requestServiceImpl implements RequestService {
             syncWaitingRoom.put(hash, objectMapper.readValue(Objects.requireNonNull(httpEntity.getBody()), AreteResponse.class));
         } catch (Exception e) {
             LOGGER.error("Processing sync job failed: {}", e.getMessage());
-            syncWaitingRoom.put(hash, new AreteResponse("Codera", new Submission(), e.getMessage()));
+            syncWaitingRoom.put(hash, new AreteResponse("NaN", new Submission(), e.getMessage()));
         }
     }
 

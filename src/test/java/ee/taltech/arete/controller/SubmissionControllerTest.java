@@ -5,7 +5,6 @@ import ee.taltech.arete.AreteApplication;
 import ee.taltech.arete.api.data.request.AreteRequest;
 import ee.taltech.arete.api.data.request.AreteTestUpdate;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
-import ee.taltech.arete.domain.Submission;
 import io.restassured.RestAssured;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
@@ -18,7 +17,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 
 import static ee.taltech.arete.initializers.SubmissionInitializer.*;
 import static io.restassured.RestAssured.given;
@@ -57,65 +56,65 @@ public class SubmissionControllerTest {
         submissionNoStyle = getFullSubmissionStringPythonSyncNoStyle(String.format("http://localhost:%s", port));
     }
 
-    @Test
-    public void addNewSubmissionAsyncReturnsFullSubmission() throws InterruptedException {
+//    @Test
+//    public void addNewSubmissionAsyncReturnsFullSubmission() throws InterruptedException {
+//
+//        AreteRequest payload = getFullSubmissionStringControllerEndpoint();
+//        Submission submission = given()
+//                .when()
+//                .body(payload)
+//                .post(":testAsync")
+//                .then()
+//                .statusCode(is(HttpStatus.SC_ACCEPTED))
+//                .extract()
+//                .body()
+//                .as(Submission.class);
+//
+//        TimeUnit.SECONDS.sleep(10);
+//
+//        // then
+//        assertFullSubmission(submission);
+//    }
 
-        AreteRequest payload = getFullSubmissionStringControllerEndpoint();
-        Submission submission = given()
-                .when()
-                .body(payload)
-                .post(":testAsync")
-                .then()
-                .statusCode(is(HttpStatus.SC_ACCEPTED))
-                .extract()
-                .body()
-                .as(Submission.class);
 
-        TimeUnit.SECONDS.sleep(10);
+//    @Test
+//    public void addNewSubmissionAsyncPythonReturnsFullSubmission() throws InterruptedException {
+//
+//        AreteRequest payload = getFullSubmissionStringControllerEndpointPython();
+//        Submission submission = given()
+//                .when()
+//                .body(payload)
+//                .post(":testAsync")
+//                .then()
+//                .statusCode(is(HttpStatus.SC_ACCEPTED))
+//                .extract()
+//                .body()
+//                .as(Submission.class);
+//
+//        TimeUnit.SECONDS.sleep(10);
+//
+//        // then
+//        assertFullSubmission(submission);
+//
+//    }
 
-        // then
-        assertFullSubmission(submission);
-    }
-
-
-    @Test
-    public void addNewSubmissionAsyncPythonReturnsFullSubmission() throws InterruptedException {
-
-        AreteRequest payload = getFullSubmissionStringControllerEndpointPython();
-        Submission submission = given()
-                .when()
-                .body(payload)
-                .post(":testAsync")
-                .then()
-                .statusCode(is(HttpStatus.SC_ACCEPTED))
-                .extract()
-                .body()
-                .as(Submission.class);
-
-        TimeUnit.SECONDS.sleep(10);
-
-        // then
-        assertFullSubmission(submission);
-
-    }
-
-    @Test
-    public void addNewSubmissionAsyncPythonLFSReturnsFullSubmission() throws InterruptedException {
-
-        AreteRequest payload = getFullSubmissionStringControllerEndpointPythonLong();
-        Submission submission = given()
-                .when()
-                .body(payload)
-                .post(":testAsync")
-                .then()
-                .statusCode(is(HttpStatus.SC_ACCEPTED))
-                .extract()
-                .body()
-                .as(Submission.class);
-
-        // then
-        assertFullSubmission(submission);
-    }
+//    @Test
+//    public void addNewSubmissionAsyncPythonLFSReturnsFullSubmission() {
+//
+//        AreteRequest payload = getFullSubmissionStringControllerEndpointPythonLong();
+//        Submission submission = given()
+//                .when()
+//                .body(payload)
+//                .post(":testAsync")
+//                .then()
+//                .statusCode(is(HttpStatus.SC_ACCEPTED))
+//                .extract()
+//                .body()
+//                .as(Submission.class);
+//
+//        // then
+//        assertFullSubmission(submission);
+//    }
 
 
     @Test
@@ -134,57 +133,56 @@ public class SubmissionControllerTest {
         assert response.getOutput() != null;
     }
 
-    @Test
-    public void addNewSubmissionAsyncPythonCustomConfigurationReturnsFullSubmission() throws InterruptedException {
-        AreteRequest payload = getFullSubmissionStringControllerEndpointPythonCustomConfiguration();
-        Submission submission = given()
-                .when()
-                .body(payload)
-                .post(":testAsync")
-                .then()
-                .statusCode(is(HttpStatus.SC_ACCEPTED))
-                .extract()
-                .body()
-                .as(Submission.class);
+//    @Test
+//    public void addNewSubmissionAsyncPythonCustomConfigurationReturnsFullSubmission() throws InterruptedException {
+//        AreteRequest payload = getFullSubmissionStringControllerEndpointPythonCustomConfiguration();
+//        Submission submission = given()
+//                .when()
+//                .body(payload)
+//                .post(":testAsync")
+//                .then()
+//                .statusCode(is(HttpStatus.SC_ACCEPTED))
+//                .extract()
+//                .body()
+//                .as(Submission.class);
+//
+//        // then
+//        assertFullSubmission(submission);
+//    }
 
-        // then
-        assertFullSubmission(submission);
-    }
-
     @Test
-    public void addNewSubmissionFromStringParsesCorrectly() throws InterruptedException {
-        Submission submission = given()
+    public void addNewSubmissionFromStringParsesCorrectly() {
+        AreteResponse submission = given()
                 .when()
                 .body("{\"testingPlatform\":\"python\",\"returnUrl\":\"https://jsonplaceholder.typicode.com/posts\",\"gitStudentRepo\":\"https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git\",\"source\":null,\"gitTestSource\":\"https://gitlab.cs.ttu.ee/iti0102-2019/ex.git\",\"testSource\":null,\"hash\":null,\"uniid\":null,\"project\":null,\"dockerExtra\":null,\"systemExtra\":null,\"dockerTimeout\":null,\"priority\":10,\"returnExtra\":{\"some\":\"stuff\"}}")
-                .post(":testAsync")
+                .post(":testSync")
                 .then()
                 .statusCode(is(HttpStatus.SC_ACCEPTED))
                 .extract()
                 .body()
-                .as(Submission.class);
+                .as(AreteResponse.class);
 
         // then
-        assertFullSubmission(submission);
         assert submission.getReturnExtra().get("some").toString().equals("\"stuff\"");
     }
 
-    @Test
-    public void addNewSubmissionAsyncExamReturnsFullSubmission() throws InterruptedException {
-
-        AreteRequest payload = getFullSubmissionStringExamControllerEndpoint();
-        Submission submission = given()
-                .when()
-                .body(payload)
-                .post(":testAsync")
-                .then()
-                .statusCode(is(HttpStatus.SC_ACCEPTED))
-                .extract()
-                .body()
-                .as(Submission.class);
-
-        // then
-        assertFullSubmission(submission);
-    }
+//    @Test
+//    public void addNewSubmissionAsyncExamReturnsFullSubmission() throws InterruptedException {
+//
+//        AreteRequest payload = getFullSubmissionStringExamControllerEndpoint();
+//        Submission submission = given()
+//                .when()
+//                .body(payload)
+//                .post(":testAsync")
+//                .then()
+//                .statusCode(is(HttpStatus.SC_ACCEPTED))
+//                .extract()
+//                .body()
+//                .as(Submission.class);
+//
+//        // then
+//        assertFullSubmission(submission);
+//    }
 
     @Test
     public void addNewSubmissionSyncExamReturnsOutput() {
@@ -277,6 +275,78 @@ public class SubmissionControllerTest {
 
     }
 
+
+    @Test
+    public void addNewSubmissionSyncBadRequestWrongTestingPlatformGives500() throws IOException {
+
+        AreteRequest badSubmission = getFullSubmissionStringSyncBadRequest(String.format("http://localhost:%s", port));
+        badSubmission.setTestingPlatform("SupriseMe");
+
+        AreteResponse answer = given()
+                .when()
+                .body(badSubmission)
+                .post(":testSync")
+                .then()
+                .statusCode(is(HttpStatus.SC_INTERNAL_SERVER_ERROR))
+                .extract()
+                .body()
+                .as(AreteResponse.class);
+
+    }
+
+    @Test
+    public void addNewSubmissionSyncBadRequestWrongStudentRepoGives500() throws IOException {
+
+        AreteRequest badSubmission = getFullSubmissionStringSyncBadRequest(String.format("http://localhost:%s", port));
+        badSubmission.setGitStudentRepo("https://www.neti.ee/");
+
+        AreteResponse answer = given()
+                .when()
+                .body(badSubmission)
+                .post(":testSync")
+                .then()
+                .statusCode(is(HttpStatus.SC_INTERNAL_SERVER_ERROR))
+                .extract()
+                .body()
+                .as(AreteResponse.class);
+    }
+
+    @Test
+    public void addNewSubmissionSyncBadRequestWrongTesterRepoGives500() throws IOException {
+
+        AreteRequest badSubmission = getFullSubmissionStringSyncBadRequest(String.format("http://localhost:%s", port));
+        badSubmission.setGitTestSource("https://www.neti.ee/");
+
+        AreteResponse answer = given()
+                .when()
+                .body(badSubmission)
+                .post(":testSync")
+                .then()
+                .statusCode(is(HttpStatus.SC_INTERNAL_SERVER_ERROR))
+                .extract()
+                .body()
+                .as(AreteResponse.class);
+
+    }
+
+
+    @Test
+    public void addNewSubmissionSyncNoFilesGives500() throws IOException {
+
+        AreteRequest badSubmission = getFullSubmissionStringSyncBadRequest(String.format("http://localhost:%s", port));
+        badSubmission.setSource(new ArrayList<>());
+        badSubmission.setTestSource(new ArrayList<>());
+
+        AreteResponse answer = given()
+                .when()
+                .body(badSubmission)
+                .post(":testSync")
+                .then()
+                .statusCode(is(HttpStatus.SC_INTERNAL_SERVER_ERROR))
+                .extract()
+                .body()
+                .as(AreteResponse.class);
+    }
 
     @Test
     public void addNewSubmissionSyncNoStyleReturnsStyle100() {

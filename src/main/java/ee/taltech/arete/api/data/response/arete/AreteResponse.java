@@ -90,6 +90,9 @@ public class AreteResponse {
     @JsonPropertyDescription("Commit message for student repository")
     String commitMessage;
 
+    @JsonPropertyDescription("Whether the testing was successful or not")
+    private Boolean failed = false;
+
     @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -112,9 +115,10 @@ public class AreteResponse {
             submission.setResponse(new ArrayList<>());
         }
 
-        submission.getResponse().add(this);
         this.returnExtra = submission.getReturnExtra();
         this.slug = slug;
+        this.failed = true;
+        submission.getResponse().add(this);
     }
 
     public AreteResponse(String slug, Submission submission, hodorStudentTesterResponse response) { //Successful submission

@@ -2,7 +2,6 @@ package ee.taltech.arete.service.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
-import ee.taltech.arete.exception.RequestFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +55,9 @@ public class ReportServiceImpl implements ReportService {
 		try {
 			post(returnUrl, objectMapper.writeValueAsString(response));
 		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
-			throw new RequestFormatException("Malformed returnUrl");
+			LOGGER.error("Failed to POST: {}", e.getMessage());
 		}
+
 	}
 
 	private void post(String postUrl, String data) throws IOException, InterruptedException {

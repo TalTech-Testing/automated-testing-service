@@ -17,7 +17,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Builder()
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "submission")

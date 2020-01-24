@@ -10,7 +10,7 @@ import lombok.*;
 import java.util.List;
 import java.util.Set;
 
-@Getter
+@Data
 @Builder
 @ToString
 @NoArgsConstructor

@@ -17,6 +17,8 @@ Schemas can be generated from arete/api/data ```/request``` and ```/response```
 * get
     * /submissions
     * /submissions/{amount}
+    * /submissions/failed
+    * /submissions/failed/{amount}
     * /submission/{hash}
     * /submission/{hash}/logs
     * /submissions/active
@@ -31,7 +33,7 @@ Force an update on a test:
 curl -d '{"project":{"url":"git@gitlab.cs.ttu.ee:iti0102-2019/ex.git","path_with_namespace":"iti0211-2019/ex"}}' -X POST -H "Content-Type: application/json" localhost:8098/tests:update
 
 Force an update on a image
-curl -X POST -H "Content-Type: application/json" localhost:8098/tests/python-tester:update
+curl -X POST -H "Content-Type: application/json" localhost:8098/image/python-tester:update
 
 Test something sync
 curl -d '{"testingPlatform":"prolog","gitTestSource":"https://gitlab.cs.ttu.ee/iti0211-2019/tests","gitStudentRepo":"https://gitlab.cs.ttu.ee/envomp/iti0211-2019.git","uniid":"envomp"}' -X POST -H "Content-Type: application/json" localhost:8098/:testSync

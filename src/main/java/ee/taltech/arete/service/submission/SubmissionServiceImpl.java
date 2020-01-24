@@ -49,7 +49,8 @@ public class SubmissionServiceImpl implements SubmissionService {
         } else {
             submission.setWaitingroom(submission.getHash()); // for integration tests
         }
-        if (submission.getReturnUrl() == null) {
+
+        if (!submission.getReturnUrl().contains("waitingroom")) {
             submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
         }
 
@@ -61,61 +62,84 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     private void populateStudentRelatedFields(Submission submission) {
-        if (submission.getGitStudentRepo() != null) {
-            submission.setGitStudentRepo(fixRepository(submission.getGitStudentRepo()));
-            String repo; //set OtherDefaults
+        try {
+            if (submission.getGitStudentRepo() != null) {
+                submission.setGitStudentRepo(fixRepository(submission.getGitStudentRepo()));
+                String repo; //set OtherDefaults
 
-            repo = submission.getGitStudentRepo().replaceAll("\\.git", "");
-            String[] url = repo.replace("://", "").split("[/:]");
+                repo = submission.getGitStudentRepo().replaceAll("\\.git", "");
+                String[] url = repo.replace("://", "").split("[/:]");
 
-            if (submission.getUniid() == null) {
-                submission.setUniid(url[1]); // user identificator - this is 100% unique
-            }
-
-            if (submission.getFolder() == null) {
-                submission.setFolder(url[url.length - 1]); // Just the folder where file is saved - user cant have multiple of those
-            }
-
-        } else if (submission.getSource() != null) {
-
-            if (submission.getSlugs() == null) {
-                String path = submission.getSource().get(0).getPath().split("\\\\")[0];
-                if (path.equals(submission.getSource().get(0).getPath())) {
-                    path = submission.getSource().get(0).getPath().split("/")[0];
+                if (submission.getUniid() == null) {
+                    if (url[1].length() == 0) {
+                        throw new BadRequestException("Git student repo namespace is size 0");
+                    }
+                    assert url[1].matches("^[0-9a-zA-Z]*$");
+                    submission.setUniid(url[1]); // user identificator - this is 100% unique
                 }
-                submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
-            }
 
-        } else {
-            throw new BadRequestException("Git student repo or student source is needed.");
+                if (submission.getFolder() == null) {
+                    if (url[url.length - 1].length() == 0) {
+                        throw new BadRequestException("Git student repo namespace with path is size 0");
+                    }
+                    submission.setFolder(url[url.length - 1]); // Just the folder where file is saved - user cant have multiple of those
+                }
+
+            } else if (submission.getSource() != null) {
+
+                if (submission.getSlugs() == null) {
+                    String path = submission.getSource().get(0).getPath().split("\\\\")[0];
+                    if (path.equals(submission.getSource().get(0).getPath())) {
+                        path = submission.getSource().get(0).getPath().split("/")[0];
+                    }
+                    submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
+                }
+
+            } else {
+                throw new BadRequestException("Git student repo or student source is needed.");
+            }
+        } catch (Exception e) {
+            throw new BadRequestException("Malformed student repo or student source.");
         }
+
     }
 
     private void populateTesterRelatedFields(Submission submission) {
-        if (submission.getGitTestSource() != null) {
-            try {
-                submission.setGitTestSource(fixRepository(submission.getGitTestSource()));
-                String namespace = submission.getGitTestSource()
-                        .replace(".git", "")
-                        .replace("https://gitlab.cs.ttu.ee/", "")
-                        .replace("git@gitlab.cs.ttu.ee:", "");
 
-                if (submission.getCourse() == null) {
-                    submission.setCourse(namespace);
+        try {
+            if (submission.getGitTestSource() != null) {
+                try {
+                    submission.setGitTestSource(fixRepository(submission.getGitTestSource()));
+                    String namespace = submission.getGitTestSource()
+                            .replace(".git", "")
+                            .replace("://", "")
+                            .split("[:/]", 2)[1];
+
+                    if (namespace.length() == 0) {
+                        throw new BadRequestException("Git test source namespace is needed size non zero.");
+                    }
+
+                    if (submission.getCourse() == null) {
+                        submission.setCourse(namespace);
+                    }
+
+                } catch (Exception e) {
+                    throw new BadRequestException(e.getMessage());
+                }
+            } else if (submission.getTestSource() != null) {
+
+                if (submission.getTestSource().size() == 0) {
+                    throw new BadRequestException("Test source is needed size non zero.");
                 }
 
-            } catch (Exception e) {
-                throw new BadRequestException(e.getMessage());
+            } else {
+                throw new BadRequestException("Git test repo or test source is needed.");
             }
-        } else if (submission.getTestSource() != null) {
-
-            if (submission.getTestSource().size() == 0) {
-                throw new BadRequestException("Git test source is needed size non zero.");
-            }
-
-        } else {
-            throw new BadRequestException("Git test repo or test source is needed.");
+        } catch (Exception e) {
+            throw new BadRequestException("Malformed git test repo or test source.");
         }
+
+
     }
 
     @Override

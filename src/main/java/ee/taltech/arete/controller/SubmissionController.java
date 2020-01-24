@@ -9,6 +9,7 @@ import ee.taltech.arete.service.submission.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Files;
@@ -38,10 +39,18 @@ public class SubmissionController {
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping({"/test/sync", "/:testSync"})
-    public AreteResponse TestSync(HttpEntity<String> httpEntity) {
+    public ResponseEntity<AreteResponse> TestSync(HttpEntity<String> httpEntity) {
 
-        return requestService.testSync(httpEntity);
-
+        try {
+            AreteResponse response = requestService.testSync(httpEntity);
+            if (!response.getFailed()) {
+                return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(new AreteResponse("NaN", new Submission(), e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -130,6 +139,45 @@ public class SubmissionController {
         }
 
     }
+
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @GetMapping("/submissions/failed")
+    public List<Submission> GetFailedSubmissions() {
+
+        try {
+            List<Submission> submissions = submissionService.getSubmissions()
+                    .stream()
+                    .filter(x -> x.getResponse().parallelStream().anyMatch(y -> y.getFailed() != null && y.getFailed()))
+                    .sorted(Comparator.comparingLong(Submission::getTimestamp))
+                    .collect(Collectors.toList());
+            int n = Math.min(20, submissions.size());
+            return submissions.subList(submissions.size() - n, submissions.size());
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @GetMapping("/submissions/failed/{n}")
+    public List<Submission> GetNFailedSubmissions(@PathVariable("n") Integer n) {
+
+        try {
+            List<Submission> submissions = submissionService.getSubmissions()
+                    .stream()
+                    .filter(x -> x.getResponse().parallelStream().anyMatch(y -> y.getFailed() != null && y.getFailed()))
+                    .sorted(Comparator.comparingLong(Submission::getTimestamp))
+                    .collect(Collectors.toList());
+            n = Math.min(n, submissions.size());
+            return submissions.subList(submissions.size() - n, submissions.size());
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+
+    }
+
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @GetMapping("/submissions/active")

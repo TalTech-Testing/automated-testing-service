@@ -189,7 +189,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
             } catch (Exception e1) {
                 html = false;
                 LOGGER.error(e1.getMessage());
-                if (jsonObject.get("output") != null) {
+                if (jsonObject.has("output") && jsonObject.get("output") != null) {
                     areteResponse = new AreteResponse(slug, submission, jsonObject.get("output").toString());
                 } else {
                     areteResponse = new AreteResponse(slug, submission, e1.getMessage());

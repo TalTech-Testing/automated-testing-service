@@ -225,6 +225,25 @@ public class SubmissionInitializer {
 				.build();
 	}
 
+	public static AreteRequest getFullSubmissionStringSyncBadRequest(String base) throws IOException {
+		String hash = getRandomHash();
+		return AreteRequest.builder()
+				.gitTestSource(TESTER_REPO_JAVA)
+				.testingPlatform(TESTING_PLATFORM_JAVA)
+				.hash(hash)
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.gitTestSource(PROJECT_GIT)
+				.systemExtra((new HashSet<>(Arrays.asList(
+////						, "noMail"
+				))))
+				.source(new ArrayList<>(Collections.singletonList(
+						AreteRequest.SourceFile.builder()
+								.path("EX01IdCode/src/ee/taltech/iti0202/idcode/IDCode.java")
+								.contents(Files.readString(Paths.get(home + "/src/test/java/ee/taltech/arete/initializers/IDCode.java"), StandardCharsets.US_ASCII))
+								.build())))
+				.build();
+	}
+
 
 	public static AreteRequest getFullSubmissionStringPythonSync(String base) throws IOException {
 		String hash = getRandomHash();
