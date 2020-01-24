@@ -50,13 +50,13 @@ public class Submission {
 	private String hash;
 
 	@Column(length = 1023)
-	private String uniid;
+	private String uniid; // gitlab namespace: envomp
 
 	@Column(length = 1023)
-	private String course;
+	private String course; // gitlab namespace with path for tester: iti0102-2019/ex
 
 	@Column(length = 1023)
-	private String folder;
+	private String folder; // gitlab path for student: iti0102-2019
 
 	@ElementCollection
 	@CollectionTable(name = "slugs", joinColumns = @JoinColumn(name = "id"))

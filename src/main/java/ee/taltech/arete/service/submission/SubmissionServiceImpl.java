@@ -139,6 +139,10 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     private void populateDefaultValues(Submission submission) {
+        if (submission.getHash() != null && !submission.getHash().matches("^[a-zA-Z0-9]+$")) {
+            submission.setHash(getRandomHash()); // in case of a faulty input
+        }
+
         if (submission.getPriority() == null) {
             submission.setPriority(5);
         }
