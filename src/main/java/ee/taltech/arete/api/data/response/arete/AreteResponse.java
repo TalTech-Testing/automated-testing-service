@@ -320,14 +320,14 @@ public class AreteResponse {
     private String constructOutput(Submission submission) {
         StringBuilder output = new StringBuilder();
 
-        if (submission.getUniid() == null) {
+        if (submission.getUniid() != null) {
             output.append(String.format("<h2>Testing results for %s</h2>", submission.getUniid()));
         } else {
             output.append("<h2>Testing results</h2>");
         }
         output.append(String.format("<p>Submission hash: %s</p>", submission.getHash()));
         if (!submission.getSystemExtra().contains("noFun")) {
-            output.append(String.format("<br>%s<br><br>", getRandomQuote()));
+            output.append(String.format("<br><p>%s</p><br><br>", getRandomQuote()));
         }
 
         long totalSize = 0;
