@@ -1,7 +1,6 @@
 package ee.taltech.arete.api.data.request;
 
 import com.fasterxml.jackson.annotation.JsonClassDescription;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.istack.NotNull;
@@ -63,7 +62,6 @@ public class AreteRequest {
     private Integer priority;
 
     @JsonPropertyDescription("values that are returned the same way they were given in")
-    @JsonProperty("returnExtra")
     private JsonNode returnExtra;
 
     @Getter

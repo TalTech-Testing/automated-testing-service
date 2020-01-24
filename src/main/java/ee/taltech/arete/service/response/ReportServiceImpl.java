@@ -69,8 +69,7 @@ public class ReportServiceImpl implements ReportService {
 				.setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
 				.build();
 
-		HttpResponse<String> response = client.send(request,
-				HttpResponse.BodyHandlers.ofString());
+		client.send(request, HttpResponse.BodyHandlers.ofString());
 
 	}
 }

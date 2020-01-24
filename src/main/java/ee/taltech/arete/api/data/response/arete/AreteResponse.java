@@ -2,7 +2,6 @@ package ee.taltech.arete.api.data.response.arete;
 
 import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.databind.JsonNode;
 import ee.taltech.arete.api.data.response.hodor_studenttester.*;
@@ -75,7 +74,6 @@ public class AreteResponse {
 
     @Transient
     @JsonPropertyDescription("values that are returned the same way they were given in")
-    @JsonProperty("returnExtra")
     JsonNode returnExtra;
 
     @JsonPropertyDescription("Commit hash from gitlab")
@@ -91,7 +89,7 @@ public class AreteResponse {
     String commitMessage;
 
     @JsonPropertyDescription("Whether the testing was successful or not")
-    private Boolean failed = false;
+    Boolean failed = false;
 
     @JsonIgnore
     @Id

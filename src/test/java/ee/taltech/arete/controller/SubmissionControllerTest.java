@@ -1,6 +1,8 @@
 package ee.taltech.arete.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import ee.taltech.arete.AreteApplication;
 import ee.taltech.arete.api.data.request.AreteRequest;
 import ee.taltech.arete.api.data.request.AreteTestUpdate;
@@ -149,23 +151,7 @@ public class SubmissionControllerTest {
 //        // then
 //        assertFullSubmission(submission);
 //    }
-
-    @Test
-    public void addNewSubmissionFromStringParsesCorrectly() {
-        AreteResponse submission = given()
-                .when()
-                .body("{\"testingPlatform\":\"python\",\"returnUrl\":\"https://jsonplaceholder.typicode.com/posts\",\"gitStudentRepo\":\"https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git\",\"source\":null,\"gitTestSource\":\"https://gitlab.cs.ttu.ee/iti0102-2019/ex.git\",\"testSource\":null,\"hash\":null,\"uniid\":null,\"project\":null,\"dockerExtra\":null,\"systemExtra\":null,\"dockerTimeout\":null,\"priority\":10,\"returnExtra\":{\"some\":\"stuff\"}}")
-                .post(":testSync")
-                .then()
-                .statusCode(is(HttpStatus.SC_ACCEPTED))
-                .extract()
-                .body()
-                .as(AreteResponse.class);
-
-        // then
-        assert submission.getReturnExtra().get("some").toString().equals("\"stuff\"");
-    }
-
+//
 //    @Test
 //    public void addNewSubmissionAsyncExamReturnsFullSubmission() throws InterruptedException {
 //
@@ -185,9 +171,12 @@ public class SubmissionControllerTest {
 //    }
 
     @Test
-    public void addNewSubmissionSyncExamReturnsOutput() {
+    public void addNewSubmissionSyncExamReturnsOutputAndReturnExtra() {
+        ObjectNode root = objectMapper.createObjectNode();
+        root.put("some", "stuff");
+        submissionSyncExam.setReturnExtra(root);
 
-        AreteResponse response = given()
+        JsonNode response = given()
                 .when()
                 .body(submissionSyncExam)
                 .post(":testSync")
@@ -195,10 +184,11 @@ public class SubmissionControllerTest {
                 .statusCode(is(HttpStatus.SC_ACCEPTED))
                 .extract()
                 .body()
-                .as(AreteResponse.class);
-
+                .as(JsonNode.class);
         // then
-        assert response.getOutput() != null;
+        assert response.get("output") != null;
+        assert response.get("returnExtra") != null;
+
     }
 
 

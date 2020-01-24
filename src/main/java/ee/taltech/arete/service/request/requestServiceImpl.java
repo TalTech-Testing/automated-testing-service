@@ -77,7 +77,7 @@ public class requestServiceImpl implements RequestService {
             submissionService.saveSubmission(submission);
             priorityQueueService.enqueue(submission);
 
-            int timeout = 1800;
+            int timeout = submission.getDockerTimeout() == null ? 120 : submission.getDockerTimeout();
             while (!syncWaitingRoom.containsKey(waitingroom) && timeout > 0) {
                 TimeUnit.SECONDS.sleep(1);
                 timeout--;

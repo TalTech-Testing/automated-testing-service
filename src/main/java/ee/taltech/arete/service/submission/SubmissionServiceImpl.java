@@ -50,7 +50,7 @@ public class SubmissionServiceImpl implements SubmissionService {
             submission.setWaitingroom(submission.getHash()); // for integration tests
         }
 
-        if (!submission.getReturnUrl().contains("waitingroom")) {
+        if (submission.getReturnUrl() == null || !submission.getReturnUrl().contains("waitingroom")) {
             submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
         }
 
