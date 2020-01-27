@@ -24,12 +24,11 @@ public class DefaultParameters {
 		}
 
 		if (dockerExtra != null) {
-			submission.getDockerExtra().addAll(dockerExtra);
+			submission.setDockerExtra(dockerExtra);
 		}
 
 		if (systemExtra != null) {
-			submission.getSystemExtra().addAll(systemExtra);
+			submission.setSystemExtra(systemExtra);
 		}
 	}
-
 }
