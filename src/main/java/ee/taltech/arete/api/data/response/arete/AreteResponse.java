@@ -286,7 +286,11 @@ public class AreteResponse {
         output.append("<td style='color:#D5DDE5;background:#").append(hex).append(";border: 1px solid black;border-collapse: collapse;padding: 5px;text-align: left;'>");
     }
 
-    private static void td(StringBuilder output, String extra) {
+    private static void td_hex(StringBuilder output, String hex) {
+        output.append("<td style='color:#D5DDE5;background:#").append(hex).append(";border: 1px solid black;border-collapse: collapse;padding: 5px;text-align: left;'>");
+    }
+
+    private static void td_extra(StringBuilder output, String extra) {
         output.append("<td style='color:#D5DDE5;background:#393939;border: 1px solid black;border-collapse: collapse;padding: 5px;text-align: left;' ").append(extra).append(">");
     }
 
@@ -458,22 +462,28 @@ public class AreteResponse {
                 name = new String[]{"null"};
             }
 
-            td(output);
+            String hex;
+            if (error.kind == null || error.kind.toLowerCase().contains("style") || error.kind.toLowerCase().contains("diagnostic")) {
+                hex = "393939";
+            } else {
+                hex = "8b0000";
+            }
+
+            td_hex(output, hex);
             output.append(name[name.length - 1]);
             output.append("</td>");
 
-            td(output);
+            td_hex(output, hex);
             output.append(error.lineNo);
             output.append("</td>");
 
-            td(output);
+            td_hex(output, hex);
             output.append(error.columnNo);
             output.append("</td>");
 
-            td(output);
+            td_hex(output, hex);
             output.append(error.message);
             output.append("</td>");
-
 
             output.append("</tr>");
 
@@ -484,7 +494,7 @@ public class AreteResponse {
                 output.append("Hint");
                 output.append("</td>");
 
-                td(output, "colspan='3'");
+                td_extra(output, "colspan='3'");
                 output.append(error.hint.replace("\n", ""));
                 output.append("</td>");
                 output.append("</tr>");

@@ -162,7 +162,8 @@ public class SubmissionServiceImpl implements SubmissionService {
         return url;
     }
 
-    private void populateDefaultValues(Submission submission) {
+    @Override
+    public void populateDefaultValues(Submission submission) {
         if (submission.getHash() != null && !submission.getHash().matches("^[a-zA-Z0-9]+$")) {
             submission.setHash(getRandomHash()); // in case of a faulty input
         }

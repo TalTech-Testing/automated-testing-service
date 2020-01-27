@@ -62,6 +62,8 @@ stylecheck - stiilikontroll pythoni testeri jaoks
 systemExtra:
 
 ````
+noOverride - dockerTimeouti, dockerExtrat ja systemExtrat ei kirjutata üle. (Request) või (Request < root) tavapärase (Request < root < slug) asemele olenevalt olukorrast, millal noOverride sisse tuleb.
+
 noMail - tudengile ei saadeta meili.
 
 noFiles - mingeid faile ei saadeta.

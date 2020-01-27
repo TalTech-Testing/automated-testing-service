@@ -53,19 +53,29 @@ public class JobRunnerServiceImpl implements JobRunnerService {
     @Override
     public void runJob(Submission submission) {
 
-        if (folderMaitenence(submission)) return; // if error, done
+        if (folderMaintenance(submission)) return; // if error, done
 
         LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
-
-        for (String slug : submission.getSlugs()) {
-
+        if (!submission.getSystemExtra().contains("noOverride")) {
             try {
                 objectMapper
-                        .readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class)
+                        .readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class)
                         .overrideDefaults(submission);
-                LOGGER.debug("Overrode default parameters");
-            } catch (Exception e) {
-                LOGGER.debug("Using default parameters");
+            } catch (Exception ignored) {
+            }
+        }
+
+
+        for (String slug : submission.getSlugs()) {
+            if (!submission.getSystemExtra().contains("noOverride")) {
+                try {
+                    objectMapper
+                            .readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class)
+                            .overrideDefaults(submission);
+                    LOGGER.debug("Overrode default parameters");
+                } catch (Exception e) {
+                    LOGGER.debug("Using default parameters");
+                }
             }
 
             String output;
@@ -98,7 +108,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
     }
 
-    private boolean folderMaitenence(Submission submission) {
+    private boolean folderMaintenance(Submission submission) {
         if (submission.getGitTestSource() != null) {
             try {
                 String pathToTesterFolder = String.format("tests/%s/", submission.getCourse());

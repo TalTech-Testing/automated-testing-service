@@ -7,21 +7,23 @@ import java.util.List;
 
 public interface SubmissionService {
 
-	void populateAsyncFields(Submission submission);
+    void populateAsyncFields(Submission submission);
 
-	String populateSyncFields(Submission submission);
+    String populateSyncFields(Submission submission);
 
-	String fixRepository(String url);
+    String fixRepository(String url);
 
-	List<Submission> getSubmissions();
+    void populateDefaultValues(Submission submission);
 
-	List<Submission> getSubmissionByHash(String hash);
+    List<Submission> getSubmissions();
 
-	void saveSubmission(Submission submission);
+    List<Submission> getSubmissionByHash(String hash);
 
-	void deleteSubmissionsAutomatically();
+    void saveSubmission(Submission submission);
 
-	void debugMode(boolean bool);
+    void deleteSubmissionsAutomatically();
 
-	boolean isDebug();
+    void debugMode(boolean bool);
+
+    boolean isDebug();
 }
