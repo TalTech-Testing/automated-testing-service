@@ -255,8 +255,8 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
             try {
                 if (areteResponse.getFailed()) {
-                    reportService.sendTextMail(devProperties.getAgo(), String.format("Message: %s\n\n\nDocker log: %s", message, submission.getResult()), header, html);
-                    reportService.sendTextMail(devProperties.getDeveloper(), String.format("Message: %s\n\n\nDocker log: %s", message, submission.getResult()), header, html);
+                    reportService.sendTextMail(devProperties.getAgo(), String.format("UNI-ID:\n%s\n\n\nHash:\n%s\n\n\nMessage:\n%s\n\n\nDocker log:\n%s", submission.getUniid(), submission.getHash(), message, submission.getResult()), header, html);
+                    reportService.sendTextMail(devProperties.getDeveloper(), String.format("UNI-ID:\n%s\n\n\nHash:\n%s\n\n\nMessage:\n%s\n\n\nDocker log:\n%s", submission.getUniid(), submission.getHash(), message, submission.getResult()), header, html);
                 } else {
                     reportService.sendTextMail(devProperties.getDeveloper(), message, header, html);
                 }
