@@ -5,6 +5,7 @@ import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.arete.ConsoleOutput;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
 import ee.taltech.arete.api.data.response.legacy.LegacyTestJobResult;
+import ee.taltech.arete.configuration.DevProperties;
 import ee.taltech.arete.domain.DefaultParameters;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.docker.DockerService;
@@ -49,6 +50,9 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
     @Autowired
     SubmissionService submissionService;
+
+    @Autowired
+    DevProperties devProperties;
 
     @Override
     public void runJob(Submission submission) {
@@ -210,8 +214,8 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
-            message = e.getMessage();
-            areteResponse = new AreteResponse(slug, submission, e.getMessage());
+            message = String.format("Error occurred when reading test results from docker created output.json.\nThis could be a result for invalid dockerExtra or other reason, that resulted in docker crashing.\n%s", e.getMessage());
+            areteResponse = new AreteResponse(slug, submission, e.getMessage()); // create failed submission instead
         }
 
         reportSubmission(submission, areteResponse, message, slug, html);
@@ -248,12 +252,19 @@ public class JobRunnerServiceImpl implements JobRunnerService {
         }
 
         if (!System.getenv().containsKey("GITLAB_PASSWORD") && submissionService.isDebug()) {
+
             try {
-                reportService.sendTextMail("envomp", message, header, html);
-                LOGGER.info("Reported to student mailbox");
+                if (areteResponse.getFailed()) {
+                    reportService.sendTextMail(devProperties.getAgo(), String.format("Message: %s\n\n\nDocker log: %s", message, submission.getResult()), header, html);
+                    reportService.sendTextMail(devProperties.getDeveloper(), String.format("Message: %s\n\n\nDocker log: %s", message, submission.getResult()), header, html);
+                } else {
+                    reportService.sendTextMail(devProperties.getDeveloper(), message, header, html);
+                }
+
             } catch (Exception e1) {
                 LOGGER.error("Malformed mail: {}", e1.getMessage());
             }
         }
+
     }
 }

@@ -1,5 +1,6 @@
 package ee.taltech.arete.service.submission;
 
+import ee.taltech.arete.configuration.DevProperties;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.exception.RequestFormatException;
 import ee.taltech.arete.repository.SubmissionRepository;
@@ -25,10 +26,11 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Autowired
     private SubmissionRepository submissionRepository;
 
-    private Boolean DEBUG = true;
+    @Autowired
+    DevProperties devProperties;
 
     private static String getRandomHash() {
-        return RandomStringUtils.random(40, true, true).toLowerCase();
+        return RandomStringUtils.random(40, true, true).toLowerCase(); // git hash is 40 long
     }
 
     @Override
@@ -177,10 +179,10 @@ public class SubmissionServiceImpl implements SubmissionService {
         }
 
         if (submission.getDockerTimeout() == null) {
-            if (DEBUG) {
+            if (devProperties.getDebug()) {
                 submission.setDockerTimeout(360); // 360 sec
             } else {
-                submission.setDockerTimeout(120); // 120 sec
+                submission.setDockerTimeout(devProperties.getDefaultDockerTimeout()); // 120 sec
             }
         }
 
@@ -233,12 +235,12 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     public void debugMode(boolean bool) {
-        this.DEBUG = bool;
+        devProperties.setDebug(bool);
     }
 
     @Override
     public boolean isDebug() {
-        return DEBUG;
+        return devProperties.getDebug();
     }
 
 }

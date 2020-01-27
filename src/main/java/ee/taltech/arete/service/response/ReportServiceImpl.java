@@ -2,6 +2,7 @@ package ee.taltech.arete.service.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
+import ee.taltech.arete.configuration.DevProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class ReportServiceImpl implements ReportService {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@Autowired
+	DevProperties devProperties;
+
 	@Async
 	@Override
 	public void sendTextMail(String uniid, String text, String header, Boolean html) {
@@ -38,7 +42,7 @@ public class ReportServiceImpl implements ReportService {
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
-			helper.setFrom("automated_testing_service@taltech.ee");
+			helper.setFrom(devProperties.getAreteMail());
 			helper.setTo(String.format("%s@taltech.ee", uniid));
 			helper.setSubject(header);
 			helper.setText(text, html);

@@ -21,10 +21,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 						SessionCreationPolicy.ALWAYS) // No session will be created or used by spring security
 				.and()
 				.httpBasic()
-				.and()
-				.authorizeRequests()
-				.antMatchers("/test/hash")
-				.permitAll()
 				// .anyRequest().authenticated() // protect all other requests
 				.and()
 				.csrf()
