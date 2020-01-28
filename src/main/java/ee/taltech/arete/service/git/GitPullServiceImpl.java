@@ -296,7 +296,7 @@ public class GitPullServiceImpl implements GitPullService {
             // first commit, no parent. Get all slugs
             for (File file : Objects.requireNonNull(new File(pathToStudentFolder).listFiles())) {
                 try {
-                    String potentialSlug = file.getPath().split("/")[0];
+                    String potentialSlug = file.getPath().replace(pathToStudentFolder + "/", "").split("/")[0];
                     if (potentialSlug.matches("[a-zA-Z0-9_]*")) {
                         repoMainFolders.add(potentialSlug);
                     }
