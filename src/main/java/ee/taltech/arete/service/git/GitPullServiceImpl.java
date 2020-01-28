@@ -36,290 +36,302 @@ import java.util.Optional;
 @Service
 public class GitPullServiceImpl implements GitPullService {
 
-	private static final List<String> TESTABLES = List.of("ADD", "MODIFY");
-	private static Logger LOGGER = LoggerFactory.getLogger(GitPullService.class);
-	private static TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback(); // failed ssh will fallback onto password
+    private static final List<String> TESTABLES = List.of("ADD", "MODIFY");
+    private static Logger LOGGER = LoggerFactory.getLogger(GitPullService.class);
+    private static TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback(); // failed ssh will fallback onto password
 
 
-	@Override
-	public boolean repositoryMaintenance(Submission submission) {
+    @Override
+    public boolean repositoryMaintenance(Submission submission) {
 
-		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getFolder());
+        String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getFolder());
 
-		try {
-			if (!pullOrClone(pathToStudentFolder, submission.getGitStudentRepo(), Optional.of(submission))) {
-				return false;
-			}
-			if (submission.getSlugs() == null) {
-				submission.setSlugs(getChangedFolders(pathToStudentFolder));
-			}
+        try {
+            if (!pullOrClone(pathToStudentFolder, submission.getGitStudentRepo(), Optional.of(submission))) {
+                return false;
+            }
+            if (submission.getSlugs() == null) {
+                submission.setSlugs(getChangedFolders(pathToStudentFolder));
+            }
 
-		} catch (IOException | GitAPIException e) {
-			LOGGER.error("Failed to read student repository.");
-		}
+        } catch (IOException | GitAPIException e) {
+            LOGGER.error("Failed to read student repository.");
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	private boolean resetHard(String pathToFolder, String pathToRepo) {
+    private boolean resetHard(String pathToFolder, String pathToRepo) {
 
-		try {
-			FileUtils.deleteDirectory(new File(pathToFolder));
-			return true;
-		} catch (Exception e1) {
-			return false;
-		}
+        try {
+            FileUtils.deleteDirectory(new File(pathToFolder));
+            return true;
+        } catch (Exception e1) {
+            return false;
+        }
 
-	}
+    }
 
-	@Override
-	public boolean pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException {
+    @Override
+    public boolean pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException {
 
-		if (!SafePullAndClone(pathToFolder, pathToRepo, submission)) {
-			LOGGER.error("Defaulting to reset hard");
-			if (!resetHard(pathToFolder, pathToRepo)) {
-				return false;
-			}
+        if (!SafePullAndClone(pathToFolder, pathToRepo, submission)) {
+            LOGGER.error("Defaulting to reset hard");
+            if (!resetHard(pathToFolder, pathToRepo)) {
+                return false;
+            }
 
-			if (!SafePullAndClone(pathToFolder, pathToRepo, submission)) {
-				LOGGER.error("Completely failed to pull or clone.");
-				return false;
-			}
-		}
-		return true;
-	}
-
-
-	private boolean SafePullAndClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException {
-		Path path = Paths.get(pathToFolder);
-
-		if (Files.exists(path)) {
-			LOGGER.info("Checking for update for project: {}", pathToFolder);
+            if (!SafePullAndClone(pathToFolder, pathToRepo, submission)) {
+                LOGGER.error("Completely failed to pull or clone.");
+                return false;
+            }
+        }
+        return true;
+    }
 
 
-			if (!SafePull(pathToFolder, submission)) {
-				LOGGER.error("Checking failed for update. Trying to reset head and pull again");
-				Git.open(new File(pathToFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
-				return SafePull(pathToFolder, submission);
-			}
+    private boolean SafePullAndClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException {
+        Path path = Paths.get(pathToFolder);
 
-		} else {
+        if (Files.exists(path)) {
+            LOGGER.info("Checking for update for project: {}", pathToFolder);
 
-			if (!SafeClone(pathToFolder, pathToRepo, submission)) {
-				return false;
-			}
-			LOGGER.info("Cloned to folder: {}", pathToFolder);
 
-			if (submission.isPresent()) { // verify and fill fields
-				return SafePull(pathToFolder, submission);
-			}
+            if (!SafePull(pathToFolder, submission)) {
+                LOGGER.error("Checking failed for update. Trying to reset head and pull again");
+                Git.open(new File(pathToFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
+                return SafePull(pathToFolder, submission);
+            }
 
-		}
-		return true;
-	}
+        } else {
 
-	private boolean SafeClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) {
-		try {
-			if (System.getenv().containsKey("GITLAB_PASSWORD")) {
-				Git git = Git.cloneRepository()
-						.setCredentialsProvider(
-								new UsernamePasswordCredentialsProvider(
-										"envomp", System.getenv().get("GITLAB_PASSWORD")))
-						.setURI(pathToRepo)
-						.setDirectory(new File(pathToFolder))
-						.call();
-				git.close();
+            if (!SafeClone(pathToFolder, pathToRepo, submission)) {
+                return false;
+            }
+            LOGGER.info("Cloned to folder: {}", pathToFolder);
 
-			} else {
-				Git git = Git.cloneRepository()
-						.setTransportConfigCallback(transportConfigCallback)
-						.setURI(pathToRepo)
-						.setDirectory(new File(pathToFolder))
-						.call();
-				git.close();
-			}
-			return true;
-		} catch (Exception e) {
-			submission.ifPresent(value -> value.setResult(e.getMessage()));
-			LOGGER.error("Cloning failed with message: {}", e.getMessage());
-			return false;
-		}
-	}
+            if (submission.isPresent()) { // verify and fill fields
+                return SafePull(pathToFolder, submission);
+            }
 
-	@Override
-	public boolean resetHead(Submission submission) {
+        }
+        return true;
+    }
 
-		String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getFolder());
-		try {
-			Git.open(new File(pathToStudentFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
-		} catch (Exception e) {
-			LOGGER.error("Failed to reset HEAD for student. Defaulting to hard reset: {}", e.getMessage());
-			if (!resetHard(pathToStudentFolder, submission.getGitStudentRepo())) {
-				return false;
-			}
-		}
-		return true;
-	}
+    private boolean SafeClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) {
+        try {
+            if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+                Git git = Git.cloneRepository()
+                        .setCredentialsProvider(
+                                new UsernamePasswordCredentialsProvider(
+                                        "envomp", System.getenv().get("GITLAB_PASSWORD")))
+                        .setURI(pathToRepo)
+                        .setDirectory(new File(pathToFolder))
+                        .call();
+                git.close();
 
-	private boolean SafePull(String pathToFolder, Optional<Submission> submission) {
-		Git git = null;
-		try {
-			git = Git.open(new File(pathToFolder));
-			if (submission.isPresent()) {
-				Submission user = submission.get();
+            } else {
+                Git git = Git.cloneRepository()
+                        .setTransportConfigCallback(transportConfigCallback)
+                        .setURI(pathToRepo)
+                        .setDirectory(new File(pathToFolder))
+                        .call();
+                git.close();
+            }
+            return true;
+        } catch (Exception e) {
+            submission.ifPresent(value -> value.setResult(e.getMessage()));
+            LOGGER.error("Cloning failed with message: {}", e.getMessage());
+            return false;
+        }
+    }
 
-				if (submission.get().getHash() != null) {
+    @Override
+    public boolean resetHead(Submission submission) {
 
-					try {
-						fetch(git);
-						reset(git, user);
-						RevCommit latest = getLatestCommit(git);
-						user.setCommitMessage(latest.getFullMessage());
-						LOGGER.info("Pulled specific hash {} for user {}", user.getHash(), user.getUniid());
-					} catch (Exception e) {
-						try {
-							fixHash(git, user);
-							fetch(git);
-							reset(git, user);
-						} catch (Exception e1) {
-							LOGGER.info("Failed to fetch and reset.");
-							git.close();
-							return false;
-						}
-					}
+        String pathToStudentFolder = String.format("students/%s/%s/", submission.getUniid(), submission.getFolder());
+        try {
+            Git.open(new File(pathToStudentFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
+        } catch (Exception e) {
+            LOGGER.error("Failed to reset HEAD for student. Defaulting to hard reset: {}", e.getMessage());
+            if (!resetHard(pathToStudentFolder, submission.getGitStudentRepo())) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-				} else {
+    private boolean SafePull(String pathToFolder, Optional<Submission> submission) {
+        Git git = null;
+        try {
+            git = Git.open(new File(pathToFolder));
+            if (submission.isPresent()) {
+                Submission user = submission.get();
 
-					SafePull(git);
-					RevCommit latest = getLatestCommit(git);
-					user.setHash(latest.name());
-					user.setCommitMessage(latest.getFullMessage());
-					LOGGER.info("Pulled for user {} and set hash {}", user.getUniid(), user.getHash());
-				}
+                if (submission.get().getHash() != null) {
 
-			} else {
+                    try {
+                        fetch(git);
+                        reset(git, user);
+                        RevCommit latest = getLatestCommit(git);
+                        user.setCommitMessage(latest.getFullMessage());
+                        LOGGER.info("Pulled specific hash {} for user {}", user.getHash(), user.getUniid());
+                    } catch (Exception e) {
+                        try {
+                            fixHash(git, user);
+                            fetch(git);
+                            reset(git, user);
+                        } catch (Exception e1) {
+                            LOGGER.info("Failed to fetch and reset.");
+                            git.close();
+                            return false;
+                        }
+                    }
 
-				SafePull(git);
-				LOGGER.info("Pulled to {} with hash {}", pathToFolder, getLatestCommit(git).name());
-			}
-			git.close();
-			return true;
-		} catch (Exception e) {
-			if (git != null) {
-				git.close();
-			}
-			submission.ifPresent(value -> value.setResult(e.getMessage()));
-			LOGGER.error("Pull failed with message: {}", e.getMessage());
-			return false;
-		}
-	}
+                } else {
 
-	private void reset(Git git, Submission user) throws GitAPIException {
-		Ref command = git.reset().setMode(ResetCommand.ResetType.HARD).setRef(user.getHash()).call();
-	}
+                    SafePull(git);
+                    RevCommit latest = getLatestCommit(git);
+                    user.setHash(latest.name());
+                    user.setCommitMessage(latest.getFullMessage());
+                    LOGGER.info("Pulled for user {} and set hash {}", user.getUniid(), user.getHash());
+                }
 
-	private void SafePull(Git git) throws GitAPIException {
-		PullResult result;
-		if (System.getenv().containsKey("GITLAB_PASSWORD")) {
-			result = git.pull()
-					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
-							"envomp", System.getenv().get("GITLAB_PASSWORD")))
-					.call();
+            } else {
 
-		} else {
-			result = git.pull()
-					.setTransportConfigCallback(transportConfigCallback)
-					.call();
-		}
+                SafePull(git);
+                LOGGER.info("Pulled to {} with hash {}", pathToFolder, getLatestCommit(git).name());
+            }
+            git.close();
+            return true;
+        } catch (Exception e) {
+            if (git != null) {
+                git.close();
+            }
+            submission.ifPresent(value -> value.setResult(e.getMessage()));
+            LOGGER.error("Pull failed with message: {}", e.getMessage());
+            return false;
+        }
+    }
 
-		assert result.isSuccessful();
-	}
+    private void reset(Git git, Submission user) throws GitAPIException {
+        Ref command = git.reset().setMode(ResetCommand.ResetType.HARD).setRef(user.getHash()).call();
+    }
 
-	private void fetch(Git git) throws GitAPIException {
-		if (System.getenv().containsKey("GITLAB_PASSWORD")) {
-			FetchResult result = git.fetch()
-					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
-							"envomp", System.getenv().get("GITLAB_PASSWORD")))
-					.call();
+    private void SafePull(Git git) throws GitAPIException {
+        PullResult result;
+        if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+            result = git.pull()
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(
+                            "envomp", System.getenv().get("GITLAB_PASSWORD")))
+                    .call();
 
-		} else {
-			FetchResult result = git.fetch()
-					.setTransportConfigCallback(transportConfigCallback)
-					.call();
-		}
-	}
+        } else {
+            result = git.pull()
+                    .setTransportConfigCallback(transportConfigCallback)
+                    .call();
+        }
 
-	private RevCommit getLatestCommit(Git git) throws GitAPIException, IOException {
-		RevCommit youngestCommit = null;
-		List<Ref> branches = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
-		try (RevWalk walk = new RevWalk(git.getRepository())) {
-			for (Ref branch : branches) {
-				RevCommit commit = walk.parseCommit(branch.getObjectId());
-				if (youngestCommit == null || commit.getAuthorIdent().getWhen().compareTo(
-						youngestCommit.getAuthorIdent().getWhen()) > 0)
-					youngestCommit = commit;
-			}
-		}
+        assert result.isSuccessful();
+    }
 
-		assert youngestCommit != null;
-		return youngestCommit;
-	}
+    private void fetch(Git git) throws GitAPIException {
+        if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+            FetchResult result = git.fetch()
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(
+                            "envomp", System.getenv().get("GITLAB_PASSWORD")))
+                    .call();
 
-	private void fixHash(Git git, Submission user) throws GitAPIException, IOException {
-		RevCommit youngestCommit = null;
-		List<Ref> branches = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
-		try (RevWalk walk = new RevWalk(git.getRepository())) {
-			for (Ref branch : branches) {
-				RevCommit commit = walk.parseCommit(branch.getObjectId());
-				if (youngestCommit == null || commit.getAuthorIdent().getWhen().compareTo(youngestCommit.getAuthorIdent().getWhen()) > 0) {
-					if (commit.name().equals(user.getHash())) {
-						return;
-					}
-					youngestCommit = commit;
-				}
-			}
-		}
-		assert youngestCommit != null;
-		LOGGER.error("Detected faulty hash {}, replaced it with a correct one {}", user.getHash(), youngestCommit.name());
-		user.setHash(youngestCommit.name());
-	}
+        } else {
+            FetchResult result = git.fetch()
+                    .setTransportConfigCallback(transportConfigCallback)
+                    .call();
+        }
+    }
 
-	@Override
-	public HashSet<String> getChangedFolders(String pathToStudentFolder) throws IOException {
-		HashSet<String> repoMainFolders = new HashSet<>();
-		Repository repository = new FileRepository(pathToStudentFolder + ".git");
-		RevWalk rw = new RevWalk(repository);
-		ObjectId head = repository.resolve(Constants.HEAD);
-		RevCommit commit = rw.parseCommit(head);
-		try {
-			RevCommit parent = rw.parseCommit(commit.getParent(0).getId());
-			DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
-			df.setRepository(repository);
-			df.setDiffComparator(RawTextComparator.DEFAULT);
-			df.setDetectRenames(true);
-			List<DiffEntry> diffs = df.scan(parent.getTree(), commit.getTree());
-			for (DiffEntry diff : diffs) {
+    private RevCommit getLatestCommit(Git git) throws GitAPIException, IOException {
+        RevCommit youngestCommit = null;
+        List<Ref> branches = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
+        try (RevWalk walk = new RevWalk(git.getRepository())) {
+            for (Ref branch : branches) {
+                RevCommit commit = walk.parseCommit(branch.getObjectId());
+                if (youngestCommit == null || commit.getAuthorIdent().getWhen().compareTo(
+                        youngestCommit.getAuthorIdent().getWhen()) > 0)
+                    youngestCommit = commit;
+            }
+        }
 
-				if (TESTABLES.contains(diff.getChangeType().name())) {
-					String potentialSlug = diff.getNewPath().split("/")[0];
-					if (potentialSlug.matches("[a-zA-Z0-9_]*")) {
-						repoMainFolders.add(potentialSlug);
-					}
-				}
+        assert youngestCommit != null;
+        return youngestCommit;
+    }
 
-			}
-			return repoMainFolders;
-		} catch (Exception e) { // first commit, no parent. Get all slugs
-			for (File file : Objects.requireNonNull(new File(pathToStudentFolder).listFiles())) {
-				try {
-					String potentialSlug = file.getPath().split("/")[0];
-					if (potentialSlug.matches("[a-zA-Z0-9_]*")) {
-						repoMainFolders.add(potentialSlug);
-					}
-				} catch (Exception ignored) {
-				}
-			}
-			return repoMainFolders;
-		}
-	}
+    private void fixHash(Git git, Submission user) throws GitAPIException, IOException {
+        RevCommit youngestCommit = null;
+        List<Ref> branches = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
+        try (RevWalk walk = new RevWalk(git.getRepository())) {
+            for (Ref branch : branches) {
+                RevCommit commit = walk.parseCommit(branch.getObjectId());
+                if (youngestCommit == null || commit.getAuthorIdent().getWhen().compareTo(youngestCommit.getAuthorIdent().getWhen()) > 0) {
+                    if (commit.name().equals(user.getHash())) {
+                        return;
+                    }
+                    youngestCommit = commit;
+                }
+            }
+        }
+        assert youngestCommit != null;
+        LOGGER.error("Detected faulty hash {}, replaced it with a correct one {}", user.getHash(), youngestCommit.name());
+        user.setHash(youngestCommit.name());
+    }
+
+    @Override
+    public HashSet<String> getChangedFolders(String pathToStudentFolder) throws IOException {
+        HashSet<String> repoMainFolders = new HashSet<>();
+        Repository repository = new FileRepository(pathToStudentFolder + ".git");
+        RevWalk rw = new RevWalk(repository);
+        ObjectId head = repository.resolve(Constants.HEAD);
+        RevCommit commit = rw.parseCommit(head);
+        if (commit.getParentCount() == 0) {
+
+            // first commit, no parent. Get all slugs
+            for (File file : Objects.requireNonNull(new File(pathToStudentFolder).listFiles())) {
+                try {
+                    String potentialSlug = file.getPath().split("/")[0];
+                    if (potentialSlug.matches("[a-zA-Z0-9_]*")) {
+                        repoMainFolders.add(potentialSlug);
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+
+        } else {
+
+            try {
+                RevCommit parent = rw.parseCommit(commit.getParent(0).getId());
+                DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
+                df.setRepository(repository);
+                df.setDiffComparator(RawTextComparator.DEFAULT);
+                df.setDetectRenames(true);
+                List<DiffEntry> diffs = df.scan(parent.getTree(), commit.getTree());
+                for (DiffEntry diff : diffs) {
+
+                    try {
+                        if (TESTABLES.contains(diff.getChangeType().name())) {
+                            String potentialSlug = diff.getNewPath().split("/")[0];
+                            if (potentialSlug.matches("[a-zA-Z0-9_]*")) {
+                                repoMainFolders.add(potentialSlug);
+                            }
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error(e.getMessage());
+                    }
+
+                }
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage());
+            }
+        }
+
+        return repoMainFolders;
+    }
 }
