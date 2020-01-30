@@ -128,7 +128,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 			Submission job = submissionPriorityQueue.poll();
 			assert job != null;
 
-			if (job.getPriority() < 8 && activeSubmissions.stream().anyMatch(o -> o.getUniid().equals(job.getUniid()))) {
+			if (job.getPriority() < 8 && job.getUniid() != null && activeSubmissions.stream().anyMatch(o -> o.getUniid().equals(job.getUniid()))) {
 				job.setPriority(4); // Mild punish for spam pushers.
 
 				submissionPriorityQueue.add(job);
