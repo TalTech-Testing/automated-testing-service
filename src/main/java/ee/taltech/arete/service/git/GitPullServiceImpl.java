@@ -95,13 +95,7 @@ public class GitPullServiceImpl implements GitPullService {
 
         if (Files.exists(path)) {
             LOGGER.info("Checking for update for project: {}", pathToFolder);
-
-
-            if (!SafePull(pathToFolder, submission)) {
-                LOGGER.error("Checking failed for update. Trying to reset head and pull again");
-                Git.open(new File(pathToFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
-                return SafePull(pathToFolder, submission);
-            }
+            return SafePull(pathToFolder, submission);
 
         } else {
 
