@@ -17,26 +17,21 @@ import java.util.Set;
 @JsonClassDescription("Async request from Moodle")
 public class AreteRequest {
 
-    @NotNull
     @JsonPropertyDescription("Image used for testing. Currently available: [java, python]")
     private String testingPlatform;
 
-    @NotNull
     @JsonPropertyDescription("URL where result is sent.")
     private String returnUrl;
 
-    @NotNull
     @JsonPropertyDescription("URL or ssh for student repository")
     private String gitStudentRepo;
     // or. One of the options must be chosen
-    @NotNull
     @JsonPropertyDescription("List of student source files")
     private List<SourceFile> source;
 
     @JsonPropertyDescription("URL or ssh for test repository")
     private String gitTestSource;
     //or
-    @NotNull
     @JsonPropertyDescription("List of test source files")
     private List<SourceFile> testSource;
 

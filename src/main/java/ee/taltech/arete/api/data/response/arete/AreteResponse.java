@@ -28,8 +28,7 @@ import java.util.*;
 @JsonClassDescription("Response sent to ReturnUrl")
 public class AreteResponse {
 
-    @Column(length = 1023)
-    String version = "arete_2.0";
+    final String version = "arete_2.0";
 
     @JsonPropertyDescription("List of style, compilation and other errors")
     @OneToMany(cascade = {CascadeType.ALL})
@@ -58,17 +57,27 @@ public class AreteResponse {
     @JsonPropertyDescription("Number of tests")
     Integer totalCount = 0;
 
-    @Column(length = 1023)
     @JsonPropertyDescription("Passed percentage")
     String totalGrade = "0";
 
     @JsonPropertyDescription("Number of passed tests")
     Integer totalPassedCount = 0;
 
+    @JsonPropertyDescription("Docker image used for testing")
+    String testingPlatform;
+
+    @JsonPropertyDescription("git namespace")
+    String root;
+
+    @JsonPropertyDescription("URL or ssh for test repository")
+    String gitTestRepo;
+
+    @JsonPropertyDescription("URL or ssh for student repository")
+    String gitStudentRepo;
+
     @JsonPropertyDescription("Style percentage")
     Integer style = 100;
 
-    @Column(length = 1023)
     @JsonPropertyDescription("Slug ran for student. for example pr01_something")
     String slug;
 
@@ -86,7 +95,26 @@ public class AreteResponse {
     Long timestamp;
 
     @JsonPropertyDescription("Commit message for student repository")
+    @Column(length = 1023)
     String commitMessage;
+
+    @JsonPropertyDescription("Priority of job")
+    Integer priority;
+
+    @ElementCollection
+    @CollectionTable(name = "docker_extra", joinColumns = @JoinColumn(name = "id"))
+    @Column(length = 1023)
+    @JsonPropertyDescription("No defaults. You can add (stylecheck) or something. It is sent to smaller tester. Look the possibilities from the small tester repository for more details.")
+    private Set<String> dockerExtra;
+
+    @ElementCollection
+    @CollectionTable(name = "system_extra", joinColumns = @JoinColumn(name = "id"))
+    @Column(length = 1023)
+    @JsonPropertyDescription("No defaults. You can add (noMail, noFiles, noTesterFiles, noStudentFiles, noStd, noFeedback, minimalFeedback)")
+    private Set<String> systemExtra;
+
+    @JsonPropertyDescription("Default docker timeout is 120 seconds")
+    private Integer dockerTimeout;
 
     @JsonPropertyDescription("Whether the testing was successful or not")
     Boolean failed = false;
@@ -98,25 +126,10 @@ public class AreteResponse {
 
     public AreteResponse(String slug, Submission submission, String message) { //Failed submission
         Error error = new Error.ErrorBuilder().columnNo(0).lineNo(0).fileName("tester").message(message).build();
-        this.hash = submission.getHash();
-        this.uniid = submission.getUniid();
-        this.timestamp = submission.getTimestamp();
-        this.commitMessage = submission.getCommitMessage();
+        this.fillFromSubmission(slug, submission);
         this.output = message;
         this.errors.add(error);
-
-        if (submission.getSystemExtra() != null && !submission.getSystemExtra().contains("noStd")) {
-            consoleOutputs.add(new ConsoleOutput.ConsoleOutputBuilder().content(submission.getResult()).build());
-        }
-
-        if (submission.getResponse() == null) {
-            submission.setResponse(new ArrayList<>());
-        }
-
-        this.returnExtra = submission.getReturnExtra();
-        this.slug = slug;
         this.failed = true;
-        submission.getResponse().add(this);
     }
 
     public AreteResponse(String slug, Submission submission, hodorStudentTesterResponse response) { //Successful submission
@@ -321,6 +334,14 @@ public class AreteResponse {
         this.uniid = submission.getUniid();
         this.timestamp = submission.getTimestamp();
         this.commitMessage = submission.getCommitMessage();
+        this.testingPlatform = submission.getTestingPlatform();
+        this.root = submission.getFolder();
+        this.gitStudentRepo = submission.getGitStudentRepo();
+        this.gitTestRepo = submission.getGitTestSource();
+        this.priority = submission.getPriority();
+        this.dockerTimeout = submission.getDockerTimeout();
+        this.dockerExtra = submission.getDockerExtra();
+        this.systemExtra = submission.getSystemExtra();
     }
 
     private String constructOutput(Submission submission) {

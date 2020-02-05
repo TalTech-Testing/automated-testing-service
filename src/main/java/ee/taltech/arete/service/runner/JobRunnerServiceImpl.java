@@ -60,29 +60,14 @@ public class JobRunnerServiceImpl implements JobRunnerService {
         if (folderMaintenance(submission)) return; // if error, done
 
         LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
-        if (!submission.getSystemExtra().contains("noOverride")) {
-            try {
-                objectMapper
-                        .readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class)
-                        .overrideDefaults(submission);
-            } catch (Exception ignored) {
-            }
-        }
-
 
         for (String slug : submission.getSlugs()) {
-            if (!submission.getSystemExtra().contains("noOverride")) {
-                try {
-                    objectMapper
-                            .readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class)
-                            .overrideDefaults(submission);
-                    LOGGER.debug("Overrode default parameters");
-                } catch (Exception e) {
-                    LOGGER.debug("Using default parameters");
-                }
-            }
+
+            rootProperties(submission);
+            slugProperties(submission, slug);
 
             String output;
+
             try {
                 output = dockerService.runDocker(submission, slug);
                 LOGGER.info("Job {} has been ran for user {}", slug, submission.getUniid());
@@ -96,20 +81,47 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
             reportSuccessfulSubmission(slug, submission, output);
 
-            try {
-                new PrintWriter(output).close(); // clears output file
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage());
-            }
-
-            try {
-                new PrintWriter(String.format("input_and_output/%s/host/input.json", submission.getThread())).close(); // clears input file
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage());
-            }
+            clearInputAndOutput(submission, output);
 
         }
+    }
 
+    private void slugProperties(Submission submission, String slug) {
+        if (!submission.getSystemExtra().contains("noOverride")) {
+            try {
+                objectMapper
+                        .readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class)
+                        .overrideDefaults(submission);
+                LOGGER.debug("Overrode default parameters");
+            } catch (Exception e) {
+                LOGGER.debug("Using default parameters");
+            }
+        }
+    }
+
+    private void clearInputAndOutput(Submission submission, String output) {
+        try {
+            new PrintWriter(output).close(); // clears output file
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        try {
+            new PrintWriter(String.format("input_and_output/%s/host/input.json", submission.getThread())).close(); // clears input file
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+
+    private void rootProperties(Submission submission) {
+        if (!submission.getSystemExtra().contains("noOverride")) {
+            try {
+                objectMapper
+                        .readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class)
+                        .overrideDefaults(submission);
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     private boolean folderMaintenance(Submission submission) {
