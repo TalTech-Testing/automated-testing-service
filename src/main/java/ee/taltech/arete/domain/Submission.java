@@ -9,6 +9,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -72,12 +73,12 @@ public class Submission {
 	@ElementCollection
 	@CollectionTable(name = "docker_extra", joinColumns = @JoinColumn(name = "id"))
 	@Column(length = 1023)
-	private Set<String> dockerExtra;
+	private Set<String> dockerExtra = new HashSet<>();
 
 	@ElementCollection
 	@CollectionTable(name = "system_extra", joinColumns = @JoinColumn(name = "id"))
 	@Column(length = 1023)
-	private Set<String> systemExtra;
+	private Set<String> systemExtra = new HashSet<>();
 
 	private Integer dockerTimeout;
 
