@@ -6,8 +6,6 @@ services:
     container_name: arete
     image: arete:latest
     privileged: true
-    depends_on:
-      - db
     build:
       args:
         - ARETE_HOME=/arete

@@ -47,7 +47,7 @@ public class AreteRequest {
     @JsonPropertyDescription("No defaults. You can add (stylecheck) or something. It is sent to smaller tester. Look the possibilities from the small tester repository for more details.")
     private Set<String> dockerExtra;
 
-    @JsonPropertyDescription("No defaults. You can add (noOverride, noMail, noFiles, noTesterFiles, noStudentFiles, noStd, noFeedback, minimalFeedback, noFun)")
+    @JsonPropertyDescription("No defaults. You can add (anonymous, noOverride, noMail, noFiles, noTesterFiles, noStudentFiles, noStd, noFeedback, minimalFeedback, noFun)")
     private Set<String> systemExtra;
 
     @JsonPropertyDescription("Default docker timeout is 120 seconds")

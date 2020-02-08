@@ -15,12 +15,6 @@ Schemas can be generated from arete/api/data ```/request``` and ```/response```
         * java-tester
         * python-tester
 * get
-    * /submissions
-    * /submissions/{amount}
-    * /submissions/failed
-    * /submissions/failed/{amount}
-    * /submission/{hash}
-    * /submission/{hash}/logs
     * /submissions/active
     * /debug/{1 or 0}
     * /logs
@@ -62,6 +56,8 @@ stylecheck - stiilikontroll pythoni testeri jaoks
 systemExtra:
 
 ````
+anonymous - andmebaasi midagi ei salvestata.
+
 noOverride - dockerTimeouti, dockerExtrat ja systemExtrat ei kirjutata üle. (Request) või (Request < root) tavapärase (Request < root < slug) asemele olenevalt olukorrast, millal noOverride sisse tuleb.
 
 noMail - tudengile ei saadeta meili.

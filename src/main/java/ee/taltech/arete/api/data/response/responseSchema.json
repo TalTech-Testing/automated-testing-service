@@ -214,6 +214,22 @@
       "type": "integer",
       "description": "Number of passed tests"
     },
+    "testingPlatform": {
+      "type": "string",
+      "description": "Docker image used for testing"
+    },
+    "root": {
+      "type": "string",
+      "description": "git namespace"
+    },
+    "gitTestRepo": {
+      "type": "string",
+      "description": "URL or ssh for test repository"
+    },
+    "gitStudentRepo": {
+      "type": "string",
+      "description": "URL or ssh for student repository"
+    },
     "style": {
       "type": "integer",
       "description": "Style percentage"
@@ -221,6 +237,10 @@
     "slug": {
       "type": "string",
       "description": "Slug ran for student. for example pr01_something"
+    },
+    "returnExtra": {
+      "type": "any",
+      "description": "values that are returned the same way they were given in"
     },
     "hash": {
       "type": "string",
@@ -238,9 +258,31 @@
       "type": "string",
       "description": "Commit message for student repository"
     },
-    "returnExtra": {
-      "type": "any",
-      "description": "values that are returned the same way they were given in"
+    "priority": {
+      "type": "integer",
+      "description": "Priority of job"
+    },
+    "dockerExtra": {
+      "type": "array",
+      "description": "No defaults. You can add (stylecheck) or something. It is sent to smaller tester. Look the possibilities from the small tester repository for more details.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "systemExtra": {
+      "type": "array",
+      "description": "No defaults. You can add (noMail, noFiles, noTesterFiles, noStudentFiles, noStd, noFeedback, minimalFeedback)",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dockerTimeout": {
+      "type": "integer",
+      "description": "Default docker timeout is 120 seconds"
+    },
+    "failed": {
+      "type": "boolean",
+      "description": "Whether the testing was successful or not"
     }
   }
 }
