@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
 
-  back-test:
+  testing_service-test:
     container_name: arete-test
     image: arete-test:latest
     privileged: true

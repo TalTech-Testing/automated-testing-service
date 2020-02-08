@@ -144,12 +144,10 @@ public class hodorStudentTesterResponseTest {
     }
 
     private void assertSuccessfulParsing(Submission test, AreteResponse areteResponse) {
-        assert test.getResponse().size() > 0;
         assert areteResponse.getOutput() != null;
         assert areteResponse.getErrors() != null;
         assert areteResponse.getConsoleOutputs() != null;
         assert areteResponse.getFiles() != null;
         assert areteResponse.getTestFiles() != null;
-        assert areteResponse.getId() >= 0;
     }
 }

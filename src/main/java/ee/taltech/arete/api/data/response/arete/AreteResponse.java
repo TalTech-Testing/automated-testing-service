@@ -1,7 +1,6 @@
 package ee.taltech.arete.api.data.response.arete;
 
 import com.fasterxml.jackson.annotation.JsonClassDescription;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.databind.JsonNode;
 import ee.taltech.arete.api.data.response.hodor_studenttester.*;
@@ -13,7 +12,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -23,35 +21,27 @@ import java.util.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "response")
-@Entity
 @JsonClassDescription("Response sent to ReturnUrl")
 public class AreteResponse {
 
     final String version = "arete_2.0";
 
     @JsonPropertyDescription("List of style, compilation and other errors")
-    @OneToMany(cascade = {CascadeType.ALL})
     List<Error> errors = new ArrayList<>();
 
     @JsonPropertyDescription("List of student files")
-    @OneToMany(cascade = {CascadeType.ALL})
     List<File> files = new ArrayList<>();
 
     @JsonPropertyDescription("List of test files")
-    @OneToMany(cascade = {CascadeType.ALL})
     List<File> testFiles = new ArrayList<>();
 
     @JsonPropertyDescription("List of test suites which each contains unit-tests. Each test file produces an test suite")
-    @OneToMany(cascade = {CascadeType.ALL})
     List<TestContext> testSuites = new ArrayList<>();
 
     @JsonPropertyDescription("Console outputs from docker")
-    @OneToMany(cascade = {CascadeType.ALL})
     List<ConsoleOutput> consoleOutputs = new ArrayList<>();
 
     @JsonPropertyDescription("HTML result for student")
-    @Column(columnDefinition = "TEXT")
     String output;
 
     @JsonPropertyDescription("Number of tests")
@@ -81,7 +71,6 @@ public class AreteResponse {
     @JsonPropertyDescription("Slug ran for student. for example pr01_something")
     String slug;
 
-    @Transient
     @JsonPropertyDescription("values that are returned the same way they were given in")
     JsonNode returnExtra;
 
@@ -95,21 +84,14 @@ public class AreteResponse {
     Long timestamp;
 
     @JsonPropertyDescription("Commit message for student repository")
-    @Column(length = 1023)
     String commitMessage;
 
     @JsonPropertyDescription("Priority of job")
     Integer priority;
 
-    @ElementCollection
-    @CollectionTable(name = "docker_extra", joinColumns = @JoinColumn(name = "id"))
-    @Column(length = 1023)
     @JsonPropertyDescription("No defaults. You can add (stylecheck) or something. It is sent to smaller tester. Look the possibilities from the small tester repository for more details.")
     private Set<String> dockerExtra;
 
-    @ElementCollection
-    @CollectionTable(name = "system_extra", joinColumns = @JoinColumn(name = "id"))
-    @Column(length = 1023)
     @JsonPropertyDescription("No defaults. You can add (noMail, noFiles, noTesterFiles, noStudentFiles, noStd, noFeedback, minimalFeedback)")
     private Set<String> systemExtra;
 
@@ -118,11 +100,6 @@ public class AreteResponse {
 
     @JsonPropertyDescription("Whether the testing was successful or not")
     Boolean failed = false;
-
-    @JsonIgnore
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
 
     public AreteResponse(String slug, Submission submission, String message) { //Failed submission
         Error error = new Error.ErrorBuilder().columnNo(0).lineNo(0).fileName("tester").message(message).build();
@@ -323,11 +300,6 @@ public class AreteResponse {
             consoleOutputs.add(new ConsoleOutput.ConsoleOutputBuilder().content(submission.getResult()).build());
         }
 
-        if (submission.getResponse() == null) {
-            submission.setResponse(new ArrayList<>());
-        }
-        submission.getResponse().add(this);
-
         this.returnExtra = submission.getReturnExtra();
         this.slug = slug;
         this.hash = submission.getHash();
@@ -335,7 +307,7 @@ public class AreteResponse {
         this.timestamp = submission.getTimestamp();
         this.commitMessage = submission.getCommitMessage();
         this.testingPlatform = submission.getTestingPlatform();
-        this.root = submission.getFolder();
+        this.root = submission.getCourse();
         this.gitStudentRepo = submission.getGitStudentRepo();
         this.gitTestRepo = submission.getGitTestSource();
         this.priority = submission.getPriority();

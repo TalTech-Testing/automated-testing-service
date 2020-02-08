@@ -53,7 +53,6 @@ public class requestServiceImpl implements RequestService {
 
             Submission submission = objectMapper.readValue(requestBody, Submission.class);
             submissionService.populateAsyncFields(submission);
-            submissionService.saveSubmission(submission);
             priorityQueueService.enqueue(submission);
             return submission;
 
@@ -74,7 +73,6 @@ public class requestServiceImpl implements RequestService {
 
             Submission submission = objectMapper.readValue(requestBody, Submission.class);
             String waitingroom = submissionService.populateSyncFields(submission);
-            submissionService.saveSubmission(submission);
             priorityQueueService.enqueue(submission);
 
             int timeout = submission.getDockerTimeout() == null ? 120 : submission.getDockerTimeout();

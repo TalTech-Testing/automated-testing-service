@@ -2,29 +2,21 @@ package ee.taltech.arete.service.submission;
 
 import ee.taltech.arete.configuration.DevProperties;
 import ee.taltech.arete.domain.Submission;
-import ee.taltech.arete.exception.RequestFormatException;
-import ee.taltech.arete.repository.SubmissionRepository;
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.BadRequestException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 
 
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
-
-    @Autowired
-    private SubmissionRepository submissionRepository;
 
     @Autowired
     DevProperties devProperties;
@@ -197,40 +189,6 @@ public class SubmissionServiceImpl implements SubmissionService {
         if (submission.getUniid() == null) {
             submission.getSystemExtra().add("noMail");
         }
-    }
-
-    @Override
-    public List<Submission> getSubmissions() {
-        LOGGER.info("Reading all Submissions from database.");
-        return submissionRepository.findAll();
-    }
-
-    @Override
-    public List<Submission> getSubmissionByHash(String hash) {
-        ArrayList<Submission> submissions = submissionRepository.findByHash(hash);
-        LOGGER.info("Reading Submission hash " + hash + " from database.");
-        if (submissions.size() > 0) {
-            return submissions;
-        }
-        LOGGER.error(String.format("Submission with hash %s was not found.", hash));
-        throw new RequestFormatException(String.format("No Submission with hash: %s was not found", hash));
-    }
-
-    @Override
-    public void saveSubmission(Submission submission) {
-        submissionRepository.saveAndFlush(submission);
-        LOGGER.info("Submission with hash {} successfully saved into DB", submission.getHash());
-    }
-
-    @Override
-    @Scheduled(cron = "0 4 4 * * ?")
-    public void deleteSubmissionsAutomatically() {
-//		for (Submission submission : submissionRepository.findAll()) {
-//			if (System.currentTimeMillis() - submission.getTimestamp() > (1000 * 60 * 60 * 24 * 7)) { // if it has been a week
-//				submissionRepository.delete(submission);
-//				LOG.info("Deleted old submission from DB: {}", submission);
-//			}
-//		}
     }
 
     @Override

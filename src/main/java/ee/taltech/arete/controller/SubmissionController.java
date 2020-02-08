@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class SubmissionController {
@@ -91,93 +89,6 @@ public class SubmissionController {
 
     }
 
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @GetMapping("/submission/{hash}")
-    public List<Submission> GetSubmissionsByHash(@PathVariable("hash") String hash) {
-
-        try {
-            return submissionService.getSubmissionByHash(hash);
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-
-    }
-
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @GetMapping("/submissions")
-    public List<Submission> GetSubmissions() {
-
-        try {
-
-            List<Submission> submissions = submissionService.getSubmissions()
-                    .stream()
-                    .sorted(Comparator.comparingLong(Submission::getTimestamp))
-                    .collect(Collectors.toList());
-            int n = Math.min(20, submissions.size());
-            return submissions.subList(submissions.size() - n, submissions.size());
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-
-    }
-
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @GetMapping("/submissions/{n}")
-    public List<Submission> GetNSubmissions(@PathVariable("n") Integer n) {
-
-        try {
-            List<Submission> submissions = submissionService.getSubmissions()
-                    .stream()
-                    .sorted(Comparator.comparingLong(Submission::getTimestamp))
-                    .collect(Collectors.toList());
-            n = Math.min(n, submissions.size());
-            return submissions.subList(submissions.size() - n, submissions.size());
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-
-    }
-
-
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @GetMapping("/submissions/failed")
-    public List<Submission> GetFailedSubmissions() {
-
-        try {
-            List<Submission> submissions = submissionService.getSubmissions()
-                    .stream()
-                    .filter(x -> x.getResponse().parallelStream().anyMatch(y -> y.getFailed() != null && y.getFailed()))
-                    .sorted(Comparator.comparingLong(Submission::getTimestamp))
-                    .collect(Collectors.toList());
-            int n = Math.min(20, submissions.size());
-            return submissions.subList(submissions.size() - n, submissions.size());
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @GetMapping("/submissions/failed/{n}")
-    public List<Submission> GetNFailedSubmissions(@PathVariable("n") Integer n) {
-
-        try {
-            List<Submission> submissions = submissionService.getSubmissions()
-                    .stream()
-                    .filter(x -> x.getResponse().parallelStream().anyMatch(y -> y.getFailed() != null && y.getFailed()))
-                    .sorted(Comparator.comparingLong(Submission::getTimestamp))
-                    .collect(Collectors.toList());
-            n = Math.min(n, submissions.size());
-            return submissions.subList(submissions.size() - n, submissions.size());
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-
-    }
-
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @GetMapping("/submissions/active")
@@ -185,21 +96,6 @@ public class SubmissionController {
 
         try {
             return priorityQueueService.getActiveSubmissions();
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-
-    }
-
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @GetMapping("/submission/{hash}/logs")
-    public List<List<AreteResponse>> GetSubmissionLogs(@PathVariable("hash") String hash) {
-
-        try {
-            return submissionService.getSubmissionByHash(hash)
-                    .stream()
-                    .map(Submission::getResponse)
-                    .collect(Collectors.toList());
         } catch (Exception e) {
             return new ArrayList<>();
         }

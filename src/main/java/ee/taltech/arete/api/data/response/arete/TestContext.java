@@ -1,11 +1,9 @@
 package ee.taltech.arete.api.data.response.arete;
 
 import com.fasterxml.jackson.annotation.JsonClassDescription;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import lombok.*;
 
-import javax.persistence.*;
 import java.util.List;
 
 @Data
@@ -13,21 +11,15 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "text_context")
-@Entity
 @JsonClassDescription("Test results from test file")
 public class TestContext {
 
-
-	@OneToMany(cascade = {CascadeType.ALL})
 	@JsonPropertyDescription("List of unittests tested")
 	List<UnitTest> unitTests;
 
-	@Column(length = 1023)
 	@JsonPropertyDescription("Test name")
 	String name;
 
-	@Column(length = 1023)
 	@JsonPropertyDescription("Test file path")
 	String file;
 
@@ -51,8 +43,4 @@ public class TestContext {
 	@JsonPropertyDescription("Total grade for this test file")
 	Double grade;
 
-	@JsonIgnore
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
 }

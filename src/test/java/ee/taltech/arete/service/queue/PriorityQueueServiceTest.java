@@ -42,27 +42,6 @@
 //			priorityQueueService.enqueue(submission);
 //		}
 //
-////		Optional<Submission> submission = priorityQueueService.runJob();
-////		assert submission.isPresent();
-////		int lastPriority = submission.get().getPriority();
-////		long lastTimestamp = submission.get().getTimestamp();
-////
-////		while (true) {
-////			Optional<Submission> submissionNew = priorityQueueService.runJob();
-////			if (submissionNew.isEmpty()) {
-////				break;
-////			}
-////			if (submissionNew.get().getPriority() != lastPriority) {
-////				assert submissionNew.get().getPriority() < lastPriority;
-////				lastPriority = submissionNew.get().getPriority();
-////				lastTimestamp = submissionNew.get().getTimestamp();
-////			} else {
-////				assert submissionNew.get().getTimestamp() >= lastTimestamp;
-////				lastPriority = submissionNew.get().getPriority();
-////				lastTimestamp = submissionNew.get().getTimestamp();
-////			}
-////		}
-//
 //		while (priorityQueueService.getJobsRan() < 4) {
 //			TimeUnit.SECONDS.sleep(1);
 //		}

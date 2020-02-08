@@ -254,6 +254,13 @@ public class JobRunnerServiceImpl implements JobRunnerService {
             LOGGER.error("Malformed returnUrl: {}", e1.getMessage());
         }
 
+        try {
+            reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), areteResponse);
+            LOGGER.info("Reported to backend");
+        } catch (Exception e1) {
+            LOGGER.error("Failed to report to backend");
+        }
+
         if (!submission.getSystemExtra().contains("noMail")) {
             try {
                 reportService.sendTextMail(submission.getUniid(), message, header, html);

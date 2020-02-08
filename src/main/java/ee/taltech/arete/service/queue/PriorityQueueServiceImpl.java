@@ -60,11 +60,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 		jobsRan++;
 		activeSubmissions.remove(submission);
 		threads.add(submission.getThread());
-		try {
-			submissionService.saveSubmission(submission);
-		} catch (Exception e) {
-			LOGGER.error("Failed to save result to DB: {}", e.getMessage());
-		}
 		LOGGER.info("All done for submission on thread: {}", submission.getThread());
 	}
 

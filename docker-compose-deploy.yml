@@ -2,33 +2,12 @@ version: '3.4'
 
 services:
 
-  db:
-    container_name: postgres
-    image: postgres:11.5
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: arete
-      POSTGRES_DB: arete
-      POSTGRES_PASSWORD: arete
-    ports:
-      - "5432:5432"
-
-  adminer:
-    container_name: adminer
-    image: adminer
-    restart: unless-stopped
-    ports:
-      - "8090:8080"
-
-  back:
+  testing_service:
     container_name: arete
-    #    entrypoint: ["sh", "-c", "sleep infinity"]
     image: ${DOCKER_USER}/arete:latest
     restart: unless-stopped
     privileged: true
     working_dir: ${ARETE_HOME}
-    depends_on:
-      - db
     ports:
       - "8098:8098"
     env_file:
