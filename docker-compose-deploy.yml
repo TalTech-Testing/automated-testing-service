@@ -10,7 +10,7 @@ services:
     working_dir: ${ARETE_HOME}
     ports:
       - "8098:8098"
-    network_mode: "host"
+    network_mode: "host" #Communication to arete-back
     env_file:
       - ..env #Change to .env to run locally
     environment:
