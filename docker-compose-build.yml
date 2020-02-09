@@ -17,7 +17,7 @@ services:
       context: .
     ports:
       - "8098:8098"
-    net: "host"
+    network_mode: "host"
     env_file:
       - ..env #Change to .env to run locally
     volumes:
