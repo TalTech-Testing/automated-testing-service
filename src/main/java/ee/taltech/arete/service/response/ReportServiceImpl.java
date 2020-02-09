@@ -59,6 +59,7 @@ public class ReportServiceImpl implements ReportService {
 		try {
 			post(returnUrl, objectMapper.writeValueAsString(response));
 		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
 			LOGGER.error("Failed to POST: {}", e.getMessage());
 		}
 

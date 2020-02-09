@@ -2,26 +2,26 @@ variables:
   DOCKER_DRIVER: overlay
 
 stages:
-  - test
+  #  - test
   - build
   - deploy
 
 
-test:
-  tags:
-    - dev
-    - master
-  image: docker:latest
-  stage: test
-  services:
-    - name: docker:dind
-  script:
-    - docker-compose -f docker-compose-test.yml up --build --force-recreate --no-deps
-  after_script:
-    - docker-compose -f docker-compose-test.yml down --remove-orphans -v -f
-  only:
-    - dev
-    - master
+#test:
+#  tags:
+#    - dev
+#    - master
+#  image: docker:latest
+#  stage: test
+#  services:
+#    - name: docker:dind
+#  script:
+#    - docker-compose -f docker-compose-test.yml up --build --force-recreate --no-deps
+#  after_script:
+#    - docker-compose -f docker-compose-test.yml down --remove-orphans -v -f
+#  only:
+#    - dev
+#    - master
 
 
 build:
@@ -39,7 +39,7 @@ build:
     - docker-compose -f docker-compose-build.yml up --no-start --build --force-recreate --no-deps
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker tag arete $DOCKER_USER/arete:latest
-    - docker push $DOCKER_USER/arete:latest
+  #    - docker push $DOCKER_USER/arete:latest
   after_script:
     - docker-compose -f docker-compose-build.yml down --remove-orphans -v -f
     - docker container ls
