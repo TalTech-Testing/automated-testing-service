@@ -2,7 +2,7 @@ variables:
   DOCKER_DRIVER: overlay
 
 stages:
-    - test
+  - test
   - build
   - deploy
 
