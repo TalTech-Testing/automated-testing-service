@@ -35,6 +35,9 @@ public class AreteRequest {
     @JsonPropertyDescription("List of test source files")
     private List<SourceFile> testSource;
 
+    @JsonPropertyDescription("Slugs to be tested")
+    private Set<String> slugs;
+
     @JsonPropertyDescription("Specify hash to test that specific hash. Otherwise the latest hash of student repository will be tested, if git student repo is present.")
     private String hash;
 

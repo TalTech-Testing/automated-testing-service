@@ -113,7 +113,7 @@ public class Docker {
                     FileUtils.copyDirectory(new java.io.File(tester), new java.io.File(tempTester));
                 } else {
                     for (File file : submission.getTestSource()) {
-                        copyFilesFromSource(tempStudent, file);
+                        copyFilesFromSource(tempTester, file);
                     }
                 }
 
