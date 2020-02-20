@@ -43,7 +43,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
     @Lazy
     public PriorityQueueServiceImpl(DevProperties devProperties, JobRunnerService jobRunnerService) {
-        for (int i = 1; i <= devProperties.getUsableCores(); i++) {
+        for (int i = 1; i < devProperties.getUsableCores(); i++) {
             threads.add(i);
         }
         this.devProperties = devProperties;
@@ -126,7 +126,9 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
         if (!halted && getQueueSize() != 0 && isCPUAvaiable()) {
 
             Submission job = submissionPriorityQueue.poll();
-            assert job != null;
+            if (job == null) {
+                return;
+            }
 
             if (job.getPriority() < 8 && job.getUniid() != null && activeSubmissions.stream().anyMatch(o -> o.getUniid().equals(job.getUniid()))) {
                 job.setPriority(4); // Mild punish for spam pushers.
