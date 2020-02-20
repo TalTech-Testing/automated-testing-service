@@ -44,6 +44,13 @@
         "$ref": "urn:jsonschema:ee:taltech:arete:api:data:request:AreteRequest:SourceFile"
       }
     },
+    "slugs": {
+      "type": "array",
+      "description": "Slugs to be tested",
+      "items": {
+        "type": "string"
+      }
+    },
     "hash": {
       "type": "string",
       "description": "Specify hash to test that specific hash. Otherwise the latest hash of student repository will be tested, if git student repo is present."
