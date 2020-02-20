@@ -52,7 +52,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
     }
 
     private boolean isCPUAvaiable() {
-        return osBean.getSystemCpuLoad() < 0.8 && devProperties.getUsableCores() < activeRunningJobs;
+        return osBean.getSystemCpuLoad() < 0.8 && devProperties.getUsableCores() > activeRunningJobs;
     }
 
     @Override
