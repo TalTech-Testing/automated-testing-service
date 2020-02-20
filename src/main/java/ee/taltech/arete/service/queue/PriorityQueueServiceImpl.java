@@ -6,7 +6,6 @@ import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.runner.JobRunnerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -24,14 +23,11 @@ import java.util.concurrent.TimeUnit;
 @EnableAsync
 public class PriorityQueueServiceImpl implements PriorityQueueService {
 
-    private static OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-    private static Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
+    private final OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
 
-    @Autowired
     private DevProperties devProperties;
 
-    @Autowired
-    @Lazy
     private JobRunnerService jobRunnerService;
 
     private Boolean halted = true;
@@ -45,14 +41,17 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
             .thenComparing(Submission::getTimestamp));
     private Integer stuckQueue = 300; // just some protection against stuck queue
 
-    public PriorityQueueServiceImpl() {
+    @Lazy
+    public PriorityQueueServiceImpl(DevProperties devProperties, JobRunnerService jobRunnerService) {
         for (int i = 1; i <= devProperties.getUsableCores(); i++) {
             threads.add(i);
         }
+        this.devProperties = devProperties;
+        this.jobRunnerService = jobRunnerService;
     }
 
     private boolean isCPUAvaiable() {
-        return osBean.getSystemCpuLoad() < 0.8 && devProperties.getUsableCores() > activeRunningJobs;
+        return osBean.getSystemCpuLoad() < devProperties.getMaxCpuUsage() && devProperties.getUsableCores() > activeRunningJobs;
     }
 
     @Override
