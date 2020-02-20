@@ -135,8 +135,7 @@ public class Docker {
                                             new Bind(new java.io.File(studentHost).getAbsolutePath(), volumeStudent, rw),
                                             new Bind(new java.io.File(testerHost).getAbsolutePath(), volumeTester, ro))
                                     .withCpuCount(2L)
-//							.withCpuQuota((long) (submission.getPriority() > 7 ? 200000 : 200000)) //Its about 1 or 2 cores, revert back to 1 core for both cases
-//							.withCpuPeriod((long) 100000)
+							.withCpuQuota((long) (submission.getPriority() > 7 ? 4000000 : 2000000)) //Its about 2 or 4 cores.
                     ).exec();
 
             ///   END OF WARNING   ///
