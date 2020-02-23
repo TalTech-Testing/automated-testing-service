@@ -136,21 +136,22 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     public String fixRepository(String url) {
-        if (System.getenv().containsKey("GITLAB_PASSWORD")) { // Testing
+        if (System.getenv().containsKey("GITLAB_PASSWORD")) { // Testing only!
             if (url.startsWith("git")) {
                 url = url.replaceFirst(":", "/");
                 url = url.replace("git@", "https://");
-            } else {
-                if (url.startsWith("http")) {
-                    url = url.replace("https://", "git@");
-                    url = url.replace("http://", "git@");
-                    url = url.replaceFirst("/", ":");
-                }
-                if (!url.contains(":")) {
-                    url = url.replaceFirst("/", ":");
-                }
+            }
+        } else {
+            if (url.startsWith("http")) {
+                url = url.replace("https://", "git@");
+                url = url.replace("http://", "git@");
+                url = url.replaceFirst("/", ":");
+            }
+            if (!url.contains(":")) {
+                url = url.replaceFirst("/", ":");
             }
         }
+
 
         if (!url.endsWith(".git")) {
             return url + ".git";
