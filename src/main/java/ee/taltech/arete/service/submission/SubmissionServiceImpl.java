@@ -93,7 +93,7 @@ public class SubmissionServiceImpl implements SubmissionService {
                 throw new BadRequestException("Git student repo or student source is needed.");
             }
         } catch (Exception e) {
-            throw new BadRequestException("Malformed student repo or student source.");
+            throw new BadRequestException(e.getMessage());
         }
 
     }
@@ -130,31 +130,34 @@ public class SubmissionServiceImpl implements SubmissionService {
                 throw new BadRequestException("Git test repo or test source is needed.");
             }
         } catch (Exception e) {
-            throw new BadRequestException("Malformed git test repo or test source.");
+            throw new BadRequestException(e.getMessage());
         }
-
-
     }
 
     @Override
     public String fixRepository(String url) {
-        if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+        if (System.getenv().containsKey("GITLAB_PASSWORD")) { // Testing
             if (url.startsWith("git")) {
                 url = url.replaceFirst(":", "/");
                 url = url.replace("git@", "https://");
-            }
-
-        } else {
-            if (url.startsWith("http")) {
-                url = url.replace("https://", "git@");
-                url = url.replaceFirst("/", ":");
+            } else {
+                if (url.startsWith("http")) {
+                    url = url.replace("https://", "git@");
+                    url = url.replace("http://", "git@");
+                    url = url.replaceFirst("/", ":");
+                }
+                if (!url.contains(":")) {
+                    url = url.replaceFirst("/", ":");
+                }
             }
         }
+
         if (!url.endsWith(".git")) {
             return url + ".git";
         }
         return url;
     }
+
 
     @Override
     public void populateDefaultValues(Submission submission) {
