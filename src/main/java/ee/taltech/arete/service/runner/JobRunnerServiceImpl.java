@@ -1,6 +1,7 @@
 package ee.taltech.arete.service.runner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.arete.ConsoleOutput;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
@@ -259,6 +260,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
         if (!submission.getSystemExtra().contains("anonymous")) {
             try {
+                ((ObjectNode) areteResponse.getReturnExtra()).put("shared_secret", System.getenv().getOrDefault("SHARED_SECRET", "Please make sure that shared_secret is set up properly"));
                 reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), areteResponse);
                 LOGGER.info("Reported to backend");
             } catch (Exception e1) {
