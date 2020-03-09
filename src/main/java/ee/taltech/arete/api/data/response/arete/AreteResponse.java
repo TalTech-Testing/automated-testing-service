@@ -535,9 +535,10 @@ public class AreteResponse {
                 output.append(test.name);
             }
 
-            if (!submission.getSystemExtra().contains("noFeedback") && test.getPrintExceptionMessage() != null && test.getPrintExceptionMessage() && test.getExceptionMessage() != null) {
+            if (!submission.getSystemExtra().contains("noFeedback") && test.getPrintExceptionMessage() != null && test.getPrintExceptionMessage()) {
 
-                output.append(String.format("<br><a style='color:red;'>%s</a>: ", test.getExceptionClass().equals("") ? "Exception" : test.getExceptionClass()));
+                output.append(String.format("<br><a style='color:red;'>%s</a>: ", (test.getExceptionClass() == null || test.getExceptionClass().equals("")) ? "Exception" : test.getExceptionClass()));
+
                 if (test.getExceptionMessage() == null || test.getExceptionMessage().equals("") || test.getExceptionClass().toLowerCase().contains("assert") && submission.getSystemExtra().contains("minimalFeedback")) {
                     output.append(" ... ");
                 } else {
