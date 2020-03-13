@@ -130,12 +130,11 @@ public class Docker {
                     .withAttachStdout(true)
                     .withAttachStderr(true)
                     .withHostConfig(newHostConfig()
-                                    .withBinds(
-                                            new Bind(new java.io.File(output).getAbsolutePath(), volumeOutput, rw),
-                                            new Bind(new java.io.File(studentHost).getAbsolutePath(), volumeStudent, rw),
-                                            new Bind(new java.io.File(testerHost).getAbsolutePath(), volumeTester, ro))
-                                    .withCpuCount(2L)
-							.withCpuQuota((long) (submission.getPriority() > 7 ? 4000000 : 2000000)) //Its about 2 or 4 cores.
+                            .withBinds(
+                                    new Bind(new java.io.File(output).getAbsolutePath(), volumeOutput, rw),
+                                    new Bind(new java.io.File(studentHost).getAbsolutePath(), volumeStudent, rw),
+                                    new Bind(new java.io.File(testerHost).getAbsolutePath(), volumeTester, ro))
+                            .withCpuPercent((submission.getPriority() > 7 ? 20L : 10L))
                     ).exec();
 
             ///   END OF WARNING   ///
