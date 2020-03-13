@@ -36,7 +36,7 @@ build:
     - docker container ls
     - docker images
   script:
-    - docker-compose -f docker-compose-build.yml up --build --force-recreate --no-deps
+    - docker-compose -f docker-compose-build.yml up --no-start --build --force-recreate --no-deps
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker tag arete $DOCKER_USER/arete:latest
     - docker push $DOCKER_USER/arete:latest
