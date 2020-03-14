@@ -134,7 +134,7 @@ public class Docker {
                                     new Bind(new java.io.File(output).getAbsolutePath(), volumeOutput, rw),
                                     new Bind(new java.io.File(studentHost).getAbsolutePath(), volumeStudent, rw),
                                     new Bind(new java.io.File(testerHost).getAbsolutePath(), volumeTester, ro))
-                            .withCpuPercent((submission.getPriority() > 7 ? 20L : 10L))
+                            .withCpuCount((submission.getPriority() > 7 ? 4L : 2L))
                     ).exec();
 
             ///   END OF WARNING   ///

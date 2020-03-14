@@ -258,16 +258,14 @@ public class JobRunnerServiceImpl implements JobRunnerService {
             LOGGER.error("Malformed returnUrl: {}", e1.getMessage());
         }
 
-        if (!submission.getSystemExtra().contains("anonymous")) {
-            try {
-                ((ObjectNode) areteResponse.getReturnExtra()).put("shared_secret", System.getenv().getOrDefault("SHARED_SECRET", "Please make sure that shared_secret is set up properly"));
-                reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), areteResponse);
-                LOGGER.info("Reported to backend");
-            } catch (Exception e1) {
-                LOGGER.error("Failed to report to backend");
-            }
+        try {
+            ((ObjectNode) areteResponse.getReturnExtra()).put("shared_secret", System.getenv().getOrDefault("SHARED_SECRET", "Please make sure that shared_secret is set up properly"));
+            reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), areteResponse);
+            LOGGER.info("Reported to backend");
+        } catch (Exception e1) {
+            LOGGER.error("Failed to report to backend with message: {}", e1.getMessage());
         }
-
+        
         if (!submission.getSystemExtra().contains("noMail")) {
             try {
                 reportService.sendTextMail(submission.getUniid(), message, header, html);
