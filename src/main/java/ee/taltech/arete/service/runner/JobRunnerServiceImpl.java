@@ -95,7 +95,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
                         .overrideDefaults(submission);
                 LOGGER.debug("Overrode default parameters");
             } catch (Exception e) {
-                LOGGER.debug("Using default parameters");
+                LOGGER.debug("Using default parameters: {}", e.getMessage());
             }
         }
     }
@@ -120,7 +120,9 @@ public class JobRunnerServiceImpl implements JobRunnerService {
                 objectMapper
                         .readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class)
                         .overrideDefaults(submission);
-            } catch (Exception ignored) {
+                LOGGER.debug("Overrode default parameters");
+            } catch (Exception e) {
+                LOGGER.debug("Using default parameters: {}", e.getMessage());
             }
         }
     }
@@ -265,7 +267,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
         } catch (Exception e1) {
             LOGGER.error("Failed to report to backend with message: {}", e1.getMessage());
         }
-        
+
         if (!submission.getSystemExtra().contains("noMail")) {
             try {
                 reportService.sendTextMail(submission.getUniid(), message, header, html);
