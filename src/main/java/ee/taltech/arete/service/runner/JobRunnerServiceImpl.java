@@ -262,13 +262,13 @@ public class JobRunnerServiceImpl implements JobRunnerService {
         try {
 
             if (submission.getSystemExtra().contains("anonymous")) {
-                submission.setReturnExtra(null);
+                areteResponse.setReturnExtra(null);
             }
 
             JSONObject extra = new JSONObject();
             extra.put("used_extra", areteResponse.getReturnExtra());
             extra.put("shared_secret", System.getenv().getOrDefault("SHARED_SECRET", "Please make sure that shared_secret is set up properly"));
-            submission.setReturnExtra(new ObjectMapper().readTree(extra.toString()));
+            areteResponse.setReturnExtra(new ObjectMapper().readTree(extra.toString()));
 
             reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), areteResponse);
             LOGGER.info("Reported to backend");
