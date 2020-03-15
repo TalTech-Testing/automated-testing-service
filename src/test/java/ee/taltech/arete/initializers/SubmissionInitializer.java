@@ -214,9 +214,8 @@ public class SubmissionInitializer {
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.gitTestSource(PROJECT_GIT)
-				.systemExtra((new HashSet<>(Arrays.asList(
-////						, "noMail"
-				))))
+				.dockerExtra((new HashSet<>(Collections.singletonList("-r ~CHECKSTYLE"))))
+				.systemExtra((new HashSet<>(Collections.singletonList("noMail"))))
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequest.SourceFile.builder()
 								.path("EX01IdCode/src/ee/taltech/iti0202/idcode/IDCode.java")

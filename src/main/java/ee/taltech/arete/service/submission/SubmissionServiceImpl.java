@@ -1,6 +1,5 @@
 package ee.taltech.arete.service.submission;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.configuration.DevProperties;
 import ee.taltech.arete.domain.Submission;
@@ -196,14 +195,6 @@ public class SubmissionServiceImpl implements SubmissionService {
 
         if (submission.getUniid() == null) {
             submission.getSystemExtra().add("noMail");
-        }
-
-        if (submission.getReturnExtra() == null) {
-            try {
-                submission.setReturnExtra(objectMapper.readTree("{}"));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
         }
     }
 
