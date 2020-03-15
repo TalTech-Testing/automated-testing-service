@@ -93,9 +93,9 @@ public class JobRunnerServiceImpl implements JobRunnerService {
                 objectMapper
                         .readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class)
                         .overrideDefaults(submission);
-                LOGGER.debug("Overrode default parameters");
+                LOGGER.info("Overrode default parameters");
             } catch (Exception e) {
-                LOGGER.debug("Using default parameters: {}", e.getMessage());
+                LOGGER.info("Using default parameters: {}", e.getMessage());
             }
         }
     }
@@ -120,9 +120,9 @@ public class JobRunnerServiceImpl implements JobRunnerService {
                 objectMapper
                         .readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class)
                         .overrideDefaults(submission);
-                LOGGER.debug("Overrode default parameters");
+                LOGGER.info("Overrode default parameters");
             } catch (Exception e) {
-                LOGGER.debug("Using default parameters: {}", e.getMessage());
+                LOGGER.info("Using default parameters: {}", e.getMessage());
             }
         }
     }

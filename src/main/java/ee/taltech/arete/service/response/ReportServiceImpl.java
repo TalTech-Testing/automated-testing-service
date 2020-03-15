@@ -55,7 +55,6 @@ public class ReportServiceImpl implements ReportService {
 	@Async
 	@Override
 	public void sendTextToReturnUrl(String returnUrl, AreteResponse response) {
-
 		try {
 			post(returnUrl, objectMapper.writeValueAsString(response));
 		} catch (IOException | InterruptedException e) {
