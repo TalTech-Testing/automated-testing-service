@@ -14,7 +14,7 @@ public class DevProperties {
     private String ago = "ago.luberg"; // send only failed submissions
     private String areteMail = "automated_testing_service@taltech.ee";
     private Integer defaultDockerTimeout = 120; // default dockertimeout is 120 seconds
-    private String areteBackend = "http://localhost:8001/admin/job"; // backend url
+    private String areteBackend = "https://cs.ttu.ee/services/arete/api/admin/job"; // backend url
     private Integer usableCores = 16; // Total dockers running same time
     private Double maxCpuUsage = 0.8; // percent that can allow more jobs
 
