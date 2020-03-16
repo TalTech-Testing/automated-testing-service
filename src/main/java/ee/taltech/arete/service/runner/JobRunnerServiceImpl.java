@@ -252,7 +252,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
         try {
             if (submission.getReturnUrl() != null) {
-                reportService.sendTextToReturnUrl(submission.getReturnUrl(), areteResponse);
+                reportService.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
                 LOGGER.info("Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
             }
         } catch (Exception e1) {
@@ -270,7 +270,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
             extra.put("shared_secret", System.getenv().getOrDefault("SHARED_SECRET", "Please make sure that shared_secret is set up properly"));
             areteResponse.setReturnExtra(new ObjectMapper().readTree(extra.toString()));
 
-            reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), areteResponse);
+            reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), objectMapper.writeValueAsString(areteResponse));
             LOGGER.info("Reported to backend");
         } catch (Exception e1) {
             LOGGER.error("Failed to report to backend with message: {}", e1.getMessage());

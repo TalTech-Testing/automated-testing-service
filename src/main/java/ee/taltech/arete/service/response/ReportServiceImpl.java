@@ -1,7 +1,6 @@
 package ee.taltech.arete.service.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.configuration.DevProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,9 +53,9 @@ public class ReportServiceImpl implements ReportService {
 
 	@Async
 	@Override
-	public void sendTextToReturnUrl(String returnUrl, AreteResponse response) {
+	public void sendTextToReturnUrl(String returnUrl, String response) {
 		try {
-			post(returnUrl, objectMapper.writeValueAsString(response));
+			post(returnUrl, response);
 		} catch (IOException | InterruptedException e) {
 			LOGGER.error("Failed to POST: {}", e.getMessage());
 		}
