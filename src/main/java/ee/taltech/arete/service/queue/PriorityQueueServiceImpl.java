@@ -116,7 +116,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
         getActiveSubmissions().stream()
                 .filter(job -> job.getTimestamp() + job.getDockerTimeout() < System.currentTimeMillis())
                 .collect(Collectors.toCollection(ArrayList::new))
-                .forEach(rem -> activeSubmissions.remove(rem));
+                .forEach(this::killThread);
     }
 
     @Override
