@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @EnableAsync
@@ -111,6 +112,16 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
     @Override
     @Async
     @Scheduled(fixedRate = 100)
+    public void clearCache() {
+        getActiveSubmissions().stream()
+                .filter(job -> job.getTimestamp() + job.getDockerTimeout() < System.currentTimeMillis())
+                .collect(Collectors.toCollection(ArrayList::new))
+                .forEach(rem -> activeSubmissions.remove(rem));
+    }
+
+    @Override
+    @Async
+    @Scheduled(fixedRate = 100)
     public void runJob() {
 
         if (halted) {
@@ -137,6 +148,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
                 return;
             }
 
+            job.setTimestamp(System.currentTimeMillis());
             activeRunningJobs++;
             activeSubmissions.add(job);
 

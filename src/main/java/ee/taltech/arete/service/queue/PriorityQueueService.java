@@ -23,4 +23,6 @@ public interface PriorityQueueService {
 	void go();
 
 	List<Submission> getActiveSubmissions();
+
+	void clearCache();
 }
