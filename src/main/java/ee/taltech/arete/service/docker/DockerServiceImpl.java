@@ -15,7 +15,7 @@ import java.io.IOException;
 @Service
 public class DockerServiceImpl implements DockerService {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(DockerService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DockerService.class);
 
 	private static void unTar(TarArchiveInputStream tis, File destFile) throws IOException {
 		TarArchiveEntry tarEntry = null;

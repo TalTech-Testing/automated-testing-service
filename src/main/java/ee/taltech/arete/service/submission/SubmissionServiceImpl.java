@@ -1,6 +1,5 @@
 package ee.taltech.arete.service.submission;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.configuration.DevProperties;
 import ee.taltech.arete.domain.Submission;
 import org.apache.commons.lang.RandomStringUtils;
@@ -21,8 +20,6 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Autowired
     DevProperties devProperties;
-
-    ObjectMapper objectMapper = new ObjectMapper();
 
     private static String getRandomHash() {
         return RandomStringUtils.random(40, true, true).toLowerCase(); // git hash is 40 long

@@ -23,7 +23,7 @@ import java.net.http.HttpResponse;
 @Service
 public class ReportServiceImpl implements ReportService {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(ReportService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReportService.class);
 
 	@Autowired
 	private JavaMailSender javaMailSender;

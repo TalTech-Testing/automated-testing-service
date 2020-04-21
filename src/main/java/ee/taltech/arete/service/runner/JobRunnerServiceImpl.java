@@ -25,13 +25,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
 @Service
 public class JobRunnerServiceImpl implements JobRunnerService {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(JobRunnerService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JobRunnerService.class);
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -55,9 +56,11 @@ public class JobRunnerServiceImpl implements JobRunnerService {
     DevProperties devProperties;
 
     @Override
-    public void runJob(Submission submission) {
+    public List<String> runJob(Submission submission) {
 
-        if (folderMaintenance(submission)) return; // if error, done
+        ArrayList<String> outputPaths = new ArrayList<>();
+
+        if (folderMaintenance(submission)) return outputPaths; // if error, done
 
         LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
 
@@ -81,9 +84,10 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
             reportSuccessfulSubmission(slug, submission, output);
 
-            clearInputAndOutput(submission, output);
+            outputPaths.add(output);
 
         }
+        return outputPaths;
     }
 
     private void slugProperties(Submission submission, String slug) {
@@ -99,7 +103,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
         }
     }
 
-    private void clearInputAndOutput(Submission submission, String output) {
+    public void clearInputAndOutput(Submission submission, String output) {
         try {
             new PrintWriter(output).close(); // clears output file
         } catch (Exception e) {

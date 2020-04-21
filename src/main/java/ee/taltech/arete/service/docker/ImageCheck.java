@@ -11,10 +11,10 @@ import java.util.concurrent.TimeUnit;
 
 public class ImageCheck {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(ImageCheck.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImageCheck.class);
 
-	private DockerClient dockerClient;
-	private String image;
+	private final DockerClient dockerClient;
+	private final String image;
 	private Image tester;
 
 	public ImageCheck(DockerClient dockerClient, String image) {

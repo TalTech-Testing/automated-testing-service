@@ -6,23 +6,23 @@ import java.util.List;
 
 public interface PriorityQueueService {
 
-	void enqueue(Submission submission);
+    void enqueue(Submission submission);
 
-	void runJob();
+    void runJob();
 
-	void killThread(Submission submission);
+    void killThread(Submission submission, List<String> outputs);
 
-	Integer getJobsRan();
+    Integer getJobsRan();
 
-	Integer getQueueSize();
+    Integer getQueueSize();
 
-	void halt() throws InterruptedException;
+    void halt() throws InterruptedException;
 
-	void halt(int maxAllowedJobs) throws InterruptedException;
+    void halt(int maxAllowedJobs) throws InterruptedException;
 
-	void go();
+    void go();
 
-	List<Submission> getActiveSubmissions();
+    List<Submission> getActiveSubmissions();
 
-	void clearCache();
+    void clearCache();
 }

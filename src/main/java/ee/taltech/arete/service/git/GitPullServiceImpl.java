@@ -37,8 +37,8 @@ import java.util.Optional;
 public class GitPullServiceImpl implements GitPullService {
 
     private static final List<String> TESTABLES = List.of("ADD", "MODIFY");
-    private static Logger LOGGER = LoggerFactory.getLogger(GitPullService.class);
-    private static TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback(); // failed ssh will fallback onto password
+    private static final Logger LOGGER = LoggerFactory.getLogger(GitPullService.class);
+    private static final TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback(); // failed ssh will fallback onto password
 
 
     @Override

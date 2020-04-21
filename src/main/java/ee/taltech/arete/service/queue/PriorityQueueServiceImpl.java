@@ -4,6 +4,7 @@ import com.sun.management.OperatingSystemMXBean;
 import ee.taltech.arete.configuration.DevProperties;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.runner.JobRunnerService;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,16 +29,15 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
     private final OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
     private final Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
 
-    private DevProperties devProperties;
+    private final DevProperties devProperties;
 
-    private JobRunnerService jobRunnerService;
+    private final JobRunnerService jobRunnerService;
 
     private Boolean halted = true;
     private Integer jobsRan = 0;
-    private Integer activeRunningJobs = 0;
-    private List<Integer> threads = new ArrayList<>();
-    private List<Submission> activeSubmissions = new ArrayList<>();
-    private PriorityQueue<Submission> submissionPriorityQueue = new PriorityQueue<>(Comparator
+    private final List<Integer> threads = new ArrayList<>();
+    private final List<Submission> activeSubmissions = new ArrayList<>();
+    private final PriorityQueue<Submission> submissionPriorityQueue = new PriorityQueue<>(Comparator
             .comparingInt(Submission::getPriority)
             .reversed()
             .thenComparing(Submission::getTimestamp));
@@ -52,7 +53,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
     }
 
     private boolean isCPUAvaiable() {
-        return osBean.getSystemCpuLoad() < devProperties.getMaxCpuUsage() && devProperties.getUsableCores() > activeRunningJobs;
+        return osBean.getSystemCpuLoad() < devProperties.getMaxCpuUsage() && devProperties.getUsableCores() > activeSubmissions.size();
     }
 
     @Override
@@ -60,12 +61,24 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
         submissionPriorityQueue.add(submission);
     }
 
-    @Override
-    public void killThread(Submission submission) {
-        activeRunningJobs--;
+    public void killThread(Submission submission, List<String> outputs) {
         jobsRan++;
         activeSubmissions.remove(submission);
         threads.add(submission.getThread());
+
+        for (String output : outputs) {
+            jobRunnerService.clearInputAndOutput(submission, output);
+        }
+
+        try {
+
+            FileUtils.cleanDirectory(new File(String.format("input_and_output/%d/student", submission.getThread())));
+            FileUtils.cleanDirectory(new File(String.format("input_and_output/%d/tester", submission.getThread())));
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+
         LOGGER.info("All done for submission on thread: {}", submission.getThread());
     }
 
@@ -83,7 +96,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
     public void halt() throws InterruptedException {
         halted = true;
         int antiStuck = 30;
-        while (activeRunningJobs != 0 && antiStuck != 0) {
+        while (activeSubmissions.size() != 0 && antiStuck != 0) {
             TimeUnit.SECONDS.sleep(1);
             antiStuck--;
         }
@@ -93,7 +106,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
     public void halt(int maxAllowedJobs) throws InterruptedException {
         halted = true;
         int antiStuck = 30;
-        while (activeRunningJobs > maxAllowedJobs && antiStuck != 0) {
+        while (activeSubmissions.size() > maxAllowedJobs && antiStuck != 0) {
             TimeUnit.SECONDS.sleep(1);
             antiStuck--;
         }
@@ -116,7 +129,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
         getActiveSubmissions().stream()
                 .filter(job -> job.getTimestamp() + job.getDockerTimeout() < System.currentTimeMillis())
                 .collect(Collectors.toCollection(ArrayList::new))
-                .forEach(this::killThread);
+                .forEach(submission -> killThread(submission, new ArrayList<>()));
     }
 
     @Override
@@ -149,21 +162,18 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
             }
 
             job.setTimestamp(System.currentTimeMillis());
-            activeRunningJobs++;
             activeSubmissions.add(job);
 
-            LOGGER.info("active: {}, queue: {}, ran: {}", activeRunningJobs, getQueueSize(), jobsRan);
+            LOGGER.info("active: {}, queue: {}, ran: {}", activeSubmissions.size(), getQueueSize(), jobsRan);
 
             LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
             job.setThread(threads.remove(0));
 
             try {
-                jobRunnerService.runJob(job);
+                killThread(job, jobRunnerService.runJob(job));
             } catch (Exception e) {
                 LOGGER.error("Job failed with message: {}", e.getMessage());
             }
-
-            killThread(job);
 
         }
     }

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class SshTransportConfigCallback implements TransportConfigCallback {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(TransportConfigCallback.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TransportConfigCallback.class);
 
 	private final SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
 		@Override

@@ -32,18 +32,17 @@ import static com.github.dockerjava.api.model.HostConfig.newHostConfig;
 public class Docker {
 
     private static final String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
-    private static Logger LOGGER = LoggerFactory.getLogger(Docker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Docker.class);
     public String hostFile;
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     private DockerClient dockerClient;
     private CreateContainerResponse container;
-    private String imageId;
-    private String containerName;
-    private String image;
+    private final String containerName;
+    private final String image;
 
-    private Submission submission;
-    private String slug;
+    private final Submission submission;
+    private final String slug;
 
     private boolean done = false;
 
@@ -70,7 +69,7 @@ public class Docker {
 
             dockerClient = DockerClientBuilder.getInstance(config).build();
 
-            imageId = getImage(dockerClient, image);
+            String imageId = getImage(dockerClient, image);
 
             LOGGER.info("Got image with id: {}", imageId);
 

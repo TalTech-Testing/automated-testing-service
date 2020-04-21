@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class requestServiceImpl implements RequestService {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -41,7 +41,7 @@ public class requestServiceImpl implements RequestService {
     @Autowired
     private GitPullService gitPullService;
 
-    private HashMap<String, AreteResponse> syncWaitingRoom = new HashMap<>();
+    private final HashMap<String, AreteResponse> syncWaitingRoom = new HashMap<>();
 
     @Override
     public Submission testAsync(HttpEntity<String> httpEntity) {
