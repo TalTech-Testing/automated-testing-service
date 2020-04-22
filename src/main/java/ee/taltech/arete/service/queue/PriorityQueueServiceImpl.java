@@ -15,12 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Service
 @EnableAsync
@@ -41,7 +37,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
             .comparingInt(Submission::getPriority)
             .reversed()
             .thenComparing(Submission::getTimestamp));
-    private Integer stuckQueue = 300; // just some protection against stuck queue
+    private Integer stuckQueue = 3000; // just some protection against stuck queue
 
     @Lazy
     public PriorityQueueServiceImpl(DevProperties devProperties, JobRunnerService jobRunnerService) {
@@ -126,10 +122,16 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
     @Async
     @Scheduled(fixedRate = 100)
     public void clearCache() {
-        getActiveSubmissions().stream()
-                .filter(job -> job.getTimestamp() + job.getDockerTimeout() < System.currentTimeMillis())
-                .collect(Collectors.toCollection(ArrayList::new))
-                .forEach(submission -> killThread(submission, new ArrayList<>()));
+        try {
+            for (Submission submission : getActiveSubmissions()) {
+                if (submission.getTimestamp() + Math.min(submission.getDockerTimeout() + 10, stuckQueue) * 1000 < System.currentTimeMillis()) {
+                    killThread(submission, new ArrayList<>());
+                }
+            }
+        } catch (ConcurrentModificationException ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -150,6 +152,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
         if (!halted && getQueueSize() != 0 && isCPUAvaiable()) {
 
             Submission job = submissionPriorityQueue.poll();
+
             if (job == null) {
                 return;
             }
@@ -169,12 +172,15 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
             LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
             job.setThread(threads.remove(0));
 
+            List<String> outputs = new ArrayList<>();
+
             try {
-                killThread(job, jobRunnerService.runJob(job));
+                outputs.addAll(jobRunnerService.runJob(job));
             } catch (Exception e) {
                 LOGGER.error("Job failed with message: {}", e.getMessage());
             }
 
+            killThread(job, outputs);
         }
     }
 }
