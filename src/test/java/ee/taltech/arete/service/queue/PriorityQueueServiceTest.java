@@ -1,6 +1,7 @@
 //package ee.taltech.arete.service.queue;
 //
 //import ee.taltech.arete.domain.Submission;
+//import ee.taltech.arete.service.submission.SubmissionService;
 //import org.junit.jupiter.api.Test;
 //import org.junit.runner.RunWith;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,7 @@
 //
 //import java.util.concurrent.TimeUnit;
 //
-//import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmissionJava;
-//import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmissionPython;
+//import static ee.taltech.arete.initializers.SubmissionInitializer.getGitPullEndpointSubmission;
 //
 //@AutoConfigureTestDatabase
 //@RunWith(SpringRunner.class)
@@ -21,28 +21,33 @@
 //	@Autowired
 //	PriorityQueueService priorityQueueService;
 //
-//	@Test
-//	void enqueue() {
-//		// given, when
-//		priorityQueueService.enqueue(getFullSubmissionJava());
-////		priorityQueueService.enqueue(getFullSubmissionPython());
+//	@Autowired
+//	SubmissionService submissionService;
 //
-//		// then
-//		assert priorityQueueService.getQueueSize() == 1;
-//	}
+////	@Test
+////	void enqueue() {
+////		// given, when
+////		priorityQueueService.enqueue(getFullSubmissionJava());
+//////		priorityQueueService.enqueue(getFullSubmissionPython());
+////
+////		// then
+////		assert priorityQueueService.getQueueSize() == 1;
+////	}
 //
 //	@Test
 //	void runJob() throws InterruptedException {
 //		// given
-//		int jobSets = 3;
+//		int jobSets = 100;
 //
 //		// when
 //		for (int i = 0; i < jobSets; i++) {
-//			Submission submission = getFullSubmissionPython();
+//			Submission submission = getGitPullEndpointSubmission();
+//			submissionService.populateAsyncFields(submission);
+//			submission.setReturnUrl(String.valueOf(i));
 //			priorityQueueService.enqueue(submission);
 //		}
 //
-//		while (priorityQueueService.getJobsRan() < 4) {
+//		while (priorityQueueService.getJobsRan() < jobSets) {
 //			TimeUnit.SECONDS.sleep(1);
 //		}
 //

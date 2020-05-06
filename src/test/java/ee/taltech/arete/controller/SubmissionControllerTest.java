@@ -228,7 +228,6 @@ public class SubmissionControllerTest {
                 .as(AreteResponse.class);
 
         assert answer.getOutput() != null;
-        System.out.println(answer.getOutput());
     }
 
     @Test

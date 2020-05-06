@@ -82,17 +82,23 @@ public class SubmissionInitializer {
 	public static Submission getGitPullEndpointSubmission() {
 		return Submission.builder()
 				.uniid(UNIID_GIT)
-				.gitStudentRepo(STUDENT_REPO_PYTHON)
-				.gitTestSource(TESTER_REPO_PYTHON)
-				.course(PROJECT_PYTHON)
-				.folder(PROJECT_PYTHON)
-				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.gitStudentRepo(STUDENT_REPO_JAVA)
+				.gitTestSource(TESTER_REPO_JAVA)
+				.course(PROJECT)
+				.folder(PROJECT)
+				.slugs(new HashSet<>(Arrays.asList(
+						"EX01IdCode"
+				)))
+				.priority(10)
+				.timestamp(1L)
+				.dockerTimeout(120)
+				.testingPlatform(TESTING_PLATFORM_JAVA)
 				.returnUrl(RETURN_URL)
 				.systemExtra((new HashSet<>(Arrays.asList(
 						"noMail"
 				))))
-				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
-				.hash("a5462dc0377504e79b25ad76c9d0a4c7ce27f7d4")
+//				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
+//				.hash("a5462dc0377504e79b25ad76c9d0a4c7ce27f7d4")
 				.build();
 	}
 

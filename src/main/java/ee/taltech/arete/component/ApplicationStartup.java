@@ -34,17 +34,17 @@ public class ApplicationStartup implements ApplicationRunner {
         createDirectory("students");
         createDirectory("tests");
 
-        for (int i = 0; i < devProperties.getUsableCores(); i++) {
+        for (int i = 0; i < devProperties.getParallelJobs(); i++) {
 
-            createDirectory(String.format("input_and_output/%s", i));
-            createDirectory(String.format("input_and_output/%s/tester", i));
-            createDirectory(String.format("input_and_output/%s/student", i));
-            createDirectory(String.format("input_and_output/%s/host", i));
+			createDirectory(String.format("input_and_output/%s", i));
+			createDirectory(String.format("input_and_output/%s/tester", i));
+			createDirectory(String.format("input_and_output/%s/student", i));
+			createDirectory(String.format("input_and_output/%s/host", i));
 
-            try {
-                new File(String.format("input_and_output/%s/host/input.json", i)).createNewFile();
-            } catch (Exception ignored) {
-            }
+			try {
+				new File(String.format("input_and_output/%s/host/input.json", i)).createNewFile();
+			} catch (Exception ignored) {
+			}
 
             try {
                 new File(String.format("input_and_output/%s/host/output.json", i)).createNewFile();
