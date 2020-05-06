@@ -40,7 +40,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 	@Lazy
 	public PriorityQueueServiceImpl(DevProperties devProperties, JobRunnerService jobRunnerService) {
-		for (int i = 1; i < devProperties.getParallelJobs(); i++) {
+		for (int i = 0; i < devProperties.getParallelJobs(); i++) {
 			threads.add(i);
 		}
 		this.devProperties = devProperties;
@@ -128,7 +128,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	public void clearCache() {
 
 		if (activeSubmissions.size() == 0) {
-			for (int i = 1; i < devProperties.getParallelJobs(); i++) {
+			for (int i = 0; i < devProperties.getParallelJobs(); i++) {
 				threads.add(i);
 			}
 		}
@@ -150,14 +150,22 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	@Scheduled(fixedRate = 100)
 	public void runJob() {
 
-		if (threads.size() == 0) {
+		if (threads.size() == 0 || submissionPriorityQueue.size() == 0) {
 			return;
 		}
 
-		int thread = threads.iterator().next();
-		threads.remove(thread);
+		int thread;
 
-		if (activeSubmissions.stream().anyMatch(x -> x.getThread().equals(thread))) {
+		for (thread = 0; thread < devProperties.getParallelJobs(); thread++) {
+			if (threads.remove(thread)) {
+				break;
+			}
+		}
+
+		final int finalThread = thread;
+		threads.remove(finalThread);
+
+		if (activeSubmissions.stream().anyMatch(x -> x.getThread().equals(finalThread))) {
 			return;
 		}
 
@@ -176,7 +184,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 			Submission job = submissionPriorityQueue.poll();
 
 			if (job == null) {
-				threads.add(thread);
+				threads.add(finalThread);
 				return;
 			}
 
@@ -184,7 +192,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 				job.setPriority(4); // Mild punish for spam pushers.
 
 				submissionPriorityQueue.add(job);
-				threads.add(thread);
+				threads.add(finalThread);
 				return;
 			}
 
@@ -195,7 +203,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 			LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
 
-			job.setThread(thread);
+			job.setThread(finalThread);
 
 			List<String> outputs = new ArrayList<>();
 
