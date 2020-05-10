@@ -37,23 +37,22 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public String populateSyncFields(Submission submission) {
 
-        if (submission.getHash() == null) {
-            submission.setHash(getRandomHash());
-            submission.setWaitingroom(getRandomHash());
-        } else {
-            submission.setWaitingroom(submission.getHash()); // for integration tests
-        }
+		// for integration tests
+		if (submission.getHash() == null) {
+			submission.setHash(getRandomHash());
+		}
+		submission.setWaitingroom(submission.getHash());
 
-        if (submission.getReturnUrl() == null || !submission.getReturnUrl().contains("waitingroom")) {
-            submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
-        }
+		if (submission.getReturnUrl() == null || !submission.getReturnUrl().contains("waitingroom")) {
+			submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
+		}
 
-        populateTesterRelatedFields(submission);
-        populateStudentRelatedFields(submission);
-        populateDefaultValues(submission);
+		populateTesterRelatedFields(submission);
+		populateStudentRelatedFields(submission);
+		populateDefaultValues(submission);
 
-        return submission.getWaitingroom();
-    }
+		return submission.getWaitingroom();
+	}
 
     private void populateStudentRelatedFields(Submission submission) {
         try {

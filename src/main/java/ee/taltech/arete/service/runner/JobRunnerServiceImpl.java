@@ -20,7 +20,6 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -28,281 +27,285 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.h2.store.fs.FileUtils.createDirectory;
+import static org.h2.store.fs.FileUtils.toRealPath;
+
 
 @Service
 public class JobRunnerServiceImpl implements JobRunnerService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JobRunnerService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JobRunnerService.class);
+	@Autowired
+	PriorityQueueService priorityQueueService;
+	@Autowired
+	DockerService dockerService;
+	@Autowired
+	GitPullService gitPullService;
+	@Autowired
+	ReportService reportService;
+	@Autowired
+	SubmissionService submissionService;
+	@Autowired
+	DevProperties devProperties;
+	@Autowired
+	private ObjectMapper objectMapper;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+	@Override
+	public List<String> runJob(Submission submission) {
 
-    @Autowired
-    PriorityQueueService priorityQueueService;
+		ArrayList<String> outputPaths = new ArrayList<>();
 
-    @Autowired
-    DockerService dockerService;
+		if (folderMaintenance(submission)) return outputPaths; // if error, done
 
-    @Autowired
-    GitPullService gitPullService;
+		if (createDirs(submission)) return outputPaths; // if error, done
 
-    @Autowired
-    ReportService reportService;
+		LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
 
-    @Autowired
-    SubmissionService submissionService;
+		for (String slug : submission.getSlugs()) {
 
-    @Autowired
-    DevProperties devProperties;
+			rootProperties(submission);
+			slugProperties(submission, slug);
 
-    @Override
-    public List<String> runJob(Submission submission) {
+			String output;
 
-        ArrayList<String> outputPaths = new ArrayList<>();
+			try {
+				output = dockerService.runDocker(submission, slug);
+				LOGGER.info("Job {} has been ran for user {}", slug, submission.getUniid());
 
-        if (folderMaintenance(submission)) return outputPaths; // if error, done
+			} catch (Exception e) {
+				LOGGER.error("job {} has failed for user {} with exception: {}", slug, submission.getUniid(), e.getMessage());
 
-        LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
+				reportFailedSubmission(submission, e);
+				continue;
+			}
 
-        for (String slug : submission.getSlugs()) {
+			reportSuccessfulSubmission(slug, submission, output);
 
-            rootProperties(submission);
-            slugProperties(submission, slug);
+			outputPaths.add(output);
 
-            String output;
+		}
+		return outputPaths;
+	}
 
-            try {
-                output = dockerService.runDocker(submission, slug);
-                LOGGER.info("Job {} has been ran for user {}", slug, submission.getUniid());
+	private boolean createDirs(Submission submission) {
 
-            } catch (Exception e) {
-                LOGGER.error("job {} has failed for user {} with exception: {}", slug, submission.getUniid(), e.getMessage());
+		try {
+			createDirectory(toRealPath(String.format("input_and_output/%s", submission.getHash())));
+			createDirectory(toRealPath(String.format("input_and_output/%s/tester", submission.getHash())));
+			createDirectory(toRealPath(String.format("input_and_output/%s/student", submission.getHash())));
+			createDirectory(toRealPath(String.format("input_and_output/%s/host", submission.getHash())));
 
-                reportFailedSubmission(submission, e);
-                continue;
-            }
+			new File(String.format("input_and_output/%s/host/input.json", submission.getHash())).createNewFile();
 
-            reportSuccessfulSubmission(slug, submission, output);
+			new File(String.format("input_and_output/%s/host/output.json", submission.getHash())).createNewFile();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return true;
+		}
 
-            outputPaths.add(output);
+		return false;
+	}
 
-        }
-        return outputPaths;
-    }
+	private void slugProperties(Submission submission, String slug) {
+		if (!submission.getSystemExtra().contains("noOverride")) {
+			try {
+				objectMapper
+						.readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class)
+						.overrideDefaults(submission);
+				LOGGER.info("Overrode default parameters");
+			} catch (Exception e) {
+				LOGGER.info("Using default parameters: {}", e.getMessage());
+			}
+		}
+	}
 
-    private void slugProperties(Submission submission, String slug) {
-        if (!submission.getSystemExtra().contains("noOverride")) {
-            try {
-                objectMapper
-                        .readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class)
-                        .overrideDefaults(submission);
-                LOGGER.info("Overrode default parameters");
-            } catch (Exception e) {
-                LOGGER.info("Using default parameters: {}", e.getMessage());
-            }
-        }
-    }
 
-    public void clearInputAndOutput(Submission submission, String output) {
-        try {
-            new PrintWriter(output).close(); // clears output file
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
+	private void rootProperties(Submission submission) {
+		if (!submission.getSystemExtra().contains("noOverride")) {
+			try {
+				objectMapper
+						.readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class)
+						.overrideDefaults(submission);
+				LOGGER.info("Overrode default parameters");
+			} catch (Exception e) {
+				LOGGER.info("Using default parameters: {}", e.getMessage());
+			}
+		}
+	}
 
-        try {
-            new PrintWriter(String.format("input_and_output/%s/host/input.json", submission.getThread())).close(); // clears input file
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
-    }
+	private boolean folderMaintenance(Submission submission) {
+		if (submission.getGitTestSource() != null) {
+			try {
+				String pathToTesterFolder = String.format("tests/%s/", submission.getCourse());
+				String pathToTesterRepo = submission.getGitTestSource();
+				File f = new File(pathToTesterFolder);
 
-    private void rootProperties(Submission submission) {
-        if (!submission.getSystemExtra().contains("noOverride")) {
-            try {
-                objectMapper
-                        .readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class)
-                        .overrideDefaults(submission);
-                LOGGER.info("Overrode default parameters");
-            } catch (Exception e) {
-                LOGGER.info("Using default parameters: {}", e.getMessage());
-            }
-        }
-    }
+				if (!f.exists()) {
+					LOGGER.info("Checking for update for tester: {}", pathToTesterFolder);
+					priorityQueueService.halt(1); // only allow this job.. then continue to pull tests
 
-    private boolean folderMaintenance(Submission submission) {
-        if (submission.getGitTestSource() != null) {
-            try {
-                String pathToTesterFolder = String.format("tests/%s/", submission.getCourse());
-                String pathToTesterRepo = submission.getGitTestSource();
-                File f = new File(pathToTesterFolder);
+					if (gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty())) {
+						priorityQueueService.go();
+					} else {
+						priorityQueueService.go();
+						reportFailedSubmission(submission, new RuntimeException("No test files"));
+						return true;
+					}
+				}
 
-                if (!f.exists()) {
-                    LOGGER.info("Checking for update for tester: {}", pathToTesterFolder);
-                    priorityQueueService.halt(1); // only allow this job.. then continue to pull tests
+			} catch (Exception e) {
+				priorityQueueService.go();
+				LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
+				reportFailedSubmission(submission, e);
+				return true;
+			}
+		}
 
-                    if (gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty())) {
-                        priorityQueueService.go();
-                    } else {
-                        priorityQueueService.go();
-                        reportFailedSubmission(submission, new RuntimeException("No test files"));
-                        return true;
-                    }
-                }
+		if (submission.getGitStudentRepo() != null) {
+			try {
 
-            } catch (Exception e) {
-                priorityQueueService.go();
-                LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
-                reportFailedSubmission(submission, e);
-                return true;
-            }
-        }
+				if (!gitPullService.repositoryMaintenance(submission)) {
+					reportFailedSubmission(submission, new RuntimeException(submission.getResult()));
+					return true;
+				}
 
-        if (submission.getGitStudentRepo() != null) {
-            try {
+			} catch (Exception e) {
+				LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
+				reportFailedSubmission(submission, e);
+				return true;
+			}
+		}
+		return false;
+	}
 
-                if (!gitPullService.repositoryMaintenance(submission)) {
-                    reportFailedSubmission(submission, new RuntimeException(submission.getResult()));
-                    return true;
-                }
+	private void reportSuccessfulSubmission(String slug, Submission submission, String output) {
 
-            } catch (Exception e) {
-                LOGGER.error("Job execution failed for {} with message: {}", submission.getUniid(), e.getMessage());
-                reportFailedSubmission(submission, e);
-                return true;
-            }
-        }
-        return false;
-    }
+		AreteResponse areteResponse; // Sent to Moodle
+		String message; // Sent to student
+		boolean html = false;
 
-    private void reportSuccessfulSubmission(String slug, Submission submission, String output) {
+		try {
+			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
+			JSONObject jsonObject = new JSONObject(json);
 
-        AreteResponse areteResponse; // Sent to Moodle
-        String message; // Sent to student
-        boolean html = false;
+			try {
+				if ("hodor_studenttester".equals(jsonObject.get("type"))) {
+					html = true;
+					hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
+					areteResponse = new AreteResponse(slug, submission, response);
 
-        try {
-            String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
-            JSONObject jsonObject = new JSONObject(json);
+				} else if ("arete".equals(jsonObject.get("type"))) {
+					html = true;
+					areteResponse = objectMapper.readValue(json, AreteResponse.class);
 
-            try {
-                if ("hodor_studenttester".equals(jsonObject.get("type"))) {
-                    html = true;
-                    hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
-                    areteResponse = new AreteResponse(slug, submission, response);
+					if (!submission.getSystemExtra().contains("noStd")) {
+						areteResponse.getConsoleOutputs().add(new ConsoleOutput(submission.getResult()));
+					}
 
-                } else if ("arete".equals(jsonObject.get("type"))) {
-                    html = true;
-                    areteResponse = objectMapper.readValue(json, AreteResponse.class);
+					if (submission.getSystemExtra().contains("noFiles")) {
+						areteResponse.setFiles(new ArrayList<>());
+						areteResponse.setTestFiles(new ArrayList<>());
+					}
 
-                    if (!submission.getSystemExtra().contains("noStd")) {
-                        areteResponse.getConsoleOutputs().add(new ConsoleOutput(submission.getResult()));
-                    }
+					if (submission.getSystemExtra().contains("noTesterFiles")) {
+						areteResponse.setTestFiles(new ArrayList<>());
+					}
 
-                    if (submission.getSystemExtra().contains("noFiles")) {
-                        areteResponse.setFiles(new ArrayList<>());
-                        areteResponse.setTestFiles(new ArrayList<>());
-                    }
+					if (submission.getSystemExtra().contains("noStudentFiles")) {
+						areteResponse.setFiles(new ArrayList<>());
+					}
 
-                    if (submission.getSystemExtra().contains("noTesterFiles")) {
-                        areteResponse.setTestFiles(new ArrayList<>());
-                    }
+				} else if ("hodor_legacy".equals(jsonObject.get("type"))) {
+					LegacyTestJobResult response = objectMapper.readValue(json, LegacyTestJobResult.class);
+					areteResponse = new AreteResponse(slug, submission, response);
+				} else {
+					areteResponse = new AreteResponse(slug, submission, "Unsupported tester type.");
+				}
+			} catch (Exception e1) {
+				html = false;
+				LOGGER.error(e1.getMessage());
+				if (jsonObject.has("output") && jsonObject.get("output") != null) {
+					areteResponse = new AreteResponse(slug, submission, jsonObject.get("output").toString());
+				} else {
+					areteResponse = new AreteResponse(slug, submission, e1.getMessage());
+				}
+			}
 
-                    if (submission.getSystemExtra().contains("noStudentFiles")) {
-                        areteResponse.setFiles(new ArrayList<>());
-                    }
+			message = areteResponse.getOutput();
 
-                } else if ("hodor_legacy".equals(jsonObject.get("type"))) {
-                    LegacyTestJobResult response = objectMapper.readValue(json, LegacyTestJobResult.class);
-                    areteResponse = new AreteResponse(slug, submission, response);
-                } else {
-                    areteResponse = new AreteResponse(slug, submission, "Unsupported tester type.");
-                }
-            } catch (Exception e1) {
-                html = false;
-                LOGGER.error(e1.getMessage());
-                if (jsonObject.has("output") && jsonObject.get("output") != null) {
-                    areteResponse = new AreteResponse(slug, submission, jsonObject.get("output").toString());
-                } else {
-                    areteResponse = new AreteResponse(slug, submission, e1.getMessage());
-                }
-            }
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			message = String.format("Error occurred when reading test results from docker created output.json.\nThis could be a result for invalid dockerExtra or other reason, that resulted in docker crashing.\n%s", e.getMessage());
+			areteResponse = new AreteResponse(slug, submission, e.getMessage()); // create failed submission instead
+		}
 
-            message = areteResponse.getOutput();
+		reportSubmission(submission, areteResponse, message, slug, html);
 
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-            message = String.format("Error occurred when reading test results from docker created output.json.\nThis could be a result for invalid dockerExtra or other reason, that resulted in docker crashing.\n%s", e.getMessage());
-            areteResponse = new AreteResponse(slug, submission, e.getMessage()); // create failed submission instead
-        }
+	}
 
-        reportSubmission(submission, areteResponse, message, slug, html);
+	private void reportFailedSubmission(Submission submission, Exception e) {
+		String message = String.format("Testing failed with message: %s", e.getMessage()); // Sent to student
+		AreteResponse areteResponse;
+		if (submission.getSlugs() == null) {
+			areteResponse = new AreteResponse("undefined", submission, message); // Sent to Moodle
+		} else {
+			areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
+		}
 
-    }
+		reportSubmission(submission, areteResponse, message, "Failed submission", false);
+	}
 
-    private void reportFailedSubmission(Submission submission, Exception e) {
-        String message = String.format("Testing failed with message: %s", e.getMessage()); // Sent to student
-        AreteResponse areteResponse;
-        if (submission.getSlugs() == null) {
-            areteResponse = new AreteResponse("undefined", submission, message); // Sent to Moodle
-        } else {
-            areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
-        }
+	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, String header, Boolean html) {
 
-        reportSubmission(submission, areteResponse, message, "Failed submission", false);
-    }
+		try {
+			if (submission.getReturnUrl() != null) {
+				reportService.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
+				LOGGER.info("Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
+			}
+		} catch (Exception e1) {
+			LOGGER.error("Malformed returnUrl: {}", e1.getMessage());
+		}
 
-    private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, String header, Boolean html) {
+		try {
 
-        try {
-            if (submission.getReturnUrl() != null) {
-                reportService.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
-                LOGGER.info("Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
-            }
-        } catch (Exception e1) {
-            LOGGER.error("Malformed returnUrl: {}", e1.getMessage());
-        }
+			if (submission.getSystemExtra().contains("anonymous")) {
+				areteResponse.setReturnExtra(null);
+			}
 
-        try {
+			JSONObject extra = new JSONObject();
+			extra.put("used_extra", areteResponse.getReturnExtra());
+			extra.put("shared_secret", System.getenv().getOrDefault("SHARED_SECRET", "Please make sure that shared_secret is set up properly"));
+			areteResponse.setReturnExtra(new ObjectMapper().readTree(extra.toString()));
 
-            if (submission.getSystemExtra().contains("anonymous")) {
-                areteResponse.setReturnExtra(null);
-            }
+			reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), objectMapper.writeValueAsString(areteResponse));
+			LOGGER.info("Reported to backend");
+		} catch (Exception e1) {
+			LOGGER.error("Failed to report to backend with message: {}", e1.getMessage());
+		}
 
-            JSONObject extra = new JSONObject();
-            extra.put("used_extra", areteResponse.getReturnExtra());
-            extra.put("shared_secret", System.getenv().getOrDefault("SHARED_SECRET", "Please make sure that shared_secret is set up properly"));
-            areteResponse.setReturnExtra(new ObjectMapper().readTree(extra.toString()));
+		if (!submission.getSystemExtra().contains("noMail")) {
+			try {
+				reportService.sendTextMail(submission.getUniid(), message, header, html);
+				LOGGER.info("Reported to student mailbox");
+			} catch (Exception e1) {
+				LOGGER.error("Malformed mail: {}", e1.getMessage());
+			}
+		}
 
-            reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), objectMapper.writeValueAsString(areteResponse));
-            LOGGER.info("Reported to backend");
-        } catch (Exception e1) {
-            LOGGER.error("Failed to report to backend with message: {}", e1.getMessage());
-        }
+		if (!System.getenv().containsKey("GITLAB_PASSWORD") && submissionService.isDebug()) {
 
-        if (!submission.getSystemExtra().contains("noMail")) {
-            try {
-                reportService.sendTextMail(submission.getUniid(), message, header, html);
-                LOGGER.info("Reported to student mailbox");
-            } catch (Exception e1) {
-                LOGGER.error("Malformed mail: {}", e1.getMessage());
-            }
-        }
+			try {
+				if (areteResponse.getFailed()) {
+					reportService.sendTextMail(devProperties.getAgo(), String.format("UNI-ID:\n%s\n\n\nHash:\n%s\n\n\nMessage:\n%s\n\n\nDocker log:\n%s", submission.getUniid(), submission.getHash(), message, submission.getResult()), header, html);
+					reportService.sendTextMail(devProperties.getDeveloper(), String.format("UNI-ID:\n%s\n\n\nHash:\n%s\n\n\nMessage:\n%s\n\n\nDocker log:\n%s", submission.getUniid(), submission.getHash(), message, submission.getResult()), header, html);
+				} else {
+					reportService.sendTextMail(devProperties.getDeveloper(), message, header, html);
+				}
 
-        if (!System.getenv().containsKey("GITLAB_PASSWORD") && submissionService.isDebug()) {
+			} catch (Exception e1) {
+				LOGGER.error("Malformed mail: {}", e1.getMessage());
+			}
+		}
 
-            try {
-                if (areteResponse.getFailed()) {
-                    reportService.sendTextMail(devProperties.getAgo(), String.format("UNI-ID:\n%s\n\n\nHash:\n%s\n\n\nMessage:\n%s\n\n\nDocker log:\n%s", submission.getUniid(), submission.getHash(), message, submission.getResult()), header, html);
-                    reportService.sendTextMail(devProperties.getDeveloper(), String.format("UNI-ID:\n%s\n\n\nHash:\n%s\n\n\nMessage:\n%s\n\n\nDocker log:\n%s", submission.getUniid(), submission.getHash(), message, submission.getResult()), header, html);
-                } else {
-                    reportService.sendTextMail(devProperties.getDeveloper(), message, header, html);
-                }
-
-            } catch (Exception e1) {
-                LOGGER.error("Malformed mail: {}", e1.getMessage());
-            }
-        }
-
-    }
+	}
 }

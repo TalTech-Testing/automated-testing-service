@@ -3,7 +3,6 @@ package ee.taltech.arete.service.queue;
 import ee.taltech.arete.domain.Submission;
 
 import java.util.List;
-import java.util.Set;
 
 public interface PriorityQueueService {
 
@@ -24,8 +23,6 @@ public interface PriorityQueueService {
 	void go();
 
 	List<Submission> getActiveSubmissions();
-
-	Set<Integer> getCores();
 
 	void clearCache();
 }

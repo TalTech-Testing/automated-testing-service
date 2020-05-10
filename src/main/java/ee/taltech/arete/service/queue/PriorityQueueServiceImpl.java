@@ -15,7 +15,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -28,7 +31,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	private final DevProperties devProperties;
 
 	private final JobRunnerService jobRunnerService;
-	private final Set<Integer> threads = new HashSet<>();
 	private final List<Submission> activeSubmissions = new ArrayList<>();
 	private final PriorityQueue<Submission> submissionPriorityQueue = new PriorityQueue<>(Comparator
 			.comparingInt(Submission::getPriority)
@@ -40,9 +42,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 	@Lazy
 	public PriorityQueueServiceImpl(DevProperties devProperties, JobRunnerService jobRunnerService) {
-		for (int i = 0; i < devProperties.getParallelJobs(); i++) {
-			threads.add(i);
-		}
 		this.devProperties = devProperties;
 		this.jobRunnerService = jobRunnerService;
 	}
@@ -59,22 +58,14 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	public void killThread(Submission submission, List<String> outputs) {
 		jobsRan++;
 		activeSubmissions.remove(submission);
-		threads.add(submission.getThread());
-
-		for (String output : outputs) {
-			jobRunnerService.clearInputAndOutput(submission, output);
-		}
 
 		try {
-
-			FileUtils.cleanDirectory(new File(String.format("input_and_output/%d/student", submission.getThread())));
-			FileUtils.cleanDirectory(new File(String.format("input_and_output/%d/tester", submission.getThread())));
-
+			FileUtils.deleteDirectory(new File(String.format("input_and_output/%s", submission.getHash())));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
 
-		LOGGER.info("All done for submission on thread: {}", submission.getThread());
+		LOGGER.info("All done for submission on thread: {}", submission.getHash());
 	}
 
 	@Override
@@ -117,21 +108,9 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 		return activeSubmissions;
 	}
 
-	@Override
-	public Set<Integer> getCores() {
-		return threads;
-	}
-
-	@Override
 	@Async
 	@Scheduled(fixedRate = 1000)
 	public void clearCache() {
-
-		if (activeSubmissions.size() == 0) {
-			for (int i = 0; i < devProperties.getParallelJobs(); i++) {
-				threads.add(i);
-			}
-		}
 
 		try {
 			for (Submission submission : getActiveSubmissions()) {
@@ -139,7 +118,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 					killThread(submission, new ArrayList<>());
 				}
 			}
-		} catch (ConcurrentModificationException ignored) {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -150,22 +128,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	@Scheduled(fixedRate = 100)
 	public void runJob() {
 
-		if (threads.size() == 0 || submissionPriorityQueue.size() == 0) {
-			return;
-		}
-
-		int thread;
-
-		for (thread = 0; thread < devProperties.getParallelJobs(); thread++) {
-			if (threads.remove(thread)) {
-				break;
-			}
-		}
-
-		final int finalThread = thread;
-		threads.remove(finalThread);
-
-		if (activeSubmissions.stream().anyMatch(x -> x.getThread().equals(finalThread))) {
+		if (submissionPriorityQueue.size() == 0) {
 			return;
 		}
 
@@ -184,7 +147,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 			Submission job = submissionPriorityQueue.poll();
 
 			if (job == null) {
-				threads.add(finalThread);
 				return;
 			}
 
@@ -192,7 +154,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 				job.setPriority(4); // Mild punish for spam pushers.
 
 				submissionPriorityQueue.add(job);
-				threads.add(finalThread);
 				return;
 			}
 
@@ -202,8 +163,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 			LOGGER.info("active: {}, queue: {}, ran: {}", activeSubmissions.size(), getQueueSize(), jobsRan);
 
 			LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
-
-			job.setThread(finalThread);
 
 			List<String> outputs = new ArrayList<>();
 

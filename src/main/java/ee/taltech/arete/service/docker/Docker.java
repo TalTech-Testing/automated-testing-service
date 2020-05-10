@@ -47,12 +47,12 @@ public class Docker {
     private boolean done = false;
 
     public Docker(Submission submission, String slug) {
-        this.submission = submission;
-        this.slug = slug;
-        this.containerName = String.format("%s_%s_%s", submission.getHash().substring(0, 16).toLowerCase(), submission.getThread(), 100000 + Math.abs(new Random().nextInt()) * 900000);
-        this.hostFile = String.format("input_and_output/%s/host/output.json", submission.getThread());
-        this.image = String.format("automatedtestingservice/%s-tester", submission.getTestingPlatform());
-    }
+		this.submission = submission;
+		this.slug = slug;
+		this.containerName = String.format("%s_%s", submission.getHash().substring(0, 16).toLowerCase(), 100000 + Math.abs(new Random().nextInt()) * 900000);
+		this.hostFile = String.format("input_and_output/%s/host/output.json", submission.getHash());
+		this.image = String.format("automatedtestingservice/%s-tester", submission.getTestingPlatform());
+	}
 
     public void run() {
         try {
@@ -65,29 +65,29 @@ public class Docker {
             DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
                     .withDockerHost(dockerHost)
                     .withDockerTlsVerify(false)
-                    .build();
+					.build();
 
-            dockerClient = DockerClientBuilder.getInstance(config).build();
+			dockerClient = DockerClientBuilder.getInstance(config).build();
 
-            String imageId = getImage(dockerClient, image);
+			String imageId = getImage(dockerClient, image);
 
-            LOGGER.info("Got image with id: {}", imageId);
+			LOGGER.info("Got image with id: {}", imageId);
 
-            ///  PROCEED TO MODIFY WITH CAUTION  ///
+			///  PROCEED TO MODIFY WITH CAUTION  ///
 
-            String output = String.format("input_and_output/%s/host", submission.getThread());
-            String testerHost = String.format("input_and_output/%s/tester", submission.getThread());
-            String studentHost = String.format("input_and_output/%s/student", submission.getThread());
+			String output = String.format("input_and_output/%s/host", submission.getHash());
+			String testerHost = String.format("input_and_output/%s/tester", submission.getHash());
+			String studentHost = String.format("input_and_output/%s/student", submission.getHash());
 
-            String tester = String.format("tests/%s/%s", submission.getCourse(), slug);
-            String tempTester = String.format("input_and_output/%s/tester", submission.getThread());
+			String tester = String.format("tests/%s/%s", submission.getCourse(), slug);
+			String tempTester = String.format("input_and_output/%s/tester", submission.getHash());
 
-            String student;
+			String student;
 
-            student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getFolder(), slug);
-            String tempStudent = String.format("input_and_output/%s/student", submission.getThread());
+			student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getFolder(), slug);
+			String tempStudent = String.format("input_and_output/%s/student", submission.getHash());
 
-            Volume volumeStudent = new Volume("/student");
+			Volume volumeStudent = new Volume("/student");
             Volume volumeTester = new Volume("/tester");
             Volume volumeOutput = new Volume("/host");
 
@@ -121,7 +121,7 @@ public class Docker {
                 throw new IOException(e.getMessage());
             }
 
-            mapper.writeValue(new java.io.File(String.format("input_and_output/%s/host/input.json", submission.getThread())), new InputWriter(String.join(",", submission.getDockerExtra())));
+			mapper.writeValue(new java.io.File(String.format("input_and_output/%s/host/input.json", submission.getHash())), new InputWriter(String.join(",", submission.getDockerExtra())));
 
             container = dockerClient.createContainerCmd(imageId)
                     .withName(containerName)
@@ -219,21 +219,6 @@ public class Docker {
                 LOGGER.error("Container {} has already been removed", submission.getHash());
             }
         }
-
-        try {
-            String tempTester = String.format("input_and_output/%s/tester", submission.getThread());
-            FileUtils.cleanDirectory(new java.io.File(tempTester));
-        } catch (IOException e) {
-            LOGGER.error("Temp folder already empty. {}", e.getMessage());
-        }
-
-        try {
-            String tempStudent = String.format("input_and_output/%s/student", submission.getThread());
-            FileUtils.cleanDirectory(new java.io.File(tempStudent));
-        } catch (IOException e) {
-            LOGGER.error("Temp folder already empty. {}", e.getMessage());
-        }
-
     }
 
     private String getImage(DockerClient dockerClient, String image) throws InterruptedException {

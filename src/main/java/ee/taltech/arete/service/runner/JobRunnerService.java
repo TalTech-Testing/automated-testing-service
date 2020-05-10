@@ -6,7 +6,5 @@ import java.util.List;
 
 public interface JobRunnerService {
 
-    List<String> runJob(Submission submission);
-
-    void clearInputAndOutput(Submission submission, String output);
+	List<String> runJob(Submission submission);
 }
