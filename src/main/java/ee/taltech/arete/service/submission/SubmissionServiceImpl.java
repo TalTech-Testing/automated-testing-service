@@ -135,7 +135,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     public String fixRepository(String url) {
-        if (System.getenv().containsKey("GITLAB_PASSWORD")) { // Testing only!
+        if (System.getenv().containsKey("GIT_PASSWORD")) {
             if (url.startsWith("git")) {
                 url = url.replaceFirst(":", "/");
                 url = url.replace("git@", "https://");
@@ -150,7 +150,6 @@ public class SubmissionServiceImpl implements SubmissionService {
                 url = url.replaceFirst("/", ":");
             }
         }
-
 
         if (!url.endsWith(".git")) {
             return url + ".git";

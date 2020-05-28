@@ -8,7 +8,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static ee.taltech.arete.initializers.SubmissionInitializer.getGitPullEndpointSubmission;
+import static ee.taltech.arete.initializers.SubmissionInitializer.getGitPullEndpointSubmissionGithub;
+import static ee.taltech.arete.initializers.SubmissionInitializer.getGitPullEndpointSubmissionGitlab;
 
 @AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
@@ -19,9 +20,9 @@ class GitPullServiceImplTest {
 	private GitPullService gitPullService;
 
 	@Test
-	void pullJob() {
+	void pullJobGithub() {
 		// given, when
-		Submission submission = getGitPullEndpointSubmission();
+		Submission submission = getGitPullEndpointSubmissionGithub();
 
 		// then
 		assert gitPullService.repositoryMaintenance(submission);
@@ -34,6 +35,16 @@ class GitPullServiceImplTest {
 //			FileUtils.copyDirectory(new File(tester), new File(tempTester));
 //		} catch (IOException ignored) {
 //		}
+
+	}
+
+	@Test
+	void pullJobGitlab() {
+		// given, when
+		Submission submission = getGitPullEndpointSubmissionGitlab();
+
+		// then
+		assert gitPullService.repositoryMaintenance(submission);
 
 	}
 

@@ -114,11 +114,11 @@ public class GitPullServiceImpl implements GitPullService {
 
     private boolean SafeClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) {
         try {
-            if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+            if (System.getenv().containsKey("GIT_PASSWORD")) {
                 Git git = Git.cloneRepository()
                         .setCredentialsProvider(
                                 new UsernamePasswordCredentialsProvider(
-                                        "envomp", System.getenv().get("GITLAB_PASSWORD")))
+										System.getenv().get("GIT_USERNAME"), System.getenv().get("GIT_PASSWORD")))
                         .setURI(pathToRepo)
                         .setDirectory(new File(pathToFolder))
                         .call();
@@ -214,10 +214,10 @@ public class GitPullServiceImpl implements GitPullService {
 
     private void SafePull(Git git) throws GitAPIException {
         PullResult result;
-        if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+        if (System.getenv().containsKey("GIT_PASSWORD")) {
             result = git.pull()
                     .setCredentialsProvider(new UsernamePasswordCredentialsProvider(
-                            "envomp", System.getenv().get("GITLAB_PASSWORD")))
+							System.getenv().get("GIT_USERNAME"), System.getenv().get("GIT_PASSWORD")))
                     .call();
 
         } else {
@@ -230,10 +230,10 @@ public class GitPullServiceImpl implements GitPullService {
     }
 
     private void fetch(Git git) throws GitAPIException {
-        if (System.getenv().containsKey("GITLAB_PASSWORD")) {
+        if (System.getenv().containsKey("GIT_PASSWORD")) {
             FetchResult result = git.fetch()
                     .setCredentialsProvider(new UsernamePasswordCredentialsProvider(
-                            "envomp", System.getenv().get("GITLAB_PASSWORD")))
+							System.getenv().get("GIT_USERNAME"), System.getenv().get("GIT_PASSWORD")))
                     .call();
 
         } else {

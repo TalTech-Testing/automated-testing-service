@@ -292,7 +292,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			}
 		}
 
-		if (!System.getenv().containsKey("GITLAB_PASSWORD") && submissionService.isDebug()) {
+		if (!submissionService.isDebug()) {
 
 			try {
 				if (areteResponse.getFailed()) {

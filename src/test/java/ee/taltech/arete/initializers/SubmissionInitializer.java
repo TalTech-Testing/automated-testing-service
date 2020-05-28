@@ -16,22 +16,27 @@ import java.util.HashSet;
 
 public class SubmissionInitializer {
 	private final static String UNIID_GIT = "envomp";
+
 	private static final String STUDENT_REPO_PYTHON = "https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git";
 	private static final String STUDENT_REPO_JAVA = "https://gitlab.cs.ttu.ee/envomp/iti0202-2019.git";
 	private static final String STUDENT_REPO_EXAM = "https://gitlab.cs.ttu.ee/iti0102-2018/exams/exam2-envomp.git";
+	private static final String STUDENT_REPO_GITHUB = "https://github.com/envomp/CV.git";
+
 	private static final String TESTER_REPO_PYTHON = "https://gitlab.cs.ttu.ee/iti0102-2019/ex.git";
 	private static final String TESTER_REPO_EXAM = "https://gitlab.cs.ttu.ee/iti0102-2018/ex.git";
 	private static final String TESTER_REPO_JAVA = "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git";
+	private static final String TESTER_REPO_GITHUB = "https://github.com/envomp/CV.git";
+
 	private static final String PROJECT_PYTHON = "iti0102-2019";
 	private static final String PROJECT = "iti0202-2019";
 	private final static String TESTING_PLATFORM_JAVA = "java";
 	private final static String TESTING_PLATFORM_PYTHON = "python";
 	private final static String TESTING_PLATFORM_PROLOG = "prolog";
-	private static final String PROJECT_GIT = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git" : "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git";
-	private static final String PROJECT_GIT_PYTHON = System.getenv().containsKey("GITLAB_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0102-2019/ex.git" : "git@gitlab.cs.ttu.ee:iti0102-2019/ex.git";
+	private static final String PROJECT_GIT = System.getenv().containsKey("GIT_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git" : "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git";
+	private static final String PROJECT_GIT_PYTHON = System.getenv().containsKey("GIT_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0102-2019/ex.git" : "git@gitlab.cs.ttu.ee:iti0102-2019/ex.git";
 	private final static String RETURN_URL = "https://jsonplaceholder.typicode.com/posts";
 	private final static HashSet<String> EXTRA = new HashSet<>(Collections.singletonList("stylecheck"));
-	private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
+	private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv().getOrDefault("HOME", ".") + "/arete");
 
 	public static Submission getFullSubmissionPython() {
 
@@ -62,9 +67,8 @@ public class SubmissionInitializer {
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_JAVA)
 				.gitTestSource(TESTER_REPO_JAVA)
-				.course(PROJECT)
-				.folder(PROJECT)
-				.hash("8133c4fb0dbcda3709d9f8ced953f5ef5af4e0ca")
+				.course(UNIID_GIT)
+				.folder(UNIID_GIT)
 				.testingPlatform(TESTING_PLATFORM_JAVA)
 				.returnUrl(RETURN_URL)
 				.dockerTimeout(120)
@@ -79,7 +83,30 @@ public class SubmissionInitializer {
 	}
 
 
-	public static Submission getGitPullEndpointSubmission() {
+	public static Submission getGitPullEndpointSubmissionGithub() {
+		return Submission.builder()
+				.uniid(UNIID_GIT)
+				.gitStudentRepo(STUDENT_REPO_GITHUB)
+				.gitTestSource(TESTER_REPO_GITHUB)
+				.course(UNIID_GIT)
+				.folder(UNIID_GIT)
+				.slugs(new HashSet<>(Arrays.asList(
+						"EX01IdCode"
+				)))
+				.priority(10)
+				.timestamp(1L)
+				.dockerTimeout(120)
+				.testingPlatform(TESTING_PLATFORM_JAVA)
+				.returnUrl(RETURN_URL)
+				.systemExtra((new HashSet<>(Arrays.asList(
+						"noMail"
+				))))
+//				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
+//				.hash("a5462dc0377504e79b25ad76c9d0a4c7ce27f7d4")
+				.build();
+	}
+
+	public static Submission getGitPullEndpointSubmissionGitlab() {
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_JAVA)

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Data
 public class DevProperties {
 
-    private Boolean debug = true; // if unlock features for debug
+    private Boolean debug = false; // if unlock features for debug
     private String developer = "ago.luberg"; // send all submissions
     private String ago = "ago.luberg"; // send only failed submissions
     private String areteMail = "automated_testing_service@taltech.ee";

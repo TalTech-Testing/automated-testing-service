@@ -9,7 +9,8 @@ services:
     build:
       args:
         - ARETE_HOME=${ARETE_HOME}/arete-test
-        - GITLAB_PASSWORD=${GITLAB_PASSWORD}
+        - GIT_PASSWORD=${GITLAB_PASSWORD}
+        - GIT_USERNAME=envomp
       dockerfile:
         Dockerfile-ubuntu-test
       context: .

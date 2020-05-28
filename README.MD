@@ -118,7 +118,7 @@ docker-compose up -d
 ```
 
 ##### Local host machine with H2 ####
-You need latest of: Java11, Docker, System Environments for ARETE_HOME, GITLAB_PASSWORD
+You need latest of: Java11, Docker, System Environments for ARETE_HOME, (GIT_PASSWORD, GIT_USERNAME)/SSH key
 ___
 ##### for Linux
 ```shell script
