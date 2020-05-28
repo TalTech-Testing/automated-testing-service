@@ -1,0 +1,584 @@
+{
+  "type": "arete",
+  "errors": [
+    {
+      "message": "'9999999' is a magic number.",
+      "kind": "style error",
+      "fileName": "src/ee/taltech/iti0202/tk1/Exam.java",
+      "lineNo": 9,
+      "columnNo": 31,
+      "hint": null
+    }
+  ],
+  "files": [
+    {
+      "path": "src/ee/taltech/iti0202/tk1/cat/Cat.java",
+      "contents": "package ee.taltech.iti0202.tk1.cat;\n\npublic class Cat {\n    private static String cname;\n    private static Integer cage;\n    private static String ccolor;\n\n    public Cat(String name, int age, String color) {\n        cname = name;\n        cage = age;\n        ccolor = color;\n    }\n\n    public Cat(String name) {\n        cname = name;\n        cage = null;\n        ccolor = null;\n    }\n\n    public String getName() {\n        return cname;\n    }\n\n    public Integer getAge() {\n        return cage;\n    }\n\n    public String getColor() {\n        return ccolor;\n    }\n\n    public static void main(String[] args) {\n        Cat cat = new Cat(\"Mati\");\n        System.out.println(cat);\n        Cat muri = new Cat(\"Muri\", 3, \"White\");\n        System.out.println(muri);\n\n        Person malle = new Person();\n        Person kalle = new Person();\n        System.out.println(malle.addCat(cat)); // true\n        System.out.println(malle.addCat(cat)); // false\n\n        malle.sellCat(kalle, cat); // true\n        System.out.println(malle.getCats()); // []\n        System.out.println(kalle.getCats()); // [Mati]\n    }\n}\n\n"
+    },
+    {
+      "path": "src/ee/taltech/iti0202/tk1/cat/Person.java",
+      "contents": "package ee.taltech.iti0202.tk1.cat;\n\n\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic class Person {\n\n    private List<Cat> cats;\n\n    public Person() {\n        cats = new ArrayList<>();\n    }\n\n    public boolean addCat(Cat cat) {\n        if (!cats.contains(cat)) {\n            cats.add(cat);\n            return false;\n        }\n        return true;\n    }\n\n    public List<Cat> getCats() {\n        return cats;\n    }\n\n    public boolean sellCat(Person sellTo, Cat cat) {\n        if (cats.contains(cat)) {\n            cats.remove(cat);\n            return sellTo.addCat(cat);\n        }\n        return false;\n    }\n\n}\n"
+    },
+    {
+      "path": "src/ee/taltech/iti0202/tk1/Exam.java",
+      "contents": "package ee.taltech.iti0202.tk1;\n\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.Map;\n\npublic class Exam {\n\n    private static int tere = 9999999;\n    public static List<Integer> evenOdd(List<Integer> input) {\n        List<Integer> answer = new ArrayList<>();\n        for (Integer even : input) {\n            if (even != null && even % 2 == 0) {\n                answer.add(even);\n            }\n        }\n        for (Integer odd : input) {\n            if (odd != null && odd % 2 == 1) {\n                answer.add(odd);\n            }\n        }\n\n\n        return answer;\n    }\n\n    public static int loneSum(int a, int b, int c) {\n        if (a == b && b == c) {\n            return 0;\n        }\n\n        if (a == b) {\n            return c;\n        }\n\n        if (a == c) {\n            return b;\n        }\n\n        if (b == c) {\n            return a;\n        }\n\n        return a + b + c;\n    }\n\n    public static String getSandwich(String str) {\n        try {\n            String temp = str;\n            String[] answer = str.split(\"bread\");\n            int s = tere;\n            int e = 0;\n            for (int i = 0; i < str.length(); i++) {\n                if (str.substring(i).startsWith(\"bread\")) {\n                    s = i;\n                    temp = str.substring(i, str.length());\n                    break;\n                }\n            }\n            for (int i = 0; i < temp.length(); i++) {\n                if (temp.substring(0, temp.length() - i).endsWith(\"bread\")) {\n                    str = temp.substring(5, temp.length() - i - 5);\n                    break;\n                }\n            }\n            if (s != tere) {\n                return str;\n            }\n            return \"\";\n        } catch (Exception e) {\n            return \"\";\n        }\n\n    }\n\n    public static Map<String, String> topping(Map<String, String> map) {\n        if (map.containsKey(\"ice cream\")) {\n            map.put(\"ice cream\", \"cherry\");\n        }\n        if (map.containsKey(\"bread\")) {\n            map.put(\"bread\", \"butter\");\n        } else {\n            map.putIfAbsent(\"bread\", \"butter\");\n        }\n\n        return map;\n    }\n\n    public static void main(String[] args) {\n        //List<Integer> vars = new ArrayList(){}\n        // System.out.println(evenOdd());\n        // evenOdd([1, 0, 1, 0, 0, 1, 1]) // → [0, 0, 0, 1, 1, 1, 1]\n        // evenOdd([3, 3, 2]) // → [2, 3, 3]\n        // evenOdd([2, 2, 2]) // → [2, 2, 2]\n        // loneSum(1, 2, 3) // → 6\n        // loneSum(3, 2, 3) // → 2\n        // loneSum(3, 3, 3) // → 0\n        System.out.println(getSandwich(\"xxbreadjambreadx\")); // → \"jam\"\n        // getSandwich(\"xxbreadjambreadyy\") // → \"jam\"\n        // getSandwich(\"xxbreadyy\") // → \"\"\n        // topping({\"ice cream\": \"peanuts\"}) // → {\"bread\": \"butter\", \"ice cream\": \"cherry\"}\n        // topping({}) // → {\"bread\": \"butter\"}\n        // topping({\"pancake\": \"syrup\"}) // → {\"bread\": \"butter\", \"pancake\": \"syrup\"}\n    }\n}\n"
+    },
+    {
+      "path": "src/ee/taltech/iti0202/tk1/om",
+      "contents": "<file in binary format or unable to read file>"
+    },
+    {
+      "path": "TK1.iml",
+      "contents": "<file in binary format or unable to read file>"
+    }
+  ],
+  "testFiles": [
+    {
+      "path": ".gitkeep",
+      "contents": "<file in binary format or unable to read file>"
+    },
+    {
+      "path": "checkstyle.xml",
+      "contents": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE module PUBLIC \"-//Puppy Crawl//DTD Check Configuration 1.2//EN\" \"http://www.puppycrawl.com/dtds/configuration_1_2.dtd\">\n<!--\n\n  Checkstyle configuration that checks the sun coding conventions from:\n\n    - the Java Language Specification at\n      http://java.sun.com/docs/books/jls/second_edition/html/index.html\n\n    - the Sun Code Conventions at http://java.sun.com/docs/codeconv/\n\n    - the Javadoc guidelines at\n      http://java.sun.com/j2se/javadoc/writingdoccomments/index.html\n\n    - the JDK Api documentation http://java.sun.com/j2se/docs/api/index.html\n\n    - some best practices\n\n  Checkstyle is very configurable. Be sure to read the documentation at\n  http://checkstyle.sf.net (or in your downloaded distribution).\n\n  Most Checks are configurable, be sure to consult the documentation.\n\n  To completely disable a check, just comment it out or delete it from the file.\n\n  Finally, it is worth reading the documentation.\n\n-->\n<module name=\"Checker\">\n    <property name=\"charset\" value=\"UTF-8\"/>\n    <!--\n        If you set the basedir property below, then all reported file\n        names will be relative to the specified directory. See\n        http://checkstyle.sourceforge.net/5.x/config.html#Checker\n\n        <property name=\"basedir\" value=\"${basedir}\"/>\n    -->\n\n    <!-- Checks that a package-info.java file exists for each package.     -->\n    <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocPackage -->\n    <!--\n    <module name=\"JavadocPackage\"/>\n    -->\n\n    <!-- Checks whether files end with a new line.                        -->\n    <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->\n    <module name=\"NewlineAtEndOfFile\">\n        <property name=\"fileExtensions\" value=\"java, xml, py, css, fxml\"/>\n    </module>\n\n    <!-- Checks that property files contain the same keys.         -->\n    <!-- See http://checkstyle.sf.net/config_misc.html#Translation -->\n    <module name=\"Translation\"/>\n\n    <!-- Checks for Size Violations.                    -->\n    <!-- See http://checkstyle.sf.net/config_sizes.html -->\n    <module name=\"FileLength\"/>\n\n    <!-- Checks for whitespace                               -->\n    <!-- See http://checkstyle.sf.net/config_whitespace.html -->\n    <module name=\"FileTabCharacter\"/>\n\n    <!-- Miscellaneous other checks.                   -->\n    <!-- See http://checkstyle.sf.net/config_misc.html -->\n    <module name=\"RegexpSingleline\">\n        <property name=\"format\" value=\"\\s+$\"/>\n        <property name=\"minimum\" value=\"0\"/>\n        <property name=\"maximum\" value=\"0\"/>\n        <property name=\"message\" value=\"Line has trailing spaces.\"/>\n    </module>\n\n    <module name=\"TreeWalker\">\n\n        <!-- Checks for Javadoc comments.                     -->\n        <!-- See http://checkstyle.sf.net/config_javadoc.html -->\n\n\n        <!-- Checks for Naming Conventions.                  -->\n        <!-- See http://checkstyle.sf.net/config_naming.html -->\n        <module name=\"ConstantName\"/>\n        <!--\n            <module name=\"LocalFinalVariableName\"/>\n        -->\n        <module name=\"LocalVariableName\"/>\n        <module name=\"MemberName\"/>\n        <module name=\"MethodName\"/>\n        <module name=\"PackageName\"/>\n        <module name=\"ParameterName\"/>\n        <module name=\"StaticVariableName\"/>\n        <module name=\"TypeName\"/>\n\n\n        <!-- Checks for Headers                                -->\n        <!-- See http://checkstyle.sf.net/config_header.html   -->\n        <!-- <module name=\"Header\">                            -->\n        <!-- The follow property value demonstrates the ability     -->\n        <!-- to have access to ANT properties. In this case it uses -->\n        <!-- the ${basedir} property to allow Checkstyle to be run  -->\n        <!-- from any directory within a project. See property      -->\n        <!-- expansion,                                             -->\n        <!-- http://checkstyle.sf.net/config.html#properties        -->\n        <!-- <property                                              -->\n        <!--     name=\"headerFile\"                                  -->\n        <!--     value=\"${basedir}/java.header\"/>                   -->\n        <!-- </module> -->\n\n        <!-- Following interprets the header file as regular expressions. -->\n        <!-- <module name=\"RegexpHeader\"/>                                -->\n\n\n        <!-- Checks for imports                              -->\n        <!-- See http://checkstyle.sf.net/config_import.html -->\n        <module name=\"AvoidStarImport\"/>\n        <module name=\"IllegalImport\"/> <!-- defaults to sun.* packages -->\n        <module name=\"RedundantImport\"/>\n        <module name=\"UnusedImports\"/>\n\n\n        <!-- Checks for Size Violations.                    -->\n        <!-- See http://checkstyle.sf.net/config_sizes.html -->\n        <module name=\"LineLength\">\n            <property name=\"max\" value=\"120\"/>\n        </module>\n        <module name=\"MethodLength\"/>\n        <module name=\"ParameterNumber\"/>\n\n\n        <!-- Checks for whitespace                               -->\n        <!-- See http://checkstyle.sf.net/config_whitespace.html -->\n        <module name=\"EmptyForIteratorPad\"/>\n        <module name=\"GenericWhitespace\"/>\n        <module name=\"MethodParamPad\"/>\n        <module name=\"NoWhitespaceAfter\"/>\n        <module name=\"NoWhitespaceBefore\"/>\n        <module name=\"OperatorWrap\"/>\n        <module name=\"ParenPad\"/>\n        <module name=\"TypecastParenPad\"/>\n        <module name=\"WhitespaceAfter\"/>\n        <module name=\"WhitespaceAround\"/>\n\n\n        <!-- Modifier Checks                                    -->\n        <!-- See http://checkstyle.sf.net/config_modifiers.html -->\n        <module name=\"ModifierOrder\"/>\n        <module name=\"RedundantModifier\"/>\n\n\n        <!-- Checks for blocks. You know, those {}'s         -->\n        <!-- See http://checkstyle.sf.net/config_blocks.html -->\n        <module name=\"AvoidNestedBlocks\"/>\n        <module name=\"EmptyBlock\"/>\n        <module name=\"LeftCurly\"/>\n        <module name=\"NeedBraces\">\n            <property name=\"allowSingleLineStatement\" value=\"true\"/>\n        </module>\n        <module name=\"RightCurly\"/>\n\n\n        <!-- Checks for common coding problems               -->\n        <!-- See http://checkstyle.sf.net/config_coding.html -->\n        <!-- module name=\"AvoidInlineConditionals\"/ -->\n        <module name=\"EmptyStatement\"/>\n        <module name=\"EqualsHashCode\"/>\n        <!--\n            <module name=\"HiddenField\">\n                <property name=\"ignoreSetter\" value=\"true\"/>\n        </module>\n        -->\n        <module name=\"IllegalInstantiation\"/>\n        <module name=\"InnerAssignment\"/>\n        <module name=\"MagicNumber\">\n            <property name=\"ignoreNumbers\" value=\"-5,-4,-3,-2,-1,0,1,2,3,4,5,10,100,1000\"/>\n        </module>\n        <module name=\"MissingSwitchDefault\"/>\n        <module name=\"SimplifyBooleanExpression\"/>\n        <module name=\"SimplifyBooleanReturn\"/>\n\n        <!-- Checks for class design                         -->\n        <!-- See http://checkstyle.sf.net/config_design.html -->\n        <!--\n            <module name=\"DesignForExtension\"/>\n        -->\n        <module name=\"FinalClass\"/>\n        <!--\n            <module name=\"HideUtilityClassConstructor\"/>\n        -->\n        <module name=\"InterfaceIsType\"/>\n        <!--\n            <module name=\"VisibilityModifier\"/>\n        -->\n\n\n        <!-- Miscellaneous other checks.                   -->\n        <!-- See http://checkstyle.sf.net/config_misc.html -->\n        <module name=\"ArrayTypeStyle\"/>\n        <!--\n            <module name=\"FinalParameters\"/>\n        -->\n        <module name=\"TodoComment\"/>\n        <module name=\"UpperEll\"/>\n\n    </module>\n\n\n</module>"
+    },
+    {
+      "path": "src/ee/taltech/iti0202/tk1/Test01EvenOdd.java",
+      "contents": "package ee.taltech.iti0202.tk1;\n\nimport ee.ttu.java.studenttester.annotations.TestContextConfiguration;\nimport org.testng.annotations.Test;\n\nimport java.security.SecureRandom;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Collections;\nimport java.util.List;\nimport java.util.stream.Collectors;\n\nimport static org.testng.Assert.*;\n\n@TestContextConfiguration(identifier = 1)\npublic class Test01EvenOdd {\n    @Test\n    public void testEvenOdd1() {\n\n        assertEquals(Exam.evenOdd(Arrays.asList(1, 0, 1, 0, 0, 1, 1)), Arrays.asList(0, 0, 0, 1, 1, 1, 1));\n        assertEquals(Exam.evenOdd(Arrays.asList(3, 3, 2)), Arrays.asList(2, 3, 3));\n    }\n\n    @Test\n    public void testEvenOdd2() {\n\n        assertEquals(Exam.evenOdd(Arrays.asList(3, 2, 2)), Arrays.asList(2, 2, 3));\n        assertEquals(Exam.evenOdd(Arrays.asList(1, 1, 0, 1, 0)), Arrays.asList(0, 0, 1, 1, 1));\n        assertEquals(Exam.evenOdd(Arrays.asList(1, 2)), Arrays.asList(2, 1));\n\n    }\n\n    @Test\n    public void testEvenOdd3() {\n        assertEquals(Exam.evenOdd(Arrays.asList(2, 2, 2)), Arrays.asList(2, 2, 2));\n        assertEquals(Exam.evenOdd(Collections.singletonList(1)), Collections.singletonList(1));\n        assertEquals(Exam.evenOdd(new ArrayList<>()), new ArrayList<>());\n    }\n\n    SecureRandom random = new SecureRandom();\n    private List<Integer> generateRandomList(int size) {\n        return random.ints().limit(size).boxed().collect(Collectors.toList());\n    }\n\n    private void randomTest(int testCount, int maxSize) {\n        for (int n = 0; n < testCount; n++) {\n            int size = random.nextInt(maxSize);\n            List<Integer> nums = generateRandomList(size);\n            List<Integer> result = Exam.evenOdd(nums);\n            // check\n            boolean odd = false;\n            for (int nr : result) {\n                if (nr % 2 == 0 && odd) fail();\n                if (nr % 2 == 1) odd = true;\n                assertTrue(nums.remove(Integer.valueOf(nr)));\n            }\n            assertEquals(nums.size(), 0);\n        }\n    }\n\n    @Test(timeOut = 1000)\n    public void testEvenOdd4() {\n        randomTest(100, 100);\n    }\n\n    @Test(timeOut = 10000)\n    public void testEvenOdd5() {\n        randomTest(1000, 1000);\n    }\n}\n"
+    },
+    {
+      "path": "src/ee/taltech/iti0202/tk1/Test02LoneSum.java",
+      "contents": "package ee.taltech.iti0202.tk1;\n\nimport ee.ttu.java.studenttester.annotations.TestContextConfiguration;\nimport org.testng.annotations.Test;\n\nimport java.security.SecureRandom;\nimport java.util.List;\nimport java.util.stream.Collectors;\n\nimport static org.testng.Assert.assertEquals;\n\n@TestContextConfiguration(identifier = 2)\npublic class Test02LoneSum {\n    @Test\n    public void testLoneSum1() {\n\n        assertEquals(Exam.loneSum(1, 2, 3), 6);\n        assertEquals(Exam.loneSum(3, 2, 3), 2);\n        assertEquals(Exam.loneSum(3, 3, 3), 0);\n    }\n\n    @Test\n    public void testLoneSum2() {\n\n        assertEquals(Exam.loneSum(9, 2, 2), 9);\n        assertEquals(Exam.loneSum(2, 2, 9), 9);\n        assertEquals(Exam.loneSum(2, 9, 2), 9);\n\n    }\n\n    @Test\n    public void testLoneSum3() {\n\n        assertEquals(Exam.loneSum(2, 9, 3), 14);\n        assertEquals(Exam.loneSum(4, 2, 3), 9);\n        assertEquals(Exam.loneSum(1, 3, 1), 3);\n\n    }\n\n    SecureRandom random = new SecureRandom();\n    private void randomTest(int testsCount) {\n        for (int n = 0; n < testsCount; n++) {\n            List<Integer> nrs = random.ints(3, -10, 10).boxed().sorted().collect(Collectors.toList());\n            int sum = 0;\n            if (!nrs.get(0).equals(nrs.get(1))) sum += nrs.get(0);\n            if (!nrs.get(0).equals(nrs.get(1)) && !nrs.get(1).equals(nrs.get(2))) sum += nrs.get(1);\n            if (!nrs.get(2).equals(nrs.get(1))) sum += nrs.get(2);\n            assertEquals(Exam.loneSum(nrs.get(0), nrs.get(1), nrs.get(2)), sum);\n            assertEquals(Exam.loneSum(nrs.get(0), nrs.get(2), nrs.get(1)), sum);\n            assertEquals(Exam.loneSum(nrs.get(1), nrs.get(0), nrs.get(2)), sum);\n            assertEquals(Exam.loneSum(nrs.get(1), nrs.get(2), nrs.get(0)), sum);\n            assertEquals(Exam.loneSum(nrs.get(2), nrs.get(1), nrs.get(0)), sum);\n            assertEquals(Exam.loneSum(nrs.get(2), nrs.get(0), nrs.get(1)), sum);\n        }\n    }\n\n    @Test(timeOut = 1000)\n    public void testLoneSum4() {\n        randomTest(100);\n    }\n\n    @Test(timeOut = 1000)\n    public void testLoneSum5() {\n        randomTest(1000);\n    }\n}\n"
+    },
+    {
+      "path": "src/ee/taltech/iti0202/tk1/Test03GetSandwich.java",
+      "contents": "package ee.taltech.iti0202.tk1;\n\nimport ee.ttu.java.studenttester.annotations.TestContextConfiguration;\nimport org.testng.annotations.Test;\n\nimport static org.testng.Assert.assertEquals;\n\n@TestContextConfiguration(identifier = 3)\npublic class Test03GetSandwich {\n    /**\n     * getSandwich\n     */\n    @Test\n    public void testGetSandwich1() {\n\n        assertEquals(Exam.getSandwich(\"breadjambread\"), \"jam\");\n        assertEquals(Exam.getSandwich(\"breadjammbread\"), \"jamm\");\n        assertEquals(Exam.getSandwich(\"xxbreadjambreadyy\"), \"jam\");\n\n    }\n\n    @Test\n    public void testGetSandwich2() {\n\n        assertEquals(Exam.getSandwich(\"breadjambread\"), \"jam\");\n        assertEquals(Exam.getSandwich(\"xxbreadyy\"), \"\");\n        assertEquals(Exam.getSandwich(\"breadbread\"), \"\");\n        assertEquals(Exam.getSandwich(\"abcbreaz\"), \"\");\n        assertEquals(Exam.getSandwich(\"xyz\"), \"\");\n\n    }\n\n    @Test\n    public void testGetSandwich3() {\n\n        assertEquals(Exam.getSandwich(\"breadbreaxbread\"), \"breax\");\n        assertEquals(Exam.getSandwich(\"breaxbreadybread\"), \"y\");\n        assertEquals(Exam.getSandwich(\"breadbreadbreadbread\"), \"breadbread\");\n    }\n\n    @Test(timeOut = 1000)\n    public void testGetSandwich4() {\n        assertEquals(Exam.getSandwich(\"areadtooaread\"), \"\");\n        assertEquals(Exam.getSandwich(\"abreatooabrea\"), \"\");\n        assertEquals(Exam.getSandwich(\"abreadbreadbready\"), \"bread\");\n    }\n\n    @Test(timeOut = 1000)\n    public void testGetSandwich5() {\n        assertEquals(Exam.getSandwich(\"\"), \"\");\n        assertEquals(Exam.getSandwich(\"b\"), \"\");\n        assertEquals(Exam.getSandwich(\"br\"), \"\");\n        assertEquals(Exam.getSandwich(\"bre\"), \"\");\n        assertEquals(Exam.getSandwich(\"brea\"), \"\");\n        assertEquals(Exam.getSandwich(\"bread\"), \"\");\n        assertEquals(Exam.getSandwich(\"breadb\"), \"\");\n        assertEquals(Exam.getSandwich(\"breadbr\"), \"\");\n        assertEquals(Exam.getSandwich(\"breadbre\"), \"\");\n        assertEquals(Exam.getSandwich(\"breadbrea\"), \"\");\n        assertEquals(Exam.getSandwich(\"breadbread\"), \"\");\n        assertEquals(Exam.getSandwich(\"breadbreadb\"), \"\");\n        assertEquals(Exam.getSandwich(\"breadbreadbr\"), \"\");\n        assertEquals(Exam.getSandwich(\"breadbreadbre\"), \"\");\n        assertEquals(Exam.getSandwich(\"breadbreadbrea\"), \"\");\n        assertEquals(Exam.getSandwich(\"breadbreadbread\"), \"bread\");\n        assertEquals(Exam.getSandwich(\"bbreadbreadbreadb\"), \"bread\");\n    }\n}\n"
+    },
+    {
+      "path": "src/ee/taltech/iti0202/tk1/Test04Topping.java",
+      "contents": "package ee.taltech.iti0202.tk1;\n\nimport ee.ttu.java.studenttester.annotations.TestContextConfiguration;\nimport org.testng.annotations.Test;\n\nimport java.security.SecureRandom;\nimport java.util.HashMap;\nimport java.util.Map;\nimport java.util.Random;\n\nimport static org.testng.Assert.assertEquals;\n\n@TestContextConfiguration(identifier = 4)\npublic class Test04Topping {\n    @Test\n    public void testTopping1() {\n\n\n        Map<String, String> hashMapOut1 = new HashMap<String, String>() {{\n            put(\"bread\", \"butter\");\n            put(\"ice cream\", \"cherry\");\n        }};\n\n        Map<String, String> hashMapIn1 = new HashMap<String, String>() {{\n            put(\"ice cream\", \"peanuts\");\n        }};\n\n        assertEquals(Exam.topping(hashMapIn1), hashMapOut1);\n\n        Map<String, String> hashMapOut2 = new HashMap<String, String>() {{\n            put(\"bread\", \"butter\");\n        }};\n\n        assertEquals(Exam.topping(new HashMap<>()), hashMapOut2);\n\n        Map<String, String> hashMapOut3 = new HashMap<String, String>() {{\n            put(\"bread\", \"butter\");\n            put(\"pancake\", \"syrup\");\n        }};\n\n        Map<String, String> hashMapIn3 = new HashMap<String, String>() {{\n            put(\"pancake\", \"syrup\");\n        }};\n\n        assertEquals(Exam.topping(hashMapIn3), hashMapOut3);\n    }\n\n    @Test\n    public void testTopping2() {\n\n\n        Map<String, String> hashMapOut1 = new HashMap<String, String>() {{\n            put(\"bread\", \"butter\");\n            put(\"ice cream\", \"cherry\");\n        }};\n\n        Map<String, String> hashMapIn1 = new HashMap<String, String>() {{\n            put(\"bread\", \"dirt\");\n            put(\"ice cream\", \"strawberries\");\n        }};\n\n        assertEquals(Exam.topping(hashMapIn1), hashMapOut1);\n\n\n        Map<String, String> hashMapOut2 = new HashMap<String, String>() {{\n            put(\"bread\", \"butter\");\n            put(\"ice cream\", \"cherry\");\n            put(\"salad\", \"oil\");\n        }};\n\n        Map<String, String> hashMapIn2 = new HashMap<String, String>() {{\n            put(\"bread\", \"jam\");\n            put(\"ice cream\", \"strawberries\");\n            put(\"salad\", \"oil\");\n        }};\n\n        assertEquals(Exam.topping(hashMapIn2), hashMapOut2);\n    }\n\n    @Test(timeOut = 1000)\n    public void testTopping3() {\n        assertEquals(Exam.topping(new HashMap<>(Map.of())), Map.of(\"bread\", \"butter\"));\n        assertEquals(Exam.topping(new HashMap<>(Map.of(\"bread\", \"bread\"))), Map.of(\"bread\", \"butter\"));\n        assertEquals(Exam.topping(new HashMap<>(Map.of(\"butter\", \"bread\"))), Map.of(\"bread\", \"butter\", \"butter\", \"bread\"));\n    }\n\n    private String randomString(Random random, char[] symbols, int length) {\n        return random.ints(0, symbols.length)\n                .mapToObj(i -> (char) symbols[i])\n                .limit(length)\n                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)\n                .toString();\n    }\n\n    private void randomTest(int testCount, int maxSize) {\n        Random random = new SecureRandom();\n        char[] symbols = \"abcdefghijklmnopqrstuvwxyz0123456789\".toCharArray();\n        for (int n = 0; n < testCount; n++) {\n            int size = random.nextInt(maxSize);\n            Map<String, String> in = new HashMap<>();\n            Map<String, String> out = new HashMap<>();\n            for (int i = 0; i < size; i++) {\n                String k = randomString(random, symbols, 10);\n                String v = randomString(random, symbols, 10);\n                in.put(k, v);\n                out.put(k, v);\n            }\n            if (random.nextDouble() < 0.1) {\n                String v = randomString(random, symbols, 10);\n                in.put(\"ice cream\", v);\n                out.put(\"ice cream\", \"cherry\");\n            }\n            if (random.nextDouble() < 0.1) {\n                in.put(\"bread\", randomString(random, symbols, 10));\n            }\n            out.put(\"bread\", \"butter\");\n        }\n    }\n\n    @Test(timeOut = 1000)\n    public void testTopping4() {\n        randomTest(100, 100);\n    }\n\n    @Test(timeOut = 10000)\n    public void testTopping5() {\n        randomTest(100, 1000);\n    }\n}\n"
+    },
+    {
+      "path": "src/ee/taltech/iti0202/tk1/Test05Cats.java",
+      "contents": "package ee.taltech.iti0202.tk1;\n\nimport ee.taltech.iti0202.tk1.cat.Cat;\nimport ee.taltech.iti0202.tk1.cat.Person;\nimport ee.ttu.java.studenttester.annotations.Gradable;\nimport ee.ttu.java.studenttester.annotations.TestContextConfiguration;\nimport org.testng.annotations.Test;\n\nimport java.lang.reflect.Field;\nimport java.lang.reflect.Modifier;\n\nimport static org.testng.Assert.assertEquals;\nimport static org.testng.Assert.assertFalse;\nimport static org.testng.Assert.assertTrue;\n\n@TestContextConfiguration(identifier = 5)\npublic class Test05Cats {\n    private void testForPrivateFields(Class<?> clazz) {\n        Field[] fields = clazz.getFields();\n        for (Field field : fields) {\n            assertTrue(Modifier.isPrivate(field.getModifiers()));\n        }\n    }\n    @Test(timeOut = 1000)\n    @Gradable(description = \"\")\n    public void testCatConstructorsAndPrivate() throws Exception {\n        Cat cat = new Cat(\"Mati\");\n        Cat cat2 = new Cat(\"Mati\", 10, \"red\");\n        testForPrivateFields(Cat.class);\n    }\n\n    @Test(timeOut = 1000)\n    @Gradable(description = \"\")\n    public void testCatGetterSetter() throws Exception {\n        Cat cat = new Cat(\"Kadri\", 5, \"black\");\n        assertEquals((int)cat.getAge(), 5);\n        assertEquals(cat.getName(), \"Kadri\");\n        assertEquals(cat.getColor(), \"black\");\n    }\n\n    @Test(timeOut = 1000)\n    @Gradable(description = \"\")\n    public void testCatToString() throws Exception {\n        Cat cat = new Cat(\"Joosep\", 10, \"white\");\n        assertEquals(cat.toString(), \"white Joosep (10)\");\n        cat = new Cat(\"Rein\");\n        assertEquals(cat.toString(), \"Rein\");\n    }\n\n    /* PERSON tests */\n\n    @Test(timeOut = 1000)\n    @Gradable(description = \"\")\n    public void testPersonPrivateField() throws Exception {\n        testForPrivateFields(Person.class);\n    }\n\n    @Test(timeOut = 1000)\n    @Gradable(description = \"\")\n    public void testPersonCatList() throws Exception {\n        Person person = new Person();\n        assertEquals(person.getCats().size(), 0);\n        Cat cat = new Cat(\"MM\");\n        person.addCat(cat);\n        assertEquals(person.getCats().size(), 1);\n        assertEquals(person.getCats().get(0), cat);\n\n        for (int i = 0; i < 100; i++) {\n            Cat c = new Cat(\"cat\");\n            assertTrue(person.addCat(c));\n            assertEquals(person.getCats().size(), 2 + i);\n            assertTrue(person.getCats().contains(c));\n        }\n    }\n\n    @Test(timeOut = 1000)\n    @Gradable(description = \"\")\n    public void testPersonAddSameCat() throws Exception {\n        Person person = new Person();\n        Cat cat = new Cat(\"Abc\");\n        assertTrue(person.addCat(cat));\n        assertEquals(person.getCats().size(), 1);\n        assertFalse(person.addCat(cat));\n        assertEquals(person.getCats().size(), 1);\n    }\n\n    @Test(timeOut = 1000)\n    @Gradable(description = \"\")\n    public void testPeronSellCat() throws Exception {\n        Person p1 = new Person();\n        Person p2 = new Person();\n        Cat cat = new Cat(\"ui\");\n        assertTrue(p1.addCat(cat));\n        assertTrue(p1.sellCat(p2, cat));\n        assertEquals(p1.getCats().size(), 0);\n        assertEquals(p2.getCats().size(), 1);\n        assertEquals(p2.getCats().get(0), cat);\n    }\n\n    @Test(timeOut = 1000)\n    @Gradable(description = \"\")\n    public void testPersonSellWrongCat() throws Exception {\n        Person p1 = new Person();\n        Person p2 = new Person();\n        Cat cat = new Cat(\"ui\");\n        assertFalse(p1.sellCat(p2, cat));\n        assertEquals(p1.getCats().size(), 0);\n        assertEquals(p2.getCats().size(), 0);\n    }\n\n    @Test(timeOut = 1000)\n    @Gradable(description = \"\")\n    public void testPersonSellCatToMyself() throws Exception {\n        Person p1 = new Person();\n        Cat cat = new Cat(\"ui\");\n        assertTrue(p1.addCat(cat));\n        assertFalse(p1.sellCat(p1, cat));\n        assertEquals(p1.getCats().size(), 1);\n    }\n\n    @Test(timeOut = 1000)\n    @Gradable(description = \"\")\n    public void testPersonSellCatTwice() throws Exception {\n        Person p1 = new Person();\n        Person p2 = new Person();\n        Cat cat = new Cat(\"ui\");\n        Cat c2 = new Cat(\"kuido\");\n        Cat c3 = new Cat(\"mjau\");\n        assertTrue(p1.addCat(cat));\n        assertTrue(p1.addCat(c2));\n        assertTrue(p1.addCat(c3));\n        assertTrue(p1.sellCat(p2, cat));\n        assertEquals(p1.getCats().size(), 2);\n        assertEquals(p2.getCats().size(), 1);\n        assertEquals(p2.getCats().get(0), cat);\n\n        assertFalse(p1.sellCat(p2, cat));\n        assertEquals(p1.getCats().size(), 2);\n        assertEquals(p2.getCats().size(), 1);\n        assertEquals(p2.getCats().get(0), cat);\n\n        assertTrue(p2.sellCat(p1, cat));\n        assertEquals(p1.getCats().size(), 3);\n        assertEquals(p2.getCats().size(), 0);\n\n\n    }\n}\n"
+    },
+    {
+      "path": "tk1.rst",
+      "contents": "Tunnikontroll 1\n===============\n\nÜldine\n------\n\nTunnikontrolli saab sooritada vaid praktikumi ajal arvutiklassis. **Pärast lõpetamist näita õppejõule ette, et ta paneks su nime kirja**.\n\nIga ülesanne annab 1 punkti. Kokku võimalik saada 5 punkti.\n\n**Stiilipunktid lähevad arvesse!**\n\n**Eksamile pääsemiseks peab tunnikontrolli eest saama vähemalt 1 punkti.**\n\nMaterjalid: https://ained.ttu.ee/javadoc/\n\nJava ametlik dokumentatsioon: https://ained.ttu.ee/javadoc/jdk\n\nGitlab: http://gitlab.cs.ttu.ee/\n\nKursuse veeb: http://ained.ttu.ee/\n\nKõik lahendused lähevad Gitis kausta (IntelliJ-s moodul): ``TK1``. Seal sees pakett: ``ee.taltech.iti0202.tk1``. Ülesanded 1 kuni 4 lähevad klassi ``Exam``. Ülesanne 5 jaoks tuleb teha omakorda pakett ``cat`` (täielikul kujul: ``ee.taltech.iti0202.tk1.cat``), mille tulevad vajalikud klassid.\n\n**Interneti kasutamine pole lubatud!**\n\nTulemusi vaata pigem ained.ttu.ee lehelt ülesande juurest (paremal *submissions*).\n\nGit ja IntelliJ\n---------------\n\nKooliarvutis IntelliJ kasutamiseks pead litsentsi küsima litsentsiserverilt. Kui klikkida *licence server*, peaks server automaatselt leitama (või kliki *discover*).\n\nGiti kasutamiseks  IntelliJs *checkout from version control* -> Git esilehelt või VCS -> *checkout from version control* -> Git\n\nGiti repo aadressi saad gitlabi lehelt. Selle kuju on üldiselt: ``https://gitlab.cs.ttu.ee/UNIID/iti0202-2019.git``. Kus ``UNIID`` asenda enda uni-id-ga.\n\n\nÜlesanded\n---------\n\n01 - evenOdd\n......................\n\nSaab sisendiks listi. Tuleb tagastada sama pikkusega list, kus sisendlisti elemendid on ümber paigutatud nii, et paarisarvud on alati paaritute arvude ees. pole vahet, mis järjekorras paaris- või paaritud arvud omavahel on.\n\n02 - loneSum\n...................\n\nSaab sisendiks 3 täisarvu, tagastab nende summa. Kui aga mõni element on teise elemendiga võrdne, siis neid elemente ei summeerita.\n\n03 - getSandwich\n.................\n\nSaab sisendiks sõne. Tagasta uus sõne, mis on esimese ja viimase \"bread\" esinemise vahel esialgses sõnes. Kkui ei leidu 2 \"bread\" alamsõne, tagasta tühja sõne.\n\n\n04 - topping\n..............\n\nSaab sisendiks mapi, kus võtmeks on toit (string) ja väärtuseks on *topping* (string). Tagasta map jälgides järgmisi reegleid:\n\n1) kui võtmeks on 'ice cream'- pane talle väärtuseks 'cherry'.\n2) kui mapis juba leidub võti nimega 'bread', siis pane talle väärtuseks 'butter'. Kui mapis antud võtit ei ole, siis lisage see ise ja pange sellele samuti väärtuseks 'butter'.\n3) kõikide ülejäänud võti-väärtus paaride puhul muudatusi ei tehta.\n\n05 - Cat\n..........\n\nPakk: ``ee.taltech.iti0202.tk1.cat``\n\nKirjuta klass ``Cat``, millel on nimi (String), vanus (int) ja värvus (String).\n\nKlassil peavad olema *getter* meetodid: ``getName()``, ``getAge()`` ja ``getColor()``, Samuti peavad klassil olema vastavad *setter* meetodid.\n\nKlassil on kaks konstruktorit. Üks võtab vastu vaid nime, teine võtab vastu nime, vanuse ja värvuse (selles järjekorras).\nKui konstruktorile antakse kaasa vaid nimi, siis ülejäänud muutujate väärtused ei ole olulised.\n\nKlassil tuleb realiseerida ``toString()`` meetod, mis tagastab tulemuse kujul: \"värvus nimi (vanus)\". Näiteks \"sinine Bella (8)\".\nKui kassile on määratud vaid nimi (kasutades ühe parameetriga konsuktorit), tagastab ``toString`` meetod vaid nime. Näiteks: \"Guido\".\n\nKonstruktor ja *setter* meetodid ei pea valideerima andmete sisu (st kassi vanus võib olla ka 1000 või -123).\n\n\nOmanik\n^^^^^^\n\nKirjuta klass ``Person``.\n\nPersoonil võib olla null või rohkem kassi. Kassi lisamine käib meetodiga ``boolean addCat(Cat cat)``.\nKui persoonil on selline kass juba olemas, tagastab meetod ``false``, muul juhul ``true``.\n\nPersooni kasside nimekirja saab kätte meetodiga ``List<Cat> getCats()``.\n\nPersoon saab kassi müüa teisele persoonile: ``boolean sellCat(Person sellTo, Cat cat)``. Müüa saab vaid enda kassi.\nEndale müüa ei saa. Kui müümine õnnestub (tingimused on täidetud), saab ostja kassi endale, müüjal seda kassi enam pärast müümist ei ole.\nKui müümine õnnestub, tagastab ``true``, muul juhul ``false``.\n\n\nKoodinäide\n^^^^^^^^^^\n\n.. code-block:: java\n\n    Cat cat = new Cat(\"Mati\");\n    System.out.println(cat);\n\n    Cat muri = new Cat(\"Muri\", 3, \"White\");\n    System.out.println(muri);\n\n    Person malle = new Person();\n    Person kalle = new Person();\n    System.out.println(malle.addCat(cat)); // true\n    System.out.println(malle.addCat(cat)); // false\n\n    malle.sellCat(kalle, cat); // true\n    System.out.println(malle.getCats()); // []\n    System.out.println(kalle.getCats()); // [Mati]\n\nMall\n====\n\n.. code-block:: java\n\n    import java.util.List;\n    import java.util.Map;\n    \n    public class Exam {\n    \n    \n        /**\n         * Return a list that contains the exact same numbers as the given list, but rearranged so that\n         * all the even numbers come before all the odd numbers. Other than that, the numbers can be in\n         * any order. You may modify and return the given list, or make a new list.\n         * <p>\n         * <p>\n         * evenOdd([1, 0, 1, 0, 0, 1, 1]) → [0, 0, 0, 1, 1, 1, 1]\n         * evenOdd([3, 3, 2]) → [2, 3, 3]\n         * evenOdd([2, 2, 2]) → [2, 2, 2]\n         */\n        public static List<Integer> evenOdd(List<Integer> nums) {\n            return null;\n        }\n    \n    \n        /**\n         * Given 3 int values, a b c, return their sum. However, if one of the values is the same as another of the values,\n         * it does not count towards the sum.\n         * <p>\n         * loneSum(1, 2, 3) → 6\n         * loneSum(3, 2, 3) → 2\n         * loneSum(3, 3, 3) → 0\n         */\n        public static int loneSum(int a, int b, int c) {\n            return 0;\n        }\n    \n    \n        /**\n         * A sandwich is two pieces of bread with something in between. Return the string that is between the first and\n         * last appearance of \"bread\" in the given string, or return the empty string \"\"\n         * if there are not two pieces of bread.\n         * <p>\n         * getSandwich(\"breadjambread\") → \"jam\"\n         * getSandwich(\"xxbreadjambreadyy\") → \"jam\"\n         * getSandwich(\"xxbreadyy\") → \"\"\n         */\n        public static String getSandwich(String str) {\n            return \"\";\n        }\n    \n    \n        /**\n         * Given a map of food keys and topping values, modify and return the map as follows: if the key\n         * \"ice cream\" is present, set its value to \"cherry\". In all cases, set the key \"bread\"\n         * to have the value \"butter\".\n         * <p>\n         * <p>\n         * topping({\"ice cream\": \"peanuts\"}) → {\"bread\": \"butter\", \"ice cream\": \"cherry\"}\n         * topping({}) → {\"bread\": \"butter\"}\n         * topping({\"pancake\": \"syrup\"}) → {\"bread\": \"butter\", \"pancake\": \"syrup\"}\n         */\n        public static Map<String, String> topping(Map<String, String> map) {\n            return null;\n        }\n    \n    \n    }\n"
+    },
+    {
+      "path": "tk1Test.java.txt",
+      "contents": "\nimport org.testng.annotations.Test;\n\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Collections;\nimport java.util.HashMap;\nimport java.util.Map;\n\nimport static org.testng.Assert.*;\n\npublic class tk1Test {\n\n    /**\n     * evenOdd\n     */\n    @Test\n    public void testEvenOdd1() {\n\n        assertEquals(tk1.evenOdd(Arrays.asList(1, 0, 1, 0, 0, 1, 1)), Arrays.asList(0, 0, 0, 1, 1, 1, 1));\n        assertEquals(tk1.evenOdd(Arrays.asList(3, 3, 2)), Arrays.asList(2, 3, 3));\n    }\n\n    @Test\n    public void testEvenOdd2() {\n\n        assertEquals(tk1.evenOdd(Arrays.asList(3, 2, 2)), Arrays.asList(2, 2, 3));\n        assertEquals(tk1.evenOdd(Arrays.asList(1, 1, 0, 1, 0)), Arrays.asList(0, 0, 1, 1, 1));\n        assertEquals(tk1.evenOdd(Arrays.asList(1, 2)), Arrays.asList(2, 1));\n\n    }\n\n    @Test\n    public void testEvenOdd3() {\n        assertEquals(tk1.evenOdd(Arrays.asList(2, 2, 2)), Arrays.asList(2, 2, 2));\n        assertEquals(tk1.evenOdd(Collections.singletonList(1)), Collections.singletonList(1));\n        assertEquals(tk1.evenOdd(new ArrayList<>()), new ArrayList<>());\n    }\n\n    /**\n     * loneSum\n     */\n    @Test\n    public void testLoneSum1() {\n\n        assertEquals(tk1.loneSum(1, 2, 3), 6);\n        assertEquals(tk1.loneSum(3, 2, 3), 2);\n        assertEquals(tk1.loneSum(3, 3, 3), 0);\n    }\n\n    @Test\n    public void testLoneSum2() {\n\n        assertEquals(tk1.loneSum(9, 2, 2), 9);\n        assertEquals(tk1.loneSum(2, 2, 9), 9);\n        assertEquals(tk1.loneSum(2, 9, 2), 9);\n\n    }\n\n    @Test\n    public void testLoneSum3() {\n\n        assertEquals(tk1.loneSum(2, 9, 3), 14);\n        assertEquals(tk1.loneSum(4, 2, 3), 9);\n        assertEquals(tk1.loneSum(1, 3, 1), 3);\n\n    }\n\n    /**\n     * getSandwich\n     */\n    @Test\n    public void testGetSandwich1() {\n\n        assertEquals(tk1.getSandwich(\"breadjambread\"), \"jam\");\n        assertEquals(tk1.getSandwich(\"xxbreadjambreadyy\"), \"jam\");\n\n    }\n\n    @Test\n    public void testGetSandwich2() {\n\n        assertEquals(tk1.getSandwich(\"xxbreadyy\"), \"\");\n        assertEquals(tk1.getSandwich(\"breadbread\"), \"\");\n        assertEquals(tk1.getSandwich(\"abcbreaz\"), \"\");\n        assertEquals(tk1.getSandwich(\"xyz\"), \"\");\n\n    }\n\n    @Test\n    public void testGetSandwich3() {\n\n        assertEquals(tk1.getSandwich(\"breadbreaxbread\"), \"breax\");\n        assertEquals(tk1.getSandwich(\"breaxbreadybread\"), \"y\");\n        assertEquals(tk1.getSandwich(\"breadbreadbreadbread\"), \"breadbread\");\n    }\n\n\n    /**\n     * getSandwich\n     */\n    @Test\n    public void testTopping1() {\n\n\n        Map<String, String> hashMapOut1 = new HashMap<String, String>() {{\n            put(\"bread\", \"butter\");\n            put(\"ice cream\", \"cherry\");\n        }};\n\n        Map<String, String> hashMapIn1 = new HashMap<String, String>() {{\n            put(\"ice cream\", \"peanuts\");\n        }};\n\n        assertEquals(tk1.topping(hashMapIn1), hashMapOut1);\n\n        Map<String, String> hashMapOut2 = new HashMap<String, String>() {{\n            put(\"bread\", \"butter\");\n        }};\n\n        assertEquals(tk1.topping(new HashMap<>()), hashMapOut2);\n\n        Map<String, String> hashMapOut3 = new HashMap<String, String>() {{\n            put(\"bread\", \"butter\");\n            put(\"pancake\", \"syrup\");\n        }};\n\n        Map<String, String> hashMapIn3 = new HashMap<String, String>() {{\n            put(\"pancake\", \"syrup\");\n        }};\n\n        assertEquals(tk1.topping(hashMapIn3), hashMapOut3);\n    }\n\n    @Test\n    public void testTopping2() {\n\n\n        Map<String, String> hashMapOut1 = new HashMap<String, String>() {{\n            put(\"bread\", \"butter\");\n            put(\"ice cream\", \"cherry\");\n        }};\n\n        Map<String, String> hashMapIn1 = new HashMap<String, String>() {{\n            put(\"bread\", \"dirt\");\n            put(\"ice cream\", \"strawberries\");\n        }};\n\n        assertEquals(tk1.topping(hashMapIn1), hashMapOut1);\n\n\n        Map<String, String> hashMapOut2 = new HashMap<String, String>() {{\n            put(\"bread\", \"butter\");\n            put(\"ice cream\", \"cherry\");\n            put(\"salad\", \"oil\");\n        }};\n\n        Map<String, String> hashMapIn2 = new HashMap<String, String>() {{\n            put(\"bread\", \"jam\");\n            put(\"ice cream\", \"strawberries\");\n            put(\"salad\", \"oil\");\n        }};\n\n        assertEquals(tk1.topping(hashMapIn2), hashMapOut2);\n    }\n}\n"
+    }
+  ],
+  "testSuites": [
+    {
+      "unitTests": [
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 38,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testEvenOdd1",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 5,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testEvenOdd3",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 2,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testEvenOdd2",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "FAILED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 48,
+          "methodsDependedUpon": [],
+          "stackTrace": "java.lang.AssertionError: expected [0] but found [8]\n\tat org.testng.Assert.fail(Assert.java:96)\n\tat org.testng.Assert.failNotEquals(Assert.java:776)\n\tat org.testng.Assert.assertEqualsImpl(Assert.java:137)\n\tat org.testng.Assert.assertEquals(Assert.java:118)\n\tat org.testng.Assert.assertEquals(Assert.java:652)\n\tat org.testng.Assert.assertEquals(Assert.java:662)\n\tat ee.taltech.iti0202.tk1.Test01EvenOdd.randomTest(Test01EvenOdd.java:57)\n\tat ee.taltech.iti0202.tk1.Test01EvenOdd.testEvenOdd4(Test01EvenOdd.java:63)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:566)\n\tat org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)\n\tat org.testng.internal.InvokeMethodRunnable.runOne(InvokeMethodRunnable.java:54)\n\tat org.testng.internal.InvokeMethodRunnable.run(InvokeMethodRunnable.java:44)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)\n\tat java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:834)\n",
+          "name": "testEvenOdd4",
+          "stdout": [],
+          "exceptionClass": "java.lang.AssertionError",
+          "exceptionMessage": "expected [0] but found [8]",
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "FAILED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 20,
+          "methodsDependedUpon": [],
+          "stackTrace": "java.lang.AssertionError: expected [0] but found [143]\n\tat org.testng.Assert.fail(Assert.java:96)\n\tat org.testng.Assert.failNotEquals(Assert.java:776)\n\tat org.testng.Assert.assertEqualsImpl(Assert.java:137)\n\tat org.testng.Assert.assertEquals(Assert.java:118)\n\tat org.testng.Assert.assertEquals(Assert.java:652)\n\tat org.testng.Assert.assertEquals(Assert.java:662)\n\tat ee.taltech.iti0202.tk1.Test01EvenOdd.randomTest(Test01EvenOdd.java:57)\n\tat ee.taltech.iti0202.tk1.Test01EvenOdd.testEvenOdd5(Test01EvenOdd.java:68)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:566)\n\tat org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)\n\tat org.testng.internal.InvokeMethodRunnable.runOne(InvokeMethodRunnable.java:54)\n\tat org.testng.internal.InvokeMethodRunnable.run(InvokeMethodRunnable.java:44)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)\n\tat java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:834)\n",
+          "name": "testEvenOdd5",
+          "stdout": [],
+          "exceptionClass": "java.lang.AssertionError",
+          "exceptionMessage": "expected [0] but found [143]",
+          "stderr": []
+        }
+      ],
+      "name": "ee.taltech.iti0202.tk1.Test01EvenOdd (TestNG)",
+      "file": "ee.taltech.iti0202.tk1.Test01EvenOdd",
+      "startDate": 1576067836817,
+      "endDate": 1576067838220,
+      "weight": 5,
+      "passedCount": 3,
+      "grade": 60.0
+    },
+    {
+      "unitTests": [
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 13,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testLoneSum2",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 26,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testLoneSum3",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 11,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testLoneSum4",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 25,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testLoneSum1",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 60,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testLoneSum5",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        }
+      ],
+      "name": "ee.taltech.iti0202.tk1.Test02LoneSum (TestNG)",
+      "file": "ee.taltech.iti0202.tk1.Test02LoneSum",
+      "startDate": 1576067838221,
+      "endDate": 1576067838372,
+      "weight": 5,
+      "passedCount": 5,
+      "grade": 100.0
+    },
+    {
+      "unitTests": [
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 4,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testGetSandwich5",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 26,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testGetSandwich3",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 36,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testGetSandwich2",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 2,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testGetSandwich4",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 10,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testGetSandwich1",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        }
+      ],
+      "name": "ee.taltech.iti0202.tk1.Test03GetSandwich (TestNG)",
+      "file": "ee.taltech.iti0202.tk1.Test03GetSandwich",
+      "startDate": 1576067838373,
+      "endDate": 1576067838463,
+      "weight": 5,
+      "passedCount": 5,
+      "grade": 100.0
+    },
+    {
+      "unitTests": [
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 8,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testTopping3",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 15,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testTopping1",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 554,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testTopping5",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 11,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testTopping2",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 113,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testTopping4",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        }
+      ],
+      "name": "ee.taltech.iti0202.tk1.Test04Topping (TestNG)",
+      "file": "ee.taltech.iti0202.tk1.Test04Topping",
+      "startDate": 1576067838464,
+      "endDate": 1576067839178,
+      "weight": 5,
+      "passedCount": 5,
+      "grade": 100.0
+    },
+    {
+      "unitTests": [
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 1,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testPersonSellWrongCat",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 3,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testPersonPrivateField",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 2,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testCatGetterSetter",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "PASSED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 4,
+          "methodsDependedUpon": [],
+          "stackTrace": null,
+          "name": "testCatConstructorsAndPrivate",
+          "stdout": [],
+          "exceptionClass": null,
+          "exceptionMessage": null,
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "FAILED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 5,
+          "methodsDependedUpon": [],
+          "stackTrace": "java.lang.AssertionError: expected [true] but found [false]\n\tat org.testng.Assert.fail(Assert.java:96)\n\tat org.testng.Assert.failNotEquals(Assert.java:776)\n\tat org.testng.Assert.assertTrue(Assert.java:44)\n\tat org.testng.Assert.assertTrue(Assert.java:54)\n\tat ee.taltech.iti0202.tk1.Test05Cats.testPersonAddSameCat(Test05Cats.java:81)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:566)\n\tat org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)\n\tat org.testng.internal.InvokeMethodRunnable.runOne(InvokeMethodRunnable.java:54)\n\tat org.testng.internal.InvokeMethodRunnable.run(InvokeMethodRunnable.java:44)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)\n\tat java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:834)\n",
+          "name": "testPersonAddSameCat",
+          "stdout": [],
+          "exceptionClass": "java.lang.AssertionError",
+          "exceptionMessage": "expected [true] but found [false]",
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "FAILED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 1,
+          "methodsDependedUpon": [],
+          "stackTrace": "java.lang.AssertionError: expected [true] but found [false]\n\tat org.testng.Assert.fail(Assert.java:96)\n\tat org.testng.Assert.failNotEquals(Assert.java:776)\n\tat org.testng.Assert.assertTrue(Assert.java:44)\n\tat org.testng.Assert.assertTrue(Assert.java:54)\n\tat ee.taltech.iti0202.tk1.Test05Cats.testPersonSellCatToMyself(Test05Cats.java:116)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:566)\n\tat org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)\n\tat org.testng.internal.InvokeMethodRunnable.runOne(InvokeMethodRunnable.java:54)\n\tat org.testng.internal.InvokeMethodRunnable.run(InvokeMethodRunnable.java:44)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)\n\tat java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:834)\n",
+          "name": "testPersonSellCatToMyself",
+          "stdout": [],
+          "exceptionClass": "java.lang.AssertionError",
+          "exceptionMessage": "expected [true] but found [false]",
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "FAILED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 1,
+          "methodsDependedUpon": [],
+          "stackTrace": "java.lang.AssertionError: expected [true] but found [false]\n\tat org.testng.Assert.fail(Assert.java:96)\n\tat org.testng.Assert.failNotEquals(Assert.java:776)\n\tat org.testng.Assert.assertTrue(Assert.java:44)\n\tat org.testng.Assert.assertTrue(Assert.java:54)\n\tat ee.taltech.iti0202.tk1.Test05Cats.testPeronSellCat(Test05Cats.java:93)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:566)\n\tat org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)\n\tat org.testng.internal.InvokeMethodRunnable.runOne(InvokeMethodRunnable.java:54)\n\tat org.testng.internal.InvokeMethodRunnable.run(InvokeMethodRunnable.java:44)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)\n\tat java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:834)\n",
+          "name": "testPeronSellCat",
+          "stdout": [],
+          "exceptionClass": "java.lang.AssertionError",
+          "exceptionMessage": "expected [true] but found [false]",
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "FAILED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 2,
+          "methodsDependedUpon": [],
+          "stackTrace": "java.lang.AssertionError: expected [true] but found [false]\n\tat org.testng.Assert.fail(Assert.java:96)\n\tat org.testng.Assert.failNotEquals(Assert.java:776)\n\tat org.testng.Assert.assertTrue(Assert.java:44)\n\tat org.testng.Assert.assertTrue(Assert.java:54)\n\tat ee.taltech.iti0202.tk1.Test05Cats.testPersonCatList(Test05Cats.java:70)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:566)\n\tat org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)\n\tat org.testng.internal.InvokeMethodRunnable.runOne(InvokeMethodRunnable.java:54)\n\tat org.testng.internal.InvokeMethodRunnable.run(InvokeMethodRunnable.java:44)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)\n\tat java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:834)\n",
+          "name": "testPersonCatList",
+          "stdout": [],
+          "exceptionClass": "java.lang.AssertionError",
+          "exceptionMessage": "expected [true] but found [false]",
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "FAILED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 1,
+          "methodsDependedUpon": [],
+          "stackTrace": "java.lang.AssertionError: expected [white Joosep (10)] but found [ee.taltech.iti0202.tk1.cat.Cat@5079ae92]\n\tat org.testng.Assert.fail(Assert.java:96)\n\tat org.testng.Assert.failNotEquals(Assert.java:776)\n\tat org.testng.Assert.assertEqualsImpl(Assert.java:137)\n\tat org.testng.Assert.assertEquals(Assert.java:118)\n\tat org.testng.Assert.assertEquals(Assert.java:453)\n\tat org.testng.Assert.assertEquals(Assert.java:463)\n\tat ee.taltech.iti0202.tk1.Test05Cats.testCatToString(Test05Cats.java:45)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:566)\n\tat org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)\n\tat org.testng.internal.InvokeMethodRunnable.runOne(InvokeMethodRunnable.java:54)\n\tat org.testng.internal.InvokeMethodRunnable.run(InvokeMethodRunnable.java:44)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)\n\tat java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:834)\n",
+          "name": "testCatToString",
+          "stdout": [],
+          "exceptionClass": "java.lang.AssertionError",
+          "exceptionMessage": "expected [white Joosep (10)] but found [ee.taltech.iti0202.tk1.cat.Cat@5079ae92]",
+          "stderr": []
+        },
+        {
+          "groupsDependedUpon": [],
+          "status": "FAILED",
+          "weight": 1,
+          "printExceptionMessage": false,
+          "printStackTrace": false,
+          "timeElapsed": 1,
+          "methodsDependedUpon": [],
+          "stackTrace": "java.lang.AssertionError: expected [true] but found [false]\n\tat org.testng.Assert.fail(Assert.java:96)\n\tat org.testng.Assert.failNotEquals(Assert.java:776)\n\tat org.testng.Assert.assertTrue(Assert.java:44)\n\tat org.testng.Assert.assertTrue(Assert.java:54)\n\tat ee.taltech.iti0202.tk1.Test05Cats.testPersonSellCatTwice(Test05Cats.java:129)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:566)\n\tat org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)\n\tat org.testng.internal.InvokeMethodRunnable.runOne(InvokeMethodRunnable.java:54)\n\tat org.testng.internal.InvokeMethodRunnable.run(InvokeMethodRunnable.java:44)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)\n\tat java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:834)\n",
+          "name": "testPersonSellCatTwice",
+          "stdout": [],
+          "exceptionClass": "java.lang.AssertionError",
+          "exceptionMessage": "expected [true] but found [false]",
+          "stderr": []
+        }
+      ],
+      "name": "ee.taltech.iti0202.tk1.Test05Cats (TestNG)",
+      "file": "ee.taltech.iti0202.tk1.Test05Cats",
+      "startDate": 1576067839179,
+      "endDate": 1576067839205,
+      "weight": 10,
+      "passedCount": 4,
+      "grade": 40.0
+    }
+  ],
+  "totalCount": 30,
+  "totalGrade": "73.33",
+  "totalPassedCount": 22,
+  "style": 0
+}

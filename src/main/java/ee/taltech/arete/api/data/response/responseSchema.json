@@ -2,6 +2,9 @@
   "type": "object",
   "id": "urn:jsonschema:ee:taltech:arete:api:data:response:arete:AreteResponse",
   "properties": {
+    "type": {
+      "type": "string"
+    },
     "version": {
       "type": "string"
     },
@@ -192,7 +195,7 @@
     },
     "consoleOutputs": {
       "type": "array",
-      "description": "Console outputs from docker",
+      "description": "(Appended by arete) Console outputs from docker",
       "items": {
         "type": "object",
         "$ref": "urn:jsonschema:ee:taltech:arete:api:data:response:arete:ConsoleOutput"
@@ -200,7 +203,7 @@
     },
     "output": {
       "type": "string",
-      "description": "HTML result for student"
+      "description": "(Overridden by arete) HTML result for student"
     },
     "totalCount": {
       "type": "integer",
@@ -216,73 +219,73 @@
     },
     "testingPlatform": {
       "type": "string",
-      "description": "Docker image used for testing"
+      "description": "(Overridden by arete) Docker image used for testing"
     },
     "root": {
       "type": "string",
-      "description": "git namespace"
+      "description": "(Overridden by arete) git path with namespace. iti0102-2019/ex for example"
     },
     "gitTestRepo": {
       "type": "string",
-      "description": "URL or ssh for test repository"
+      "description": "(Overridden by arete) URL or ssh for test repository"
     },
     "gitStudentRepo": {
       "type": "string",
-      "description": "URL or ssh for student repository"
+      "description": "(Overridden by arete) URL or ssh for student repository"
     },
     "style": {
       "type": "integer",
-      "description": "Style percentage"
+      "description": "Style percentage. Either from 0 to 100"
     },
     "slug": {
       "type": "string",
-      "description": "Slug ran for student. for example pr01_something"
+      "description": "(Overridden by arete) Slug ran for student. for example pr01_something"
     },
     "returnExtra": {
       "type": "any",
-      "description": "values that are returned the same way they were given in"
+      "description": "(Overridden by arete) values that are returned the same way they were given in"
     },
     "hash": {
       "type": "string",
-      "description": "Commit hash from gitlab"
+      "description": "(Overridden by arete) Commit hash from student git repository"
     },
     "uniid": {
       "type": "string",
-      "description": "Students uniid"
+      "description": "(Overridden by arete) Students uniid"
     },
     "timestamp": {
       "type": "integer",
-      "description": "Testing timestamp"
+      "description": "(Overridden by arete if left empty) Testing timestamp"
     },
     "commitMessage": {
       "type": "string",
-      "description": "Commit message for student repository"
+      "description": "(Overridden by arete) Commit message by student when pushing to repository"
     },
     "priority": {
       "type": "integer",
-      "description": "Priority of job"
+      "description": "(Overridden by arete) Priority of job on a scale from 1 to 10 inclusive"
     },
     "dockerExtra": {
       "type": "array",
-      "description": "No defaults. You can add (stylecheck) or something. It is sent to smaller tester. Look the possibilities from the small tester repository for more details.",
+      "description": "(Overridden by arete if left empty) No defaults. You can add (stylecheck) or something. It is sent to smaller tester. Look the possibilities from the small tester repository for more details.",
       "items": {
         "type": "string"
       }
     },
     "systemExtra": {
       "type": "array",
-      "description": "No defaults. You can add (noMail, noFiles, noTesterFiles, noStudentFiles, noStd, noFeedback, minimalFeedback)",
+      "description": "(Overridden by arete) No defaults. You can add (anonymous, noMail, noFiles, noTesterFiles, noStudentFiles, noStd, noOverride, noFeedback, minimalFeedback)",
       "items": {
         "type": "string"
       }
     },
     "dockerTimeout": {
       "type": "integer",
-      "description": "Default docker timeout is 120 seconds"
+      "description": "(Overridden by arete) Default docker timeout is 120 seconds. Maximum allowed code execution time."
     },
     "failed": {
       "type": "boolean",
-      "description": "Whether the testing was successful or not"
+      "description": "(Overridden by arete if left empty) Whether the testing was successful or not. Will be true if tester crashed."
     }
   }
 }

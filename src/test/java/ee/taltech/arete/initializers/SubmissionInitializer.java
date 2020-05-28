@@ -50,6 +50,9 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.returnUrl(RETURN_URL)
 				.dockerTimeout(120)
+				.commitMessage("First commit!!!")
+				.hash("12dacy372642hc3642c3v423xd34v5yb534bn7354")
+				.result("Everything went ok but in Python. Here are some LOGS LOGS LOGS LOGS LOGS ...")
 //				.systemExtra(new HashSet<>())
 				.systemExtra((new HashSet<>(Arrays.asList(
 						"noMail"
@@ -67,11 +70,14 @@ public class SubmissionInitializer {
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_JAVA)
 				.gitTestSource(TESTER_REPO_JAVA)
-				.course(UNIID_GIT)
-				.folder(UNIID_GIT)
+				.course(PROJECT)
+				.folder(PROJECT)
 				.testingPlatform(TESTING_PLATFORM_JAVA)
 				.returnUrl(RETURN_URL)
 				.dockerTimeout(120)
+				.commitMessage("First commit!")
+				.hash("12dacy372642hc3642c3v423xd34v5yb534bn7354")
+				.result("Everything went ok. Here are some LOGS LOGS LOGS LOGS LOGS ...")
 //				.systemExtra(new HashSet<>())
 				.systemExtra((new HashSet<>(Arrays.asList(
 						"noMail"

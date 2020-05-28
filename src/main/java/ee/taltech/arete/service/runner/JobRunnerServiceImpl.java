@@ -1,8 +1,8 @@
 package ee.taltech.arete.service.runner;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
-import ee.taltech.arete.api.data.response.arete.ConsoleOutput;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
 import ee.taltech.arete.api.data.response.legacy.LegacyTestJobResult;
 import ee.taltech.arete.configuration.DevProperties;
@@ -178,7 +178,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 		return false;
 	}
 
-	private void reportSuccessfulSubmission(String slug, Submission submission, String output) {
+	public void reportSuccessfulSubmission(String slug, Submission submission, String output) {
 
 		AreteResponse areteResponse; // Sent to Moodle
 		String message; // Sent to student
@@ -196,24 +196,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 				} else if ("arete".equals(jsonObject.get("type"))) {
 					html = true;
-					areteResponse = objectMapper.readValue(json, AreteResponse.class);
-
-					if (!submission.getSystemExtra().contains("noStd")) {
-						areteResponse.getConsoleOutputs().add(new ConsoleOutput(submission.getResult()));
-					}
-
-					if (submission.getSystemExtra().contains("noFiles")) {
-						areteResponse.setFiles(new ArrayList<>());
-						areteResponse.setTestFiles(new ArrayList<>());
-					}
-
-					if (submission.getSystemExtra().contains("noTesterFiles")) {
-						areteResponse.setTestFiles(new ArrayList<>());
-					}
-
-					if (submission.getSystemExtra().contains("noStudentFiles")) {
-						areteResponse.setFiles(new ArrayList<>());
-					}
+					areteResponse = getAreteResponse(slug, submission, json);
 
 				} else if ("hodor_legacy".equals(jsonObject.get("type"))) {
 					LegacyTestJobResult response = objectMapper.readValue(json, LegacyTestJobResult.class);
@@ -241,6 +224,43 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		reportSubmission(submission, areteResponse, message, slug, html);
 
+	}
+
+	public AreteResponse getAreteResponse(String slug, Submission submission, String json) throws JsonProcessingException {
+		AreteResponse areteResponse = objectMapper.readValue(json, AreteResponse.class);
+
+		if (submission.getSystemExtra().contains("noFiles")) {
+			areteResponse.setFiles(new ArrayList<>());
+			areteResponse.setTestFiles(new ArrayList<>());
+		}
+
+		if (submission.getSystemExtra().contains("noTesterFiles")) {
+			areteResponse.setTestFiles(new ArrayList<>());
+		}
+
+		if (submission.getSystemExtra().contains("noStudentFiles")) {
+			areteResponse.setFiles(new ArrayList<>());
+		}
+
+		if (areteResponse.getConsoleOutputs() == null || submission.getSystemExtra().contains("noStd")) {
+			areteResponse.setConsoleOutputs(new ArrayList<>());
+		}
+
+		areteResponse.fillFromSubmission(slug, submission);
+
+		if (areteResponse.getTimestamp() == null) {
+			areteResponse.setTimestamp(submission.getTimestamp());
+		}
+
+		if (areteResponse.getDockerExtra() == null) {
+			areteResponse.setDockerExtra(submission.getDockerExtra());
+		}
+
+		if (areteResponse.getFailed() == null) {
+			areteResponse.setFailed(false);
+		}
+		areteResponse.setOutput(areteResponse.constructOutput(submission));
+		return areteResponse;
 	}
 
 	private void reportFailedSubmission(Submission submission, Exception e) {
