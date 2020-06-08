@@ -14,7 +14,7 @@ services:
     env_file:
       - ..env #Change to .env to run locally
     environment:
-      BACKEND_URL: https://cs.ttu.ee/services/arete/api/admin/job
+      BACKEND_URL: https://cs.ttu.ee/services/arete/api/v2/submission
       ARETE_HOME: ${ARETE_HOME}
       SHARED_SECRET: ${SHARED_SECRET}
     volumes:
