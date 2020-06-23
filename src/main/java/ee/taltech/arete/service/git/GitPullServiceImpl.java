@@ -122,6 +122,10 @@ public class GitPullServiceImpl implements GitPullService {
                         .setURI(pathToRepo)
                         .setDirectory(new File(pathToFolder))
                         .call();
+				if (submission.isPresent()) {
+					RevCommit latest = getLatestCommit(git);
+					submission.get().setCommitMessage(latest.getFullMessage());
+				}
                 git.close();
 
             } else {
@@ -130,6 +134,10 @@ public class GitPullServiceImpl implements GitPullService {
                         .setURI(pathToRepo)
                         .setDirectory(new File(pathToFolder))
                         .call();
+                if (submission.isPresent()) {
+					RevCommit latest = getLatestCommit(git);
+					submission.get().setCommitMessage(latest.getFullMessage());
+				}
                 git.close();
             }
             return true;
@@ -276,6 +284,8 @@ public class GitPullServiceImpl implements GitPullService {
         assert youngestCommit != null;
         LOGGER.error("Detected faulty hash {}, replaced it with a correct one {}", user.getHash(), youngestCommit.name());
         user.setHash(youngestCommit.name());
+        user.setCommitMessage(youngestCommit.getFullMessage());
+
     }
 
     @Override
