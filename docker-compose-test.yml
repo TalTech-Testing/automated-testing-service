@@ -4,7 +4,6 @@ services:
 
   testing_service-test:
     container_name: arete-test
-    image: arete-test:latest
     privileged: true
     build:
       args:
