@@ -3,7 +3,6 @@ version: '3.4'
 services:
 
   testing_service-test:
-    container_name: arete-test
     privileged: true
     build:
       args:
