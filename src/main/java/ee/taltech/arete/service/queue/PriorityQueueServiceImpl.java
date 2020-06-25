@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -31,11 +32,12 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	private final DevProperties devProperties;
 
 	private final JobRunnerService jobRunnerService;
-	private final List<Submission> activeSubmissions = new ArrayList<>();
+	private final CopyOnWriteArrayList<Submission> activeSubmissions = new CopyOnWriteArrayList<>();
 	private final PriorityQueue<Submission> submissionPriorityQueue = new PriorityQueue<>(Comparator
 			.comparingInt(Submission::getPriority)
 			.reversed()
-			.thenComparing(Submission::getTimestamp));
+			.thenComparing(Submission::getRecievedTimeStamp));
+
 	private Boolean halted = true;
 	private Integer jobsRan = 0;
 	private Integer stuckQueue = 3000; // just some protection against stuck queue
@@ -114,7 +116,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 		try {
 			for (Submission submission : getActiveSubmissions()) {
-				if (submission.getTimestamp() + Math.min(submission.getDockerTimeout() + 10, stuckQueue) * 1000 < System.currentTimeMillis()) {
+				if (submission.getRecievedTimeStamp() + Math.min(submission.getDockerTimeout() + 10, stuckQueue) * 1000 < System.currentTimeMillis()) {
 					killThread(submission, new ArrayList<>());
 				}
 			}
@@ -157,7 +159,12 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 				return;
 			}
 
-			job.setTimestamp(System.currentTimeMillis());
+			job.setRecievedTimeStamp(System.currentTimeMillis());
+
+			if (job.getTimestamp() == null) {
+				job.setTimestamp(System.currentTimeMillis());
+			}
+
 			activeSubmissions.add(job);
 
 			LOGGER.info("active: {}, queue: {}, ran: {}", activeSubmissions.size(), getQueueSize(), jobsRan);

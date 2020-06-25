@@ -120,7 +120,7 @@ public class SubmissionControllerTest {
 
 
     @Test
-    public void addNewSubmissionSyncPythonRecursionReturnsOutput() {
+    public void addNewSubmissionSyncPythonRecursionReturnsOutputEmailAndTimestamp() {
         AreteResponse response = given()
                 .when()
                 .body(submissionRecursion)
@@ -132,7 +132,9 @@ public class SubmissionControllerTest {
                 .as(AreteResponse.class);
 
         // then
-        assert response.getOutput() != null;
+		assert response.getOutput() != null;
+    	assert response.getEmail().equals(submissionRecursion.getEMail());
+    	assert response.getTimestamp().equals(submissionRecursion.getTimestamp());
     }
 
 //    @Test

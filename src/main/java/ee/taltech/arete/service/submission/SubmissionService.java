@@ -13,7 +13,4 @@ public interface SubmissionService {
 
     void populateDefaultValues(Submission submission);
 
-    void debugMode(boolean bool);
-
-    boolean isDebug();
 }

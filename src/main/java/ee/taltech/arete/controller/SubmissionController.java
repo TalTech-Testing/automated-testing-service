@@ -108,17 +108,6 @@ public class SubmissionController {
 
     }
 
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @GetMapping("/debug/{bool}")
-    public void setDebug(@PathVariable("bool") int bool) {
-
-        try {
-            submissionService.debugMode(bool != 0);
-        } catch (Exception e) {
-            throw new RequestFormatException(e.getMessage());
-        }
-    }
-
     public static final List<String> tailFile(final Path source, final int noOfLines) throws IOException {
         try (Stream<String> stream = Files.lines(source)) {
             FileBuffer fileBuffer = new FileBuffer(noOfLines);

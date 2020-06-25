@@ -35,7 +35,7 @@ public class Submission {
 
     private String uniid; // gitlab namespace: envomp
 
-	private String eMail;
+	private String email;
 
     private String course; // gitlab namespace with path for tester: iti0102-2019/ex
 
@@ -55,6 +55,8 @@ public class Submission {
     private Integer dockerTimeout;
 
     private Long timestamp;
+
+	private Long recievedTimeStamp;
 
     private Integer priority;
 

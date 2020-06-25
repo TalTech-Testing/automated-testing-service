@@ -171,6 +171,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         if (submission.getTimestamp() == null) {
             submission.setTimestamp(System.currentTimeMillis());
         }
+        submission.setRecievedTimeStamp(System.currentTimeMillis());
 
         if (submission.getDockerTimeout() == null) {
             if (devProperties.getDebug()) {
@@ -191,20 +192,10 @@ public class SubmissionServiceImpl implements SubmissionService {
         if (submission.getUniid() == null) {
             submission.getSystemExtra().add("noMail");
         } else {
-        	if (submission.getEMail() == null) {
-        		submission.setEMail(submission.getUniid() + "@ttu.ee"); // default
+        	if (submission.getEmail() == null) {
+        		submission.setEmail(submission.getUniid() + "@ttu.ee"); // default
 			}
 		}
-    }
-
-    @Override
-    public void debugMode(boolean bool) {
-        devProperties.setDebug(bool);
-    }
-
-    @Override
-    public boolean isDebug() {
-        return devProperties.getDebug();
     }
 
 }
