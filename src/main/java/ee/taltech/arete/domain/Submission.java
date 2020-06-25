@@ -35,6 +35,8 @@ public class Submission {
 
     private String uniid; // gitlab namespace: envomp
 
+	private String eMail;
+
     private String course; // gitlab namespace with path for tester: iti0102-2019/ex
 
     private String folder; // gitlab path for student: iti0102-2019

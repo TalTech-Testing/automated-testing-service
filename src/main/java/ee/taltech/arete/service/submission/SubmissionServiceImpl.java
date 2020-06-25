@@ -190,7 +190,11 @@ public class SubmissionServiceImpl implements SubmissionService {
 
         if (submission.getUniid() == null) {
             submission.getSystemExtra().add("noMail");
-        }
+        } else {
+        	if (submission.getEMail() == null) {
+        		submission.setEMail(submission.getUniid() + "@ttu.ee"); // default
+			}
+		}
     }
 
     @Override

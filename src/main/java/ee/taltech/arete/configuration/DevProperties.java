@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 public class DevProperties {
 
     private Boolean debug = false; // if unlock features for debug
-    private String developer = "ago.luberg"; // send all submissions
-    private String ago = "ago.luberg"; // send only failed submissions
+    private String developer = "ago.luberg@ttu.ee"; // send all submissions
+    private String ago = "ago.luberg@ttu.ee"; // send only failed submissions
     private String areteMail = "automated_testing_service@taltech.ee";
     private Integer defaultDockerTimeout = 120; // default dockertimeout is 120 seconds
     private String areteBackend = "https://cs.ttu.ee/services/arete/api/admin/job"; // backend url

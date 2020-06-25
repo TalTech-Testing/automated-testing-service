@@ -187,9 +187,9 @@ public class SubmissionInitializer {
 				.gitStudentRepo(STUDENT_REPO_PYTHON)
 				.gitTestSource(TESTER_REPO_PYTHON)
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.systemExtra((new HashSet<>(Arrays.asList(
-						"noMail"
-				))))
+//				.systemExtra((new HashSet<>(Arrays.asList())))
+				.uniid("envomp")
+				.eMail("envomp@ttu.ee")
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.hash(hash)
 				.dockerExtra(EXTRA)

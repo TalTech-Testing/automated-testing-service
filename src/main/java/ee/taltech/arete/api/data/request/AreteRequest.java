@@ -44,6 +44,9 @@ public class AreteRequest {
     @JsonPropertyDescription("If gitStudentRepo is used, default is second from the end in url. https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git > uniid = envomp. Specify uniid, if its not second from end. Otherwise not needed.")
     private String uniid;
 
+	@JsonPropertyDescription("Where student mail is sent. Default is uniid@ttu.ee")
+	private String eMail;
+
     @JsonPropertyDescription("Default is last in url. https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git > project = iti0102-2019. Specify project, if its not in last position.")
     private String project;
 
@@ -58,6 +61,9 @@ public class AreteRequest {
 
     @JsonPropertyDescription("Default priority is 5")
     private Integer priority;
+
+	@JsonPropertyDescription("When override testing timestamp")
+	private Long timestamp;
 
     @JsonPropertyDescription("values that are returned the same way they were given in")
     private JsonNode returnExtra;

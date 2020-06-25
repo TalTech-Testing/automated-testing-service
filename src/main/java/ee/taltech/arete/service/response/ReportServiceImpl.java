@@ -36,13 +36,13 @@ public class ReportServiceImpl implements ReportService {
 
 	@Async
 	@Override
-	public void sendTextMail(String uniid, String text, String header, Boolean html) {
+	public void sendTextMail(String mail, String text, String header, Boolean html) {
 
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
 			helper.setFrom(devProperties.getAreteMail());
-			helper.setTo(String.format("%s@taltech.ee", uniid));
+			helper.setTo(mail);
 			helper.setSubject(header);
 			helper.setText(text, html);
 			javaMailSender.send(message);
