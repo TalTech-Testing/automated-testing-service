@@ -248,6 +248,10 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		areteResponse.fillFromSubmission(slug, submission);
 
+		if (areteResponse.getEMail() == null) {
+			submission.setEMail(submission.getUniid() + "@ttu.ee");
+		}
+
 		if (areteResponse.getTimestamp() == null) {
 			areteResponse.setTimestamp(submission.getTimestamp());
 		}
@@ -305,27 +309,25 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		if (!submission.getSystemExtra().contains("noMail")) {
 			try {
-				reportService.sendTextMail(submission.getUniid(), message, header, html);
-				LOGGER.info("Reported to student mailbox");
+				reportService.sendTextMail(submission.getEMail(), message, header, html);
+				LOGGER.info("Reported to {} mailbox", submission.getEMail());
 			} catch (Exception e1) {
 				LOGGER.error("Malformed mail: {}", e1.getMessage());
 			}
 		}
 
-		if (!submissionService.isDebug()) {
-
-			try {
-				if (areteResponse.getFailed()) {
-					reportService.sendTextMail(devProperties.getAgo(), String.format("UNI-ID:\n%s\n\n\nHash:\n%s\n\n\nMessage:\n%s\n\n\nDocker log:\n%s", submission.getUniid(), submission.getHash(), message, submission.getResult()), header, html);
-					reportService.sendTextMail(devProperties.getDeveloper(), String.format("UNI-ID:\n%s\n\n\nHash:\n%s\n\n\nMessage:\n%s\n\n\nDocker log:\n%s", submission.getUniid(), submission.getHash(), message, submission.getResult()), header, html);
-				} else {
-					reportService.sendTextMail(devProperties.getDeveloper(), message, header, html);
-				}
-
-			} catch (Exception e1) {
-				LOGGER.error("Malformed mail: {}", e1.getMessage());
+		try {
+			if (areteResponse.getFailed()) {
+				reportService.sendTextMail(devProperties.getAgo(), String.format("UNI-ID:\n%s\n\n\nHash:\n%s\n\n\nMessage:\n%s\n\n\nDocker log:\n%s", submission.getUniid(), submission.getHash(), message, submission.getResult()), header, html);
+				reportService.sendTextMail(devProperties.getDeveloper(), String.format("UNI-ID:\n%s\n\n\nHash:\n%s\n\n\nMessage:\n%s\n\n\nDocker log:\n%s", submission.getUniid(), submission.getHash(), message, submission.getResult()), header, html);
+			} else {
+				reportService.sendTextMail(devProperties.getDeveloper(), message, header, html);
 			}
-		}
 
+		} catch (Exception e1) {
+			LOGGER.error("Malformed mail: {}", e1.getMessage());
+		}
 	}
+
+
 }

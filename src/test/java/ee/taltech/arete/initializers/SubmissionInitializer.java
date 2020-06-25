@@ -189,6 +189,7 @@ public class SubmissionInitializer {
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 //				.systemExtra((new HashSet<>(Arrays.asList())))
 				.uniid("envomp")
+				.timestamp(123L)
 				.eMail("envomp@ttu.ee")
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.hash(hash)
