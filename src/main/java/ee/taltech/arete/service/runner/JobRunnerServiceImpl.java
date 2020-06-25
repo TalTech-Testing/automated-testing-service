@@ -248,12 +248,8 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		areteResponse.fillFromSubmission(slug, submission);
 
-		if (areteResponse.getEMail() == null) {
-			submission.setEMail(submission.getUniid() + "@ttu.ee");
-		}
-
-		if (areteResponse.getTimestamp() == null) {
-			areteResponse.setTimestamp(submission.getTimestamp());
+		if (areteResponse.getEmail() == null) {
+			submission.setEmail(submission.getUniid() + "@ttu.ee");
 		}
 
 		if (areteResponse.getDockerExtra() == null) {
@@ -309,8 +305,8 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		if (!submission.getSystemExtra().contains("noMail")) {
 			try {
-				reportService.sendTextMail(submission.getEMail(), message, header, html);
-				LOGGER.info("Reported to {} mailbox", submission.getEMail());
+				reportService.sendTextMail(submission.getEmail(), message, header, html);
+				LOGGER.info("Reported to {} mailbox", submission.getEmail());
 			} catch (Exception e1) {
 				LOGGER.error("Malformed mail: {}", e1.getMessage());
 			}

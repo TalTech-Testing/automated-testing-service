@@ -83,7 +83,7 @@ public class AreteResponse {
 	String uniid;
 
 	@JsonPropertyDescription("(Overridden by arete if left empty) Students mail")
-	String eMail;
+	String email;
 
 	@JsonPropertyDescription("(Overridden by arete if left empty) Testing timestamp")
 	Long timestamp;
@@ -317,7 +317,7 @@ public class AreteResponse {
 		this.gitTestRepo = submission.getGitTestSource();
 		this.priority = submission.getPriority();
 		this.dockerTimeout = submission.getDockerTimeout();
-		this.eMail = submission.getEMail();
+		this.email = submission.getEmail();
 
 		if (this.dockerExtra != null) {
 			submission.getDockerExtra().addAll(this.dockerExtra);
