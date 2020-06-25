@@ -16,7 +16,7 @@ test:
   services:
     - name: docker:dind
   script:
-    - docker-compose -f docker-compose-test.yml up --build --force-recreate --no-deps --remove-orphans
+    - docker-compose -f docker-compose-test.yml up --build --no-deps --remove-orphans
   after_script:
     - docker-compose -f docker-compose-test.yml down --remove-orphans -v -f
   only:
@@ -36,7 +36,7 @@ build:
     - docker container ls
     - docker images
   script:
-    - docker-compose -f docker-compose-build.yml up --no-start --build --force-recreate --no-deps --remove-orphans
+    - docker-compose -f docker-compose-build.yml up --no-start --build --no-deps --remove-orphans
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker tag arete $DOCKER_USER/arete:latest
     - docker push $DOCKER_USER/arete:latest
@@ -64,7 +64,7 @@ deploy:
   script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker pull automatedtestingservice/arete:latest
-    - docker-compose -f docker-compose-deploy.yml up -d --force-recreate --no-deps --remove-orphans
+    - docker-compose -f docker-compose-deploy.yml up -d --no-deps --remove-orphans
   after_script:
     - docker container ls
     - docker images
