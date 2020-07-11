@@ -45,7 +45,7 @@ public class ReportServiceImpl implements ReportService {
 
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
-			MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
+			MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
 			helper.setFrom(devProperties.getAreteMail());
 			helper.setTo(mail);
 			helper.setSubject(header);
