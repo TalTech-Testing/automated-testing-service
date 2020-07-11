@@ -10,7 +10,7 @@ public interface PriorityQueueService {
 
 	void runJob();
 
-	void killThread(Submission submission, List<String> outputs);
+	void killThread(Submission submission);
 
 	Integer getJobsRan();
 

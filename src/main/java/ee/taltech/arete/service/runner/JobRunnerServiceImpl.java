@@ -66,10 +66,10 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			rootProperties(submission);
 			slugProperties(submission, slug);
 
-			String output;
+			String outputPath;
 
 			try {
-				output = dockerService.runDocker(submission, slug);
+				outputPath = dockerService.runDocker(submission, slug);
 				LOGGER.info("Job {} has been ran for user {}", slug, submission.getUniid());
 
 			} catch (Exception e) {
@@ -79,9 +79,9 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 				continue;
 			}
 
-			reportSuccessfulSubmission(slug, submission, output);
+			reportSuccessfulSubmission(slug, submission, outputPath);
 
-			outputPaths.add(output);
+			outputPaths.add(outputPath);
 
 		}
 		return outputPaths;
@@ -185,7 +185,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 		boolean html = false;
 
 		try {
-			String json = Files.readString(Paths.get(output), StandardCharsets.UTF_8);
+			String json = Files.readString(Paths.get(output + "/output.json"), StandardCharsets.UTF_8);
 			JSONObject jsonObject = new JSONObject(json);
 
 			try {
@@ -222,7 +222,7 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			areteResponse = new AreteResponse(slug, submission, e.getMessage()); // create failed submission instead
 		}
 
-		reportSubmission(submission, areteResponse, message, slug, html);
+		reportSubmission(submission, areteResponse, message, slug, html, Optional.of(output));
 
 	}
 
@@ -272,10 +272,10 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 			areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
 		}
 
-		reportSubmission(submission, areteResponse, message, "Failed submission", false);
+		reportSubmission(submission, areteResponse, message, "Failed submission", false, Optional.empty());
 	}
 
-	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, String header, Boolean html) {
+	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, String header, Boolean html, Optional<String> output) {
 
 		try {
 			if (submission.getReturnUrl() != null) {
@@ -305,19 +305,26 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		if (!submission.getSystemExtra().contains("noMail")) {
 			try {
-				reportService.sendTextMail(submission.getEmail(), message, header, html);
+				reportService.sendTextMail(submission.getEmail(), message, header, html, output);
 				LOGGER.info("Reported to {} mailbox", submission.getEmail());
 			} catch (Exception e1) {
 				LOGGER.error("Malformed mail: {}", e1.getMessage());
+				areteResponse.setFailed(true);
+				submission.setResult(submission.getResult() + "\n\n\n" + e1.getMessage());
 			}
 		}
 
 		try {
 			if (areteResponse.getFailed()) {
-				reportService.sendTextMail(devProperties.getAgo(), String.format("UNI-ID:\n%s\n\n\nHash:\n%s\n\n\nMessage:\n%s\n\n\nDocker log:\n%s", submission.getUniid(), submission.getHash(), message, submission.getResult()), header, html);
-				reportService.sendTextMail(devProperties.getDeveloper(), String.format("UNI-ID:\n%s\n\n\nHash:\n%s\n\n\nMessage:\n%s\n\n\nDocker log:\n%s", submission.getUniid(), submission.getHash(), message, submission.getResult()), header, html);
+				try {
+					reportService.sendTextMail(devProperties.getAgo(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, output);
+					reportService.sendTextMail(devProperties.getDeveloper(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, output);
+				} catch (Exception e) {
+					reportService.sendTextMail(devProperties.getAgo(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, Optional.empty());
+					reportService.sendTextMail(devProperties.getDeveloper(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, Optional.empty());
+				}
 			} else {
-				reportService.sendTextMail(devProperties.getDeveloper(), message, header, html);
+				reportService.sendTextMail(devProperties.getDeveloper(), message, header, html, output);
 			}
 
 		} catch (Exception e1) {

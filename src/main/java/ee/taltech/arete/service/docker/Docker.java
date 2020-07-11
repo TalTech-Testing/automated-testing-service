@@ -33,7 +33,7 @@ public class Docker {
 
     private static final String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
     private static final Logger LOGGER = LoggerFactory.getLogger(Docker.class);
-    public String hostFile;
+    public String outputPath;
     private final ObjectMapper mapper = new ObjectMapper();
 
     private DockerClient dockerClient;
@@ -50,7 +50,7 @@ public class Docker {
 		this.submission = submission;
 		this.slug = slug;
 		this.containerName = String.format("%s_%s", submission.getHash().substring(0, 16).toLowerCase(), 100000 + Math.abs(new Random().nextInt()) * 900000);
-		this.hostFile = String.format("input_and_output/%s/host/output.json", submission.getHash());
+		this.outputPath = String.format("input_and_output/%s/host", submission.getHash());
 		this.image = String.format("automatedtestingservice/%s-tester", submission.getTestingPlatform());
 	}
 

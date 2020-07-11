@@ -55,7 +55,7 @@ public class DockerServiceImpl implements DockerService {
 		}
 
 		if (exception == null) {
-			return docker.hostFile;
+			return docker.outputPath;
 		} else {
 			throw exception;
 		}

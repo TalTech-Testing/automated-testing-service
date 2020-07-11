@@ -1,8 +1,11 @@
 package ee.taltech.arete.service.queue;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.sun.management.OperatingSystemMXBean;
 import ee.taltech.arete.configuration.DevProperties;
 import ee.taltech.arete.domain.Submission;
+import ee.taltech.arete.service.response.ReportService;
 import ee.taltech.arete.service.runner.JobRunnerService;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -15,9 +18,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -28,10 +31,12 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 	private final OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 	private final Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
+	private final ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
 	private final DevProperties devProperties;
-
 	private final JobRunnerService jobRunnerService;
+	private final ReportService reportService;
+
 	private final CopyOnWriteArrayList<Submission> activeSubmissions = new CopyOnWriteArrayList<>();
 	private final PriorityQueue<Submission> submissionPriorityQueue = new PriorityQueue<>(Comparator
 			.comparingInt(Submission::getPriority)
@@ -43,9 +48,10 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	private Integer stuckQueue = 3000; // just some protection against stuck queue
 
 	@Lazy
-	public PriorityQueueServiceImpl(DevProperties devProperties, JobRunnerService jobRunnerService) {
+	public PriorityQueueServiceImpl(DevProperties devProperties, JobRunnerService jobRunnerService, ReportService reportService) {
 		this.devProperties = devProperties;
 		this.jobRunnerService = jobRunnerService;
+		this.reportService = reportService;
 	}
 
 	private boolean isCPUAvaiable() {
@@ -57,7 +63,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 		submissionPriorityQueue.add(submission);
 	}
 
-	public void killThread(Submission submission, List<String> outputs) {
+	public void killThread(Submission submission) {
 		jobsRan++;
 		activeSubmissions.remove(submission);
 
@@ -117,7 +123,12 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 		try {
 			for (Submission submission : getActiveSubmissions()) {
 				if (submission.getRecievedTimeStamp() + Math.min(submission.getDockerTimeout() + 10, stuckQueue) * 1000 < System.currentTimeMillis()) {
-					killThread(submission, new ArrayList<>());
+					killThread(submission);
+					try {
+						reportService.sendTextMail(devProperties.getDeveloper(), objectWriter.writeValueAsString(submission), "Removed submission", false, Optional.empty());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -171,15 +182,13 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 
 			LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
 
-			List<String> outputs = new ArrayList<>();
-
 			try {
-				outputs.addAll(jobRunnerService.runJob(job));
+				jobRunnerService.runJob(job);
 			} catch (Exception e) {
 				LOGGER.error("Job failed with message: {}", e.getMessage());
 			}
 
-			killThread(job, outputs);
+			killThread(job);
 		}
 	}
 }

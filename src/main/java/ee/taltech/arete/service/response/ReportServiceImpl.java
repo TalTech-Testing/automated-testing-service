@@ -2,6 +2,9 @@ package ee.taltech.arete.service.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.configuration.DevProperties;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +16,14 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Paths;
+import java.util.Optional;
 
 @EnableAsync
 @Service
@@ -34,9 +40,8 @@ public class ReportServiceImpl implements ReportService {
 	@Autowired
 	DevProperties devProperties;
 
-	@Async
 	@Override
-	public void sendTextMail(String mail, String text, String header, Boolean html) {
+	public void sendTextMail(String mail, String text, String header, Boolean html, Optional<String> files) {
 
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
@@ -45,6 +50,13 @@ public class ReportServiceImpl implements ReportService {
 			helper.setTo(mail);
 			helper.setSubject(header);
 			helper.setText(text, html);
+			if (files.isPresent()) {
+				for (File file : FileUtils.listFiles(Paths.get(files.get()).toFile(), new RegexFileFilter("^(.*?)"), DirectoryFileFilter.DIRECTORY)) {
+					if (!file.getName().equals("input.json") && !file.getName().equals("output.json")) {
+						helper.addAttachment(file.getName(), file);
+					}
+				}
+			}
 			javaMailSender.send(message);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
