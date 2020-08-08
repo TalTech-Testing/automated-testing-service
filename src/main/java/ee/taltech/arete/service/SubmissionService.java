@@ -1,11 +1,10 @@
-package ee.taltech.arete.service.submission;
+package ee.taltech.arete.service;
 
 import ee.taltech.arete.configuration.DevProperties;
 import ee.taltech.arete.domain.Submission;
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.BadRequestException;
@@ -14,18 +13,20 @@ import java.util.HashSet;
 
 
 @Service
-public class SubmissionServiceImpl implements SubmissionService {
+public class SubmissionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
-    @Autowired
-    DevProperties devProperties;
+    final DevProperties devProperties;
 
-    private static String getRandomHash() {
+	public SubmissionService(DevProperties devProperties) {
+		this.devProperties = devProperties;
+	}
+
+	private static String getRandomHash() {
         return RandomStringUtils.random(40, true, true).toLowerCase(); // git hash is 40 long
     }
 
-    @Override
     public void populateAsyncFields(Submission submission) {
 
         populateTesterRelatedFields(submission);
@@ -34,7 +35,6 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     }
 
-    @Override
     public String populateSyncFields(Submission submission) {
 
 		// for integration tests
@@ -133,7 +133,6 @@ public class SubmissionServiceImpl implements SubmissionService {
         }
     }
 
-    @Override
     public String fixRepository(String url) {
         if (System.getenv().containsKey("GIT_PASSWORD")) {
             if (url.startsWith("git")) {
@@ -158,7 +157,6 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
 
-    @Override
     public void populateDefaultValues(Submission submission) {
         if (submission.getHash() != null && !submission.getHash().matches("^[a-zA-Z0-9]+$")) {
             submission.setHash(getRandomHash()); // in case of a faulty input

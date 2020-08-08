@@ -1,50 +1,47 @@
-package ee.taltech.arete.service.request;
+package ee.taltech.arete.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
+import ee.taltech.arete.api.data.request.AreteTestUpdate;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
+import ee.taltech.arete.domain.DefaultParameters;
 import ee.taltech.arete.domain.Submission;
-import ee.taltech.arete.domain.TestUpdate;
 import ee.taltech.arete.exception.RequestFormatException;
 import ee.taltech.arete.service.docker.ImageCheck;
 import ee.taltech.arete.service.git.GitPullService;
-import ee.taltech.arete.service.queue.PriorityQueueService;
-import ee.taltech.arete.service.submission.SubmissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class requestServiceImpl implements RequestService {
+public class RequestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private SubmissionService submissionService;
-
-    @Autowired
-    private PriorityQueueService priorityQueueService;
-
-    @Autowired
-    private GitPullService gitPullService;
-
+    private final ObjectMapper objectMapper;
+    private final SubmissionService submissionService;
+    private final PriorityQueueService priorityQueueService;
+    private final GitPullService gitPullService;
     private final HashMap<String, AreteResponse> syncWaitingRoom = new HashMap<>();
 
-    @Override
-    public Submission testAsync(HttpEntity<String> httpEntity) {
+	public RequestService(ObjectMapper objectMapper, SubmissionService submissionService, PriorityQueueService priorityQueueService, GitPullService gitPullService) {
+		this.objectMapper = objectMapper;
+		this.submissionService = submissionService;
+		this.priorityQueueService = priorityQueueService;
+		this.gitPullService = gitPullService;
+	}
+
+	public Submission testAsync(HttpEntity<String> httpEntity) {
         String requestBody = httpEntity.getBody();
         LOGGER.info("Parsing request body: " + requestBody);
         if (requestBody == null) throw new RequestFormatException("Empty input!");
@@ -64,7 +61,6 @@ public class requestServiceImpl implements RequestService {
 
     }
 
-    @Override
     public AreteResponse testSync(HttpEntity<String> httpEntity) {
         String requestBody = httpEntity.getBody();
         LOGGER.info("Parsing request body: " + requestBody);
@@ -88,7 +84,6 @@ public class requestServiceImpl implements RequestService {
         }
     }
 
-    @Override
     public void waitingroom(HttpEntity<String> httpEntity, String hash) {
         try {
             syncWaitingRoom.put(hash, objectMapper.readValue(Objects.requireNonNull(httpEntity.getBody()), AreteResponse.class));
@@ -98,7 +93,6 @@ public class requestServiceImpl implements RequestService {
         }
     }
 
-    @Override
     public String updateImage(String image) {
         try {
             priorityQueueService.halt();
@@ -115,13 +109,12 @@ public class requestServiceImpl implements RequestService {
         }
     }
 
-    @Override
     public String updateTests(HttpEntity<String> httpEntity) {
         try {
             String requestBody = httpEntity.getBody();
             LOGGER.info("Parsing request body: " + requestBody);
             if (requestBody == null) throw new RequestFormatException("Empty input!");
-            TestUpdate update = objectMapper.readValue(requestBody, TestUpdate.class);
+			AreteTestUpdate update = objectMapper.readValue(requestBody, AreteTestUpdate.class);
 
             assert update.getProject().getPath_with_namespace() != null;
             assert update.getProject().getUrl() != null;
@@ -134,6 +127,21 @@ public class requestServiceImpl implements RequestService {
             LOGGER.info("Checking for update for tester:");
             gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
             priorityQueueService.go();
+
+            try {
+				// test the solution on some repository
+				DefaultParameters params = objectMapper.readValue(new File(String.format("tests/%s/arete.json", update.getProject().getPath_with_namespace())), DefaultParameters.class);
+				Submission submission = new Submission();
+				submission.setTestingPlatform(params.getProgrammingLanguage());
+				submission.setEmail(update.getUser_email());
+				submission.setUniid(update.getUser_username());
+				submission.setGitStudentRepo(params.getSolutionsRepository());
+				submission.setGitTestSource(update.getProject().getUrl());
+				submissionService.populateAsyncFields(submission);
+				priorityQueueService.enqueue(submission);
+			} catch (Exception ignored) {
+            	// no testing
+			}
 
             return "Successfully updated tests: " + update.getProject().getPath_with_namespace();
         } catch (Exception e) {

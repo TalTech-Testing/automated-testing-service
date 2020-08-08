@@ -14,7 +14,7 @@ import static ee.taltech.arete.initializers.SubmissionInitializer.getGitPullEndp
 @AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
 @SpringBootTest
-class GitPullServiceImplTest {
+class GitPullServiceTest {
 
 	@Autowired
 	private GitPullService gitPullService;
@@ -26,15 +26,6 @@ class GitPullServiceImplTest {
 
 		// then
 		assert gitPullService.repositoryMaintenance(submission);
-
-//		String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
-//		String tester = String.format("%s/tests/%s/%s", home, "iti0102-2019", "ex02_binary");
-//		String tempTester = String.format("%s/input_and_output/%s/tester", home, 0); // Slug into temp folder
-//
-//		try {
-//			FileUtils.copyDirectory(new File(tester), new File(tempTester));
-//		} catch (IOException ignored) {
-//		}
 
 	}
 

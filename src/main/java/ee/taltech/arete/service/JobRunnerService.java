@@ -1,4 +1,4 @@
-package ee.taltech.arete.service.runner;
+package ee.taltech.arete.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,12 +10,8 @@ import ee.taltech.arete.domain.DefaultParameters;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.docker.DockerService;
 import ee.taltech.arete.service.git.GitPullService;
-import ee.taltech.arete.service.queue.PriorityQueueService;
-import ee.taltech.arete.service.response.ReportService;
-import ee.taltech.arete.service.submission.SubmissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,25 +29,27 @@ import static org.h2.store.fs.FileUtils.toRealPath;
 
 
 @Service
-public class JobRunnerServiceImpl implements JobRunnerService {
+public class JobRunnerService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JobRunnerService.class);
-	@Autowired
-	PriorityQueueService priorityQueueService;
-	@Autowired
-	DockerService dockerService;
-	@Autowired
-	GitPullService gitPullService;
-	@Autowired
-	ReportService reportService;
-	@Autowired
-	SubmissionService submissionService;
-	@Autowired
-	DevProperties devProperties;
-	@Autowired
-	private ObjectMapper objectMapper;
+	final  PriorityQueueService priorityQueueService;
+	final DockerService dockerService;
+	final GitPullService gitPullService;
+	final ReportService reportService;
+	final SubmissionService submissionService;
+	final DevProperties devProperties;
+	private final ObjectMapper objectMapper;
 
-	@Override
+	public JobRunnerService(PriorityQueueService priorityQueueService, DockerService dockerService, GitPullService gitPullService, ReportService reportService, SubmissionService submissionService, DevProperties devProperties, ObjectMapper objectMapper) {
+		this.priorityQueueService = priorityQueueService;
+		this.dockerService = dockerService;
+		this.gitPullService = gitPullService;
+		this.reportService = reportService;
+		this.submissionService = submissionService;
+		this.devProperties = devProperties;
+		this.objectMapper = objectMapper;
+	}
+
 	public List<String> runJob(Submission submission) {
 
 		ArrayList<String> outputPaths = new ArrayList<>();
@@ -59,11 +58,14 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		if (createDirs(submission)) return outputPaths; // if error, done
 
+		formatSlugs(submission);
+
 		LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
 
 		for (String slug : submission.getSlugs()) {
 
 			rootProperties(submission);
+
 			slugProperties(submission, slug);
 
 			String outputPath;
@@ -85,6 +87,31 @@ public class JobRunnerServiceImpl implements JobRunnerService {
 
 		}
 		return outputPaths;
+	}
+
+	public void formatSlugs(Submission submission) {
+		rootProperties(submission); // load groupingFolders
+
+		HashSet<String> formattedSlugs = new HashSet<>();
+
+		for (String changed_file : submission.getSlugs()) {
+			String potentialSlug = changed_file.split("/")[0];
+			if (potentialSlug.matches("[a-zA-Z0-9_]*")) {
+				if (submission.getGroupingFolders().contains(potentialSlug)) {
+					try {
+						String innerPotentialSlug = changed_file.split("/")[1];
+						if (innerPotentialSlug.matches("[a-zA-Z0-9_]*")) {
+							formattedSlugs.add(potentialSlug + "/" + innerPotentialSlug);
+						}
+					} catch (Exception ignored) {
+					}
+				} else {
+					formattedSlugs.add(potentialSlug);
+				}
+			}
+		}
+
+		submission.setSlugs(formattedSlugs);
 	}
 
 	private boolean createDirs(Submission submission) {

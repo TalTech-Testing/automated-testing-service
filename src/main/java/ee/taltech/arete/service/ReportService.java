@@ -1,13 +1,11 @@
-package ee.taltech.arete.service.response;
+package ee.taltech.arete.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.configuration.DevProperties;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -27,20 +25,17 @@ import java.util.Optional;
 
 @EnableAsync
 @Service
-public class ReportServiceImpl implements ReportService {
+public class ReportService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReportService.class);
+	private final JavaMailSender javaMailSender;
+	final DevProperties devProperties;
 
-	@Autowired
-	private JavaMailSender javaMailSender;
+	public ReportService(JavaMailSender javaMailSender, DevProperties devProperties) {
+		this.javaMailSender = javaMailSender;
+		this.devProperties = devProperties;
+	}
 
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
-	DevProperties devProperties;
-
-	@Override
 	public void sendTextMail(String mail, String text, String header, Boolean html, Optional<String> files) {
 
 		try {
@@ -64,7 +59,6 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Async
-	@Override
 	public void sendTextToReturnUrl(String returnUrl, String response) {
 		try {
 			post(returnUrl, response);

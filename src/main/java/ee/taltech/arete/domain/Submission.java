@@ -43,6 +43,8 @@ public class Submission {
 
     private Set<String> slugs;
 
+	private Set<String> initialSlugs;
+
     private String commitMessage;
 
     @JsonIgnore
@@ -51,6 +53,8 @@ public class Submission {
     private Set<String> dockerExtra = new HashSet<>();
 
     private Set<String> systemExtra = new HashSet<>();
+
+	private Set<String> groupingFolders = new HashSet<>();
 
     private Integer dockerTimeout;
 

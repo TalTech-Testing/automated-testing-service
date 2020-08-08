@@ -97,7 +97,7 @@ public class SubmissionInitializer {
 				.course(UNIID_GIT)
 				.folder(UNIID_GIT)
 				.slugs(new HashSet<>(Arrays.asList(
-						"EX01IdCode"
+						"EX01IdCode/inner/stuff.py"
 				)))
 				.priority(10)
 				.timestamp(1L)
@@ -120,16 +120,16 @@ public class SubmissionInitializer {
 				.course(PROJECT)
 				.folder(PROJECT)
 				.slugs(new HashSet<>(Arrays.asList(
-						"EX01IdCode"
+						"EX01IdCode/inner/stuff.py",
+						"TK/TK1/stuff.py"
 				)))
+				.groupingFolders(new HashSet<>(Collections.singletonList("TK")))
 				.priority(10)
 				.timestamp(1L)
 				.dockerTimeout(120)
 				.testingPlatform(TESTING_PLATFORM_JAVA)
 				.returnUrl(RETURN_URL)
-				.systemExtra((new HashSet<>(Arrays.asList(
-						"noMail"
-				))))
+				.systemExtra((new HashSet<>(Collections.singletonList("noMail"))))
 //				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 //				.hash("a5462dc0377504e79b25ad76c9d0a4c7ce27f7d4")
 				.build();

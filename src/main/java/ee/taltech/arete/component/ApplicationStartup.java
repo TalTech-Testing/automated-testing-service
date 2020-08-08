@@ -3,9 +3,8 @@ package ee.taltech.arete.component;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
-import ee.taltech.arete.configuration.DevProperties;
 import ee.taltech.arete.service.docker.ImageCheck;
-import ee.taltech.arete.service.queue.PriorityQueueService;
+import ee.taltech.arete.service.PriorityQueueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,48 +17,49 @@ import java.io.File;
 @Component
 public class ApplicationStartup implements ApplicationRunner {
 
-    private static final Logger log = LoggerFactory.getLogger(ApplicationStartup.class);
+	private static final Logger log = LoggerFactory.getLogger(ApplicationStartup.class);
 
-    @Autowired
-    private DevProperties devProperties;
+	private final PriorityQueueService priorityQueueService;
 
-    @Autowired
-    private PriorityQueueService priorityQueueService;
+	@Autowired
+	public ApplicationStartup(PriorityQueueService priorityQueueService) {
+		this.priorityQueueService = priorityQueueService;
+	}
 
-    @Override
-    public void run(ApplicationArguments applicationArguments) {
-        log.info("setting up temp folders.");
+	@Override
+	public void run(ApplicationArguments applicationArguments) {
+		log.info("setting up temp folders.");
 
-        createDirectory("input_and_output");
-        createDirectory("students");
-        createDirectory("tests");
+		createDirectory("input_and_output");
+		createDirectory("students");
+		createDirectory("tests");
 
-        try {
-            String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
+		try {
+			String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
 
-            DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-                    .withDockerHost(dockerHost)
-                    .withDockerTlsVerify(false)
-                    .build();
+			DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+					.withDockerHost(dockerHost)
+					.withDockerTlsVerify(false)
+					.build();
 
-            new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/java-tester").pull();
-            new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/python-tester").pull();
-            new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/prolog-tester").pull();
-        } catch (Exception ignored) {
-        }
+			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/java-tester").pull();
+			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/python-tester").pull();
+			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/prolog-tester").pull();
+		} catch (Exception ignored) {
+		}
 
-        log.info("Done setup");
-        priorityQueueService.go();
+		log.info("Done setup");
+		priorityQueueService.go();
 
-    }
+	}
 
-    private void createDirectory(String home) {
-        File file = new File(home);
-        if (!file.exists()) {
-            if (!file.exists()) {
-                file.mkdir();
-            }
-        }
-    }
+	private void createDirectory(String home) {
+		File file = new File(home);
+		if (!file.exists()) {
+			if (!file.exists()) {
+				file.mkdir();
+			}
+		}
+	}
 
 }

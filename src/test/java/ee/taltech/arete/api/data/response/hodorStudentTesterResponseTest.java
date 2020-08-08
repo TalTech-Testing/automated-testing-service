@@ -8,7 +8,7 @@ import ee.taltech.arete.api.data.request.AreteTestUpdate;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
 import ee.taltech.arete.domain.Submission;
-import ee.taltech.arete.service.runner.JobRunnerService;
+import ee.taltech.arete.service.JobRunnerService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

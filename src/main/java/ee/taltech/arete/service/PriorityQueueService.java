@@ -1,12 +1,10 @@
-package ee.taltech.arete.service.queue;
+package ee.taltech.arete.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.sun.management.OperatingSystemMXBean;
 import ee.taltech.arete.configuration.DevProperties;
 import ee.taltech.arete.domain.Submission;
-import ee.taltech.arete.service.response.ReportService;
-import ee.taltech.arete.service.runner.JobRunnerService;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @EnableAsync
-public class PriorityQueueServiceImpl implements PriorityQueueService {
+public class PriorityQueueService {
 
 	private final OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 	private final Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
@@ -48,7 +46,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 	private Integer stuckQueue = 3000; // just some protection against stuck queue
 
 	@Lazy
-	public PriorityQueueServiceImpl(DevProperties devProperties, JobRunnerService jobRunnerService, ReportService reportService) {
+	public PriorityQueueService(DevProperties devProperties, JobRunnerService jobRunnerService, ReportService reportService) {
 		this.devProperties = devProperties;
 		this.jobRunnerService = jobRunnerService;
 		this.reportService = reportService;
@@ -58,7 +56,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 		return osBean.getSystemCpuLoad() < devProperties.getMaxCpuUsage() && devProperties.getParallelJobs() > activeSubmissions.size();
 	}
 
-	@Override
 	public void enqueue(Submission submission) {
 		submissionPriorityQueue.add(submission);
 	}
@@ -76,17 +73,14 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 		LOGGER.info("All done for submission on thread: {}", submission.getHash());
 	}
 
-	@Override
 	public Integer getJobsRan() {
 		return jobsRan;
 	}
 
-	@Override
 	public Integer getQueueSize() {
 		return submissionPriorityQueue.size();
 	}
 
-	@Override
 	public void halt() throws InterruptedException {
 		halted = true;
 		int antiStuck = 30;
@@ -96,7 +90,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 		}
 	}
 
-	@Override
 	public void halt(int maxAllowedJobs) throws InterruptedException {
 		halted = true;
 		int antiStuck = 30;
@@ -106,12 +99,10 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 		}
 	}
 
-	@Override
 	public void go() {
 		halted = false;
 	}
 
-	@Override
 	public List<Submission> getActiveSubmissions() {
 		return activeSubmissions;
 	}
@@ -136,7 +127,6 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 		}
 	}
 
-	@Override
 	@Async
 	@Scheduled(fixedRate = 100)
 	public void runJob() {
@@ -166,7 +156,7 @@ public class PriorityQueueServiceImpl implements PriorityQueueService {
 			if (job.getPriority() < 8 && job.getUniid() != null && activeSubmissions.stream().anyMatch(o -> o.getUniid().equals(job.getUniid()))) {
 				job.setPriority(4); // Mild punish for spam pushers.
 
-				submissionPriorityQueue.add(job);
+				enqueue(job);
 				return;
 			}
 

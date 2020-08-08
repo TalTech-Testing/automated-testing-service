@@ -4,10 +4,8 @@ import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.arete.SystemState;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.exception.RequestFormatException;
-import ee.taltech.arete.service.queue.PriorityQueueService;
-import ee.taltech.arete.service.request.RequestService;
-import ee.taltech.arete.service.submission.SubmissionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import ee.taltech.arete.service.PriorityQueueService;
+import ee.taltech.arete.service.RequestService;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,16 +24,15 @@ import java.util.stream.Stream;
 @RestController
 public class SubmissionController {
 
-    @Autowired
-    private RequestService requestService;
+    private final RequestService requestService;
+	private final PriorityQueueService priorityQueueService;
 
-    @Autowired
-    private SubmissionService submissionService;
+	public SubmissionController(RequestService requestService, PriorityQueueService priorityQueueService) {
+		this.requestService = requestService;
+		this.priorityQueueService = priorityQueueService;
+	}
 
-    @Autowired
-    private PriorityQueueService priorityQueueService;
-
-    @ResponseStatus(HttpStatus.ACCEPTED)
+	@ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping({"/test", "/:testAsync"})
     public Submission Test(HttpEntity<String> httpEntity) {
         return requestService.testAsync(httpEntity);
@@ -108,7 +105,7 @@ public class SubmissionController {
 
     }
 
-    public static final List<String> tailFile(final Path source, final int noOfLines) throws IOException {
+    public static List<String> tailFile(final Path source, final int noOfLines) throws IOException {
         try (Stream<String> stream = Files.lines(source)) {
             FileBuffer fileBuffer = new FileBuffer(noOfLines);
             stream.forEach(fileBuffer::collect);

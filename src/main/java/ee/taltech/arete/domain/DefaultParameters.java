@@ -18,6 +18,12 @@ public class DefaultParameters {
 
 	private Set<String> systemExtra;
 
+	private Set<String> groupingFolders;
+
+	private String solutionsRepository;
+
+	private String programmingLanguage;
+
 	public void overrideDefaults(Submission submission) {
 		if (dockerTimeout != null) {
 			submission.setDockerTimeout(dockerTimeout);
@@ -29,6 +35,10 @@ public class DefaultParameters {
 
 		if (systemExtra != null) {
 			submission.setSystemExtra(systemExtra);
+		}
+
+		if (groupingFolders != null) {
+			submission.setGroupingFolders(groupingFolders);
 		}
 	}
 }

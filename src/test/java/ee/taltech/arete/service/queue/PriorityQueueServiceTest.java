@@ -1,7 +1,7 @@
 //package ee.taltech.arete.service.queue;
 //
 //import ee.taltech.arete.domain.Submission;
-//import ee.taltech.arete.service.submission.SubmissionService;
+//import ee.taltech.arete.service.SubmissionService;
 //import org.junit.jupiter.api.Test;
 //import org.junit.runner.RunWith;
 //import org.springframework.beans.factory.annotation.Autowired;
