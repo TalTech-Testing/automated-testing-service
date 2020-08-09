@@ -40,5 +40,13 @@ public class DefaultParameters {
 		if (groupingFolders != null) {
 			submission.setGroupingFolders(groupingFolders);
 		}
+
+		if (programmingLanguage != null) {
+			submission.setTestingPlatform(programmingLanguage);
+		}
+
+		if (solutionsRepository != null) {
+			submission.setGitStudentRepo(solutionsRepository);
+		}
 	}
 }

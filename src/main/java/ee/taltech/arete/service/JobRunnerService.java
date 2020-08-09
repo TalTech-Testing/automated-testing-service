@@ -133,7 +133,7 @@ public class JobRunnerService {
 		return false;
 	}
 
-	private void slugProperties(Submission submission, String slug) {
+	public void slugProperties(Submission submission, String slug) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
 				objectMapper
@@ -147,7 +147,7 @@ public class JobRunnerService {
 	}
 
 
-	private void rootProperties(Submission submission) {
+	public void rootProperties(Submission submission) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
 				objectMapper

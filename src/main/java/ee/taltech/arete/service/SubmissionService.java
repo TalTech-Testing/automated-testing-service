@@ -17,10 +17,12 @@ public class SubmissionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
-    final DevProperties devProperties;
+    private final DevProperties devProperties;
+    private final JobRunnerService jobRunnerService;
 
-	public SubmissionService(DevProperties devProperties) {
+	public SubmissionService(DevProperties devProperties, JobRunnerService jobRunnerService) {
 		this.devProperties = devProperties;
+		this.jobRunnerService = jobRunnerService;
 	}
 
 	private static String getRandomHash() {
@@ -29,6 +31,7 @@ public class SubmissionService {
 
     public void populateAsyncFields(Submission submission) {
 
+		jobRunnerService.rootProperties(submission);
         populateTesterRelatedFields(submission);
         populateStudentRelatedFields(submission);
         populateDefaultValues(submission);
@@ -47,6 +50,7 @@ public class SubmissionService {
 			submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
 		}
 
+		jobRunnerService.rootProperties(submission);
 		populateTesterRelatedFields(submission);
 		populateStudentRelatedFields(submission);
 		populateDefaultValues(submission);

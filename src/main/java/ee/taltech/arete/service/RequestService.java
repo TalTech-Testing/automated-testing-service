@@ -65,6 +65,7 @@ public class RequestService {
 		String requestBody = httpEntity.getBody();
 		LOGGER.info("Parsing request body: " + requestBody);
 		if (requestBody == null) throw new RequestFormatException("Empty input!");
+
 		try {
 
 			Submission submission = objectMapper.readValue(requestBody, Submission.class);
@@ -124,7 +125,6 @@ public class RequestService {
 			String pathToTesterRepo = update.getProject().getUrl();
 
 			priorityQueueService.halt();
-			LOGGER.info("Checking for update for tester:");
 			gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
 			priorityQueueService.go();
 
@@ -144,7 +144,9 @@ public class RequestService {
 				submission.setSlugs(slugs);
 				submissionService.populateAsyncFields(submission);
 				submission.setCourse(update.getProject().getPath_with_namespace());
+				LOGGER.info("Initial slugs: {}", slugs);
 				jobRunnerService.formatSlugs(submission);
+				LOGGER.info("Final submission: {}", submission);
 				priorityQueueService.enqueue(submission);
 			} catch (Exception ignored) {
 				// no testing

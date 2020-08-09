@@ -129,7 +129,7 @@ public class SubmissionInitializer {
 				.dockerTimeout(120)
 				.testingPlatform(TESTING_PLATFORM_JAVA)
 				.returnUrl(RETURN_URL)
-				.systemExtra((new HashSet<>(Collections.singletonList("noMail"))))
+				.systemExtra((new HashSet<>(Arrays.asList("noMail"))))
 //				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 //				.hash("a5462dc0377504e79b25ad76c9d0a4c7ce27f7d4")
 				.build();
