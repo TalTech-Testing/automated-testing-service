@@ -32,7 +32,7 @@ import static org.h2.store.fs.FileUtils.toRealPath;
 public class JobRunnerService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JobRunnerService.class);
-	private final  PriorityQueueService priorityQueueService;
+	private final PriorityQueueService priorityQueueService;
 	private final DockerService dockerService;
 	private final GitPullService gitPullService;
 	private final ReportService reportService;
@@ -134,10 +134,9 @@ public class JobRunnerService {
 	public void slugProperties(Submission submission, String slug) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
-				objectMapper
-						.readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class)
-						.overrideDefaults(submission);
-				LOGGER.info("Overrode default parameters");
+				DefaultParameters params = objectMapper.readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class);
+				params.overrideDefaults(submission);
+				LOGGER.info("Overrode default parameters: {}", params);
 			} catch (Exception e) {
 				LOGGER.info("Using default parameters: {}", e.getMessage());
 			}
@@ -148,10 +147,9 @@ public class JobRunnerService {
 	public void rootProperties(Submission submission) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
-				objectMapper
-						.readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class)
-						.overrideDefaults(submission);
-				LOGGER.info("Overrode default parameters");
+				DefaultParameters params = objectMapper.readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class);
+				params.overrideDefaults(submission);
+				LOGGER.info("Overrode default parameters: {}", params);
 			} catch (Exception e) {
 				LOGGER.info("Using default parameters: {}", e.getMessage());
 			}

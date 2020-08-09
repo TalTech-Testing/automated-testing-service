@@ -47,16 +47,13 @@ public class RequestService {
 		if (requestBody == null) throw new RequestFormatException("Empty input!");
 
 		try {
-
 			Submission submission = objectMapper.readValue(requestBody, Submission.class);
 			submissionService.populateAsyncFields(submission);
 			priorityQueueService.enqueue(submission);
 			return submission;
-
 		} catch (JsonProcessingException e) {
 			LOGGER.error("Request format invalid: {}", e.getMessage());
 			throw new RequestFormatException(e.getMessage());
-
 		}
 
 	}
