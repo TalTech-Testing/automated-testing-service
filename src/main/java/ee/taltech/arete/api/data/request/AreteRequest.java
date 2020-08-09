@@ -11,7 +11,6 @@ import java.util.Set;
 
 @Data
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonClassDescription("Async request from Moodle")
@@ -68,9 +67,8 @@ public class AreteRequest {
     @JsonPropertyDescription("values that are returned the same way they were given in")
     private JsonNode returnExtra;
 
-    @Getter
-    @Builder
-    @ToString
+	@Data
+	@Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SourceFile {

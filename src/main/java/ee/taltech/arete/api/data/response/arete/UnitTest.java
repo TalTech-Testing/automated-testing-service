@@ -8,7 +8,6 @@ import java.util.List;
 
 @Data
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonClassDescription("Unit test")

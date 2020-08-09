@@ -14,7 +14,6 @@ import java.lang.management.ManagementFactory;
 
 @Data
 @Builder
-@ToString
 @AllArgsConstructor
 @JsonClassDescription("Current state of the machine")
 public class SystemState {

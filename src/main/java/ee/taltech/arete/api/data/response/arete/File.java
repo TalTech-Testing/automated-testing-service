@@ -7,9 +7,8 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@Getter
+@Data
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "file")

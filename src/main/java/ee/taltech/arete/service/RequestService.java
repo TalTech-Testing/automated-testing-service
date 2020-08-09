@@ -132,9 +132,10 @@ public class RequestService {
 				// test the solution on some repository
 				DefaultParameters params = objectMapper.readValue(new File(String.format("tests/%s/arete.json", update.getProject().getPath_with_namespace())), DefaultParameters.class);
 				Submission submission = new Submission();
+				AreteTestUpdate.Commit latest = update.getCommits().get(0);
 				submission.setTestingPlatform(params.getProgrammingLanguage());
-				submission.setEmail(update.getUser_email());
-				submission.setUniid(update.getUser_username());
+				submission.setEmail(latest.getAuthor().getEmail());
+				submission.setUniid(update.getProject().getNamespace());
 				submission.setGitStudentRepo(params.getSolutionsRepository());
 				submission.setGitTestSource(update.getProject().getUrl());
 				submissionService.populateAsyncFields(submission);
