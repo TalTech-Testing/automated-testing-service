@@ -94,11 +94,11 @@ public class JobRunnerService {
 
 		for (String changed_file : submission.getSlugs()) {
 			String potentialSlug = changed_file.split("/")[0];
-			if (potentialSlug.matches("[a-zA-Z0-9_]*")) {
+			if (potentialSlug.matches(devProperties.getNameMatcher())) {
 				if (submission.getGroupingFolders().contains(potentialSlug)) {
 					try {
 						String innerPotentialSlug = changed_file.split("/")[1];
-						if (innerPotentialSlug.matches("[a-zA-Z0-9_]*")) {
+						if (innerPotentialSlug.matches(devProperties.getNameMatcher())) {
 							formattedSlugs.add(potentialSlug + "/" + innerPotentialSlug);
 						}
 					} catch (Exception ignored) {

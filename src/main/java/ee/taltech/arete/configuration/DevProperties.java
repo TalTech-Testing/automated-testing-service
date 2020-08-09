@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 @Data
 public class DevProperties {
 
-    private Boolean debug = false; // if unlock features for debug
+    private String nameMatcher = "^[a-zA-Z0-9\\p{L}-_]*$"; // regex
+	private Boolean debug = false; // if unlock features for debug
     private String developer = "ago.luberg@ttu.ee"; // send all submissions
     private String ago = "ago.luberg@ttu.ee"; // send only failed submissions
     private String areteMail = "automated_testing_service@taltech.ee";

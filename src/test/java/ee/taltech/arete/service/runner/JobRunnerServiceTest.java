@@ -31,7 +31,8 @@ class JobRunnerServiceTest {
 		jobRunnerService.formatSlugs(submission);
 
 		// then
-		assert submission.getSlugs().containsAll(new HashSet<>(Arrays.asList("EX01IdCode", "TK/TK1")));
+		System.out.println(submission.getSlugs());
+		assert submission.getSlugs().containsAll(new HashSet<>(Arrays.asList("EX01IdCode", "TK/tk_tsükkel_1")));
 	}
 
 }

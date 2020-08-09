@@ -68,7 +68,7 @@ public class SubmissionService {
 				if (url[1].length() == 0) {
 					throw new BadRequestException("Git student repo namespace is size 0");
 				}
-				assert url[1].matches("^[0-9a-zA-Z]*$");
+				assert url[1].matches(devProperties.getNameMatcher());
 				submission.setUniid(url[1]); // user identificator - this is 100% unique
 			}
 

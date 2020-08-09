@@ -121,7 +121,7 @@ public class SubmissionInitializer {
 				.folder(PROJECT)
 				.slugs(new HashSet<>(Arrays.asList(
 						"EX01IdCode/inner/stuff.py",
-						"TK/TK1/stuff.py"
+						"TK/tk_tsükkel_1/exam.py"
 				)))
 				.groupingFolders(new HashSet<>(Collections.singletonList("TK")))
 				.priority(10)
