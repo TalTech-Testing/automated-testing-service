@@ -32,20 +32,18 @@ import static org.h2.store.fs.FileUtils.toRealPath;
 public class JobRunnerService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JobRunnerService.class);
-	final  PriorityQueueService priorityQueueService;
-	final DockerService dockerService;
-	final GitPullService gitPullService;
-	final ReportService reportService;
-	final SubmissionService submissionService;
-	final DevProperties devProperties;
+	private final  PriorityQueueService priorityQueueService;
+	private final DockerService dockerService;
+	private final GitPullService gitPullService;
+	private final ReportService reportService;
+	private final DevProperties devProperties;
 	private final ObjectMapper objectMapper;
 
-	public JobRunnerService(PriorityQueueService priorityQueueService, DockerService dockerService, GitPullService gitPullService, ReportService reportService, SubmissionService submissionService, DevProperties devProperties, ObjectMapper objectMapper) {
+	public JobRunnerService(PriorityQueueService priorityQueueService, DockerService dockerService, GitPullService gitPullService, ReportService reportService, DevProperties devProperties, ObjectMapper objectMapper) {
 		this.priorityQueueService = priorityQueueService;
 		this.dockerService = dockerService;
 		this.gitPullService = gitPullService;
 		this.reportService = reportService;
-		this.submissionService = submissionService;
 		this.devProperties = devProperties;
 		this.objectMapper = objectMapper;
 	}
