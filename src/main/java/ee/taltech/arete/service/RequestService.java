@@ -126,25 +126,7 @@ public class RequestService {
 			priorityQueueService.go();
 
 			try {
-				// test the solution on some repository
-				DefaultParameters params = objectMapper.readValue(new File(String.format("tests/%s/arete.json", update.getProject().getPath_with_namespace())), DefaultParameters.class);
-				Submission submission = new Submission();
-				AreteTestUpdate.Commit latest = update.getCommits().get(0);
-				submission.setTestingPlatform(params.getProgrammingLanguage());
-				submission.setEmail(latest.getAuthor().getEmail());
-				submission.setUniid(update.getProject().getNamespace());
-				submission.setGitStudentRepo(params.getSolutionsRepository());
-				submission.setGitTestSource(update.getProject().getUrl());
-				Set<String> slugs = new HashSet<>();
-				slugs.addAll(latest.getAdded());
-				slugs.addAll(latest.getModified());
-				submission.setSlugs(slugs);
-				submissionService.populateAsyncFields(submission);
-				submission.setCourse(update.getProject().getPath_with_namespace());
-				LOGGER.info("Initial slugs: {}", slugs);
-				jobRunnerService.formatSlugs(submission);
-				LOGGER.info("Final submission: {}", submission);
-				priorityQueueService.enqueue(submission);
+				runVerifyingTests(update);
 			} catch (Exception ignored) {
 				// no testing
 			}
@@ -153,5 +135,24 @@ public class RequestService {
 		} catch (Exception e) {
 			throw new RequestFormatException(e.getMessage());
 		}
+	}
+
+	private void runVerifyingTests(AreteTestUpdate update) {
+		Submission submission = new Submission();
+		AreteTestUpdate.Commit latest = update.getCommits().get(0);
+		submission.setEmail(latest.getAuthor().getEmail());
+		submission.setUniid(update.getProject().getNamespace());
+		submission.setGitTestSource(update.getProject().getUrl());
+		jobRunnerService.testingProperties(submission);
+		Set<String> slugs = new HashSet<>();
+		slugs.addAll(latest.getAdded());
+		slugs.addAll(latest.getModified());
+		submission.setSlugs(slugs);
+		submissionService.populateAsyncFields(submission);
+		submission.setCourse(update.getProject().getPath_with_namespace());
+		LOGGER.info("Initial slugs: {}", slugs);
+		jobRunnerService.formatSlugs(submission);
+		LOGGER.info("Final submission: {}", submission);
+		priorityQueueService.enqueue(submission);
 	}
 }

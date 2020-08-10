@@ -135,7 +135,7 @@ public class JobRunnerService {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
 				DefaultParameters params = objectMapper.readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class);
-				params.overrideDefaults(submission);
+				params.overrideParametersForStudentValidation(submission);
 				LOGGER.info("Overrode default parameters: {}", params);
 			} catch (Exception e) {
 				LOGGER.info("Using default parameters: {}", e.getMessage());
@@ -148,7 +148,19 @@ public class JobRunnerService {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
 				DefaultParameters params = objectMapper.readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class);
-				params.overrideDefaults(submission);
+				params.overrideParametersForStudentValidation(submission);
+				LOGGER.info("Overrode default parameters: {}", params);
+			} catch (Exception e) {
+				LOGGER.info("Using default parameters: {}", e.getMessage());
+			}
+		}
+	}
+
+	public void testingProperties(Submission submission) {
+		if (!submission.getSystemExtra().contains("noOverride")) {
+			try {
+				DefaultParameters params = objectMapper.readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class);
+				params.overrideParametersForTestValidation(submission);
 				LOGGER.info("Overrode default parameters: {}", params);
 			} catch (Exception e) {
 				LOGGER.info("Using default parameters: {}", e.getMessage());

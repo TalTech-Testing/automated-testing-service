@@ -24,29 +24,41 @@ public class DefaultParameters {
 
 	private String programmingLanguage;
 
-	public void overrideDefaults(Submission submission) {
-		if (dockerTimeout != null) {
-			submission.setDockerTimeout(dockerTimeout);
-		}
-
-		if (dockerExtra != null) {
-			submission.setDockerExtra(dockerExtra);
-		}
-
-		if (systemExtra != null) {
-			submission.setSystemExtra(systemExtra);
-		}
-
-		if (groupingFolders != null) {
-			submission.setGroupingFolders(groupingFolders);
-		}
-
-		if (programmingLanguage != null) {
-			submission.setTestingPlatform(programmingLanguage);
-		}
+	public void overrideParametersForTestValidation(Submission submission) {
+		overrideDefaultParameters(submission);
 
 		if (solutionsRepository != null) {
 			submission.setGitStudentRepo(solutionsRepository);
 		}
+	}
+
+	public void overrideParametersForStudentValidation(Submission submission) {
+		overrideDefaultParameters(submission);
+	}
+
+	private void overrideDefaultParameters(Submission submission) {
+		if (dockerTimeout != null && willOverride(submission)) {
+			submission.setDockerTimeout(dockerTimeout);
+		}
+
+		if (dockerExtra != null && willOverride(submission)) {
+			submission.setDockerExtra(dockerExtra);
+		}
+
+		if (systemExtra != null && willOverride(submission)) {
+			submission.setSystemExtra(systemExtra);
+		}
+
+		if (groupingFolders != null && willOverride(submission)) {
+			submission.setGroupingFolders(groupingFolders);
+		}
+
+		if (programmingLanguage != null && willOverride(submission)) {
+			submission.setTestingPlatform(programmingLanguage);
+		}
+	}
+
+	private boolean willOverride(Submission submission) {
+		return !submission.getDockerExtra().contains("noOverride");
 	}
 }
