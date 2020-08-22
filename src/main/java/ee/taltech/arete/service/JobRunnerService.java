@@ -317,6 +317,9 @@ public class JobRunnerService {
 		if (submission.getSystemExtra().contains("integration_tests")) {
 			reportService.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
 			LOGGER.info("INTEGRATION TEST: Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
+
+			submission.setUniid("integration_test");
+			reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), objectMapper.writeValueAsString(areteResponse));
 			return;
 		}
 
