@@ -9,11 +9,14 @@ import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.JobRunnerService;
+import io.restassured.RestAssured;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
@@ -30,6 +33,8 @@ import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmiss
 public class hodorStudentTesterResponseTest {
 
 	private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
+
+	int port = 8080;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -92,7 +97,7 @@ public class hodorStudentTesterResponseTest {
 		// given
 		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java2.json");
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
-		Submission test = getFullSubmissionJava();
+		Submission test = getFullSubmissionJava(String.format("http://localhost:%s", port));
 
 		// when
 		AreteResponse areteResponse = new AreteResponse("ex", test, response);
@@ -106,7 +111,7 @@ public class hodorStudentTesterResponseTest {
 		// given
 		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java.json");
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
-		Submission test = getFullSubmissionJava();
+		Submission test = getFullSubmissionJava(String.format("http://localhost:%s", port));
 
 		// when
 		AreteResponse areteResponse = new AreteResponse("ex", test, response);
@@ -119,7 +124,7 @@ public class hodorStudentTesterResponseTest {
 	public void JavaExamParsingParsesArete() throws IOException {
 		// given
 		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java-arete.json");
-		Submission test = getFullSubmissionJava();
+		Submission test = getFullSubmissionJava(String.format("http://localhost:%s", port));
 		AreteResponse response = jobRunnerService.getAreteResponse("exam", test, json);
 
 		// then
@@ -130,7 +135,7 @@ public class hodorStudentTesterResponseTest {
 	public void JavaDoesntCompileParsingParsesArete() throws IOException {
 		// given
 		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java-failed-arete.json");
-		Submission test = getFullSubmissionJava();
+		Submission test = getFullSubmissionJava(String.format("http://localhost:%s", port));
 		AreteResponse response = jobRunnerService.getAreteResponse("ex01_id_code", test, json);
 
 		// then
@@ -141,7 +146,7 @@ public class hodorStudentTesterResponseTest {
 	public void PythonParsingParsesArete() throws IOException {
 		// given
 		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/python-arete.json");
-		Submission test = getFullSubmissionPython();
+		Submission test = getFullSubmissionPython(String.format("http://localhost:%s", port));
 		AreteResponse response = jobRunnerService.getAreteResponse("ex01_geometry", test, json);
 
 		// then
@@ -153,7 +158,7 @@ public class hodorStudentTesterResponseTest {
 		// given
 		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java3.json");
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
-		Submission test = getFullSubmissionJava();
+		Submission test = getFullSubmissionJava(String.format("http://localhost:%s", port));
 
 		// when
 		AreteResponse areteResponse = new AreteResponse("ex", test, response);
@@ -167,7 +172,7 @@ public class hodorStudentTesterResponseTest {
 		// given
 		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/python.json");
 		hodorStudentTesterResponse response = objectMapper.readValue(json, hodorStudentTesterResponse.class);
-		Submission test = getFullSubmissionJava();
+		Submission test = getFullSubmissionJava(String.format("http://localhost:%s", port));
 
 		// when
 		AreteResponse areteResponse = new AreteResponse("ex", test, response);

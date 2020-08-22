@@ -31,6 +31,7 @@ public class Submission {
 
     private String hash;
 
+	@NotNull
     private String uniid; // gitlab namespace: envomp
 
 	private String email;

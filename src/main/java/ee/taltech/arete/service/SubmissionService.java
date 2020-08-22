@@ -2,6 +2,7 @@ package ee.taltech.arete.service;
 
 import ee.taltech.arete.configuration.DevProperties;
 import ee.taltech.arete.domain.Submission;
+import ee.taltech.arete.exception.RequestFormatException;
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,12 +181,13 @@ public class SubmissionService {
 		}
 
 		if (submission.getUniid() == null) {
-			submission.getSystemExtra().add("noMail");
-		} else {
-			if (submission.getEmail() == null) {
-				submission.setEmail(submission.getUniid() + "@ttu.ee"); // default
-			}
+			throw new RequestFormatException("uniid is required");
 		}
+
+		if (submission.getEmail() == null) {
+			submission.setEmail(submission.getUniid() + "@ttu.ee"); // default
+		}
+
 	}
 
 }

@@ -10,6 +10,7 @@ import ee.taltech.arete.domain.DefaultParameters;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.docker.DockerService;
 import ee.taltech.arete.service.git.GitPullService;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -310,7 +311,14 @@ public class JobRunnerService {
 		reportSubmission(submission, areteResponse, message, "Failed submission", false, Optional.empty());
 	}
 
+	@SneakyThrows
 	private void reportSubmission(Submission submission, AreteResponse areteResponse, String message, String header, Boolean html, Optional<String> output) {
+
+		if (submission.getSystemExtra().contains("integration_tests")) {
+			reportService.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
+			LOGGER.info("INTEGRATION TEST: Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
+			return;
+		}
 
 		try {
 			if (submission.getReturnUrl() != null) {

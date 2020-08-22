@@ -1,11 +1,12 @@
 package ee.taltech.arete.initializers;
 
 import ee.taltech.arete.api.data.request.AreteRequest;
+import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.domain.Submission;
+import lombok.SneakyThrows;
 import org.apache.commons.lang.RandomStringUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -34,29 +35,25 @@ public class SubmissionInitializer {
 	private final static String TESTING_PLATFORM_PROLOG = "prolog";
 	private static final String PROJECT_GIT = System.getenv().containsKey("GIT_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git" : "git@gitlab.cs.ttu.ee:iti0202-2019/ex.git";
 	private static final String PROJECT_GIT_PYTHON = System.getenv().containsKey("GIT_PASSWORD") ? "https://gitlab.cs.ttu.ee/iti0102-2019/ex.git" : "git@gitlab.cs.ttu.ee:iti0102-2019/ex.git";
-	private final static String RETURN_URL = "https://jsonplaceholder.typicode.com/posts";
 	private final static HashSet<String> EXTRA = new HashSet<>(Collections.singletonList("stylecheck"));
 	private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv().getOrDefault("HOME", ".") + "/arete");
 
-	public static Submission getFullSubmissionPython() {
-
+	public static Submission getFullSubmissionPython(String base) {
+		String hash = "1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f";
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_PYTHON)
 				.gitTestSource(TESTER_REPO_PYTHON)
 				.course(PROJECT_PYTHON)
 				.folder(PROJECT_PYTHON)
-				.hash("1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f")
+				.hash(hash)
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.returnUrl(RETURN_URL)
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.dockerTimeout(120)
 				.commitMessage("First commit!!!")
 				.hash("12dacy372642hc3642c3v423xd34v5yb534bn7354")
 				.result("Everything went ok but in Python. Here are some LOGS LOGS LOGS LOGS LOGS ...")
-//				.systemExtra(new HashSet<>())
-				.systemExtra((new HashSet<>(Arrays.asList(
-						"noMail"
-				))))
+				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 				.timestamp(System.currentTimeMillis())
 				.priority(10)
@@ -64,8 +61,8 @@ public class SubmissionInitializer {
 	}
 
 
-	public static Submission getFullSubmissionJava() {
-
+	public static Submission getFullSubmissionJava(String base) {
+		String hash = "12dacy372642hc3642c3v423xd34v5yb534bn7354";
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_JAVA)
@@ -73,15 +70,12 @@ public class SubmissionInitializer {
 				.course(PROJECT)
 				.folder(PROJECT)
 				.testingPlatform(TESTING_PLATFORM_JAVA)
-				.returnUrl(RETURN_URL)
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.dockerTimeout(120)
 				.commitMessage("First commit!")
-				.hash("12dacy372642hc3642c3v423xd34v5yb534bn7354")
+				.hash(hash)
 				.result("Everything went ok. Here are some LOGS LOGS LOGS LOGS LOGS ...")
-//				.systemExtra(new HashSet<>())
-				.systemExtra((new HashSet<>(Arrays.asList(
-						"noMail"
-				))))
+				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 				.timestamp(System.currentTimeMillis())
 				.priority(10)
@@ -89,7 +83,8 @@ public class SubmissionInitializer {
 	}
 
 
-	public static Submission getGitPullEndpointSubmissionGithub() {
+	public static Submission getGitPullEndpointSubmissionGithub(String base) {
+		String hash = getRandomHash();
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_GITHUB)
@@ -103,16 +98,15 @@ public class SubmissionInitializer {
 				.timestamp(1L)
 				.dockerTimeout(120)
 				.testingPlatform(TESTING_PLATFORM_JAVA)
-				.returnUrl(RETURN_URL)
-				.systemExtra((new HashSet<>(Arrays.asList(
-						"noMail"
-				))))
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
 //				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 //				.hash("a5462dc0377504e79b25ad76c9d0a4c7ce27f7d4")
 				.build();
 	}
 
-	public static Submission getGitPullEndpointSubmissionGitlab() {
+	public static Submission getGitPullEndpointSubmissionGitlab(String base) {
+		String hash = getRandomHash();
 		return Submission.builder()
 				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_JAVA)
@@ -128,67 +122,62 @@ public class SubmissionInitializer {
 				.timestamp(1L)
 				.dockerTimeout(120)
 				.testingPlatform(TESTING_PLATFORM_JAVA)
-				.returnUrl(RETURN_URL)
-				.systemExtra((new HashSet<>(Arrays.asList("noMail"))))
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
 //				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
 //				.hash("a5462dc0377504e79b25ad76c9d0a4c7ce27f7d4")
 				.build();
 	}
 
-	public static AreteRequest getFullSubmissionStringControllerEndpoint() {
-
+	public static AreteRequest getFullSubmissionStringControllerEndpoint(String base) {
+		String hash = "f951d41763c6b0b6d0def92722241e5746bb0b3c";
 		return AreteRequest.builder()
 				.gitStudentRepo(STUDENT_REPO_JAVA)
 				.gitTestSource(TESTER_REPO_JAVA)
-				.hash("2448474b6a76ef534660817948dc8b816e40dd48")
+				.hash(hash)
 				.testingPlatform(TESTING_PLATFORM_JAVA)
-				.systemExtra((new HashSet<>(Arrays.asList(
-						"noMail"
-				))))
-				.returnUrl(RETURN_URL)
+				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.build();
+	}
+
+	public static AreteRequest getFullSubmissionStringControllerEndpointPython(String base) {
+		String hash = "ec99e4e12d28fd8ed66aaa26c2c56c53f445444c";
+		return AreteRequest.builder()
+				.uniid(UNIID_GIT)
+				.gitStudentRepo(STUDENT_REPO_PYTHON)
+				.gitTestSource(TESTER_REPO_PYTHON)
+				.hash(hash)
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.dockerExtra(EXTRA)
 				.build();
 	}
 
-	public static AreteRequest getFullSubmissionStringControllerEndpointPython() {
-
+	public static AreteRequest getFullSubmissionStringControllerEndpointPythonLong(String base) {
+		String hash = "1a98082946d55f4479ea22a4ea9fbf58d31e2a89";
 		return AreteRequest.builder()
+				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_PYTHON)
 				.gitTestSource(TESTER_REPO_PYTHON)
-				.hash("1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f")
+				.hash(hash)
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.systemExtra((new HashSet<>(Arrays.asList(
-						"noMail"
-				))))
-				.returnUrl(RETURN_URL)
-				.dockerExtra(EXTRA)
-				.build();
-	}
-
-	public static AreteRequest getFullSubmissionStringControllerEndpointPythonLong() {
-
-		return AreteRequest.builder()
-				.gitStudentRepo(STUDENT_REPO_PYTHON)
-				.gitTestSource(TESTER_REPO_PYTHON)
-				.hash("a932ed61340fbaa08e308f591d5b5791044abc0c")
-				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.systemExtra((new HashSet<>(Arrays.asList(
-						"noMail"
-				))))
-				.returnUrl(RETURN_URL)
+				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.dockerExtra(EXTRA)
 				.dockerTimeout(1080)
 				.build();
 	}
 
 	public static AreteRequest getFullSubmissionStringControllerEndpointPythonRecursion(String base) {
-		String hash = getRandomHash();
+		String hash = "5c656f906cdd5c045e0cae99c870e77bd9a3771a";
 		return AreteRequest.builder()
 				.gitStudentRepo(STUDENT_REPO_PYTHON)
 				.gitTestSource(TESTER_REPO_PYTHON)
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
-//				.systemExtra((new HashSet<>(Arrays.asList())))
-				.uniid("envomp")
+				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
+				.uniid(UNIID_GIT)
 				.timestamp(123L)
 				.eMail("envomp@ttu.ee")
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
@@ -198,64 +187,57 @@ public class SubmissionInitializer {
 				.build();
 	}
 
-	public static AreteRequest getFullSubmissionStringControllerEndpointPythonCustomConfiguration() {
+	public static AreteRequest getFullSubmissionStringControllerEndpointPythonCustomConfiguration(String base) {
+		String hash = "ec99e4e12d28fd8ed66aaa26c2c56c53f445444c";
 		return AreteRequest.builder()
+				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_PYTHON)
+				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
 				.gitTestSource(TESTER_REPO_PYTHON)
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.returnUrl(RETURN_URL)
+				.hash(hash)
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.priority(10)
 				.build();
 	}
 
 	public static AreteRequest getFullSubmissionStringExamControllerEndpoint(String base) {
-		String hash = getRandomHash();
+		String hash = "b9a7e15b14d31b8b6af47a5b53af73051e32e38b";
 		return AreteRequest.builder()
+				.uniid(UNIID_GIT)
 				.gitStudentRepo(STUDENT_REPO_EXAM)
 				.gitTestSource(TESTER_REPO_EXAM)
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.systemExtra((new HashSet<>(Arrays.asList("noStd", "noMail"))))
-				.uniid("envomp")
+				.systemExtra((new HashSet<>(Arrays.asList("noStd", "noFeedback", "noMail", "integration_tests"))))
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.hash(hash)
 				.dockerExtra(EXTRA)
 				.build();
 	}
 
-	public static AreteRequest getFullSubmissionStringExamControllerEndpoint() {
-
+	public static AreteRequest getFullSubmissionStringProlog(String base) {
+		String hash = getRandomHash();
 		return AreteRequest.builder()
-				.gitStudentRepo(STUDENT_REPO_EXAM)
-				.gitTestSource(TESTER_REPO_EXAM)
-				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.systemExtra((new HashSet<>(Arrays.asList("noStd", "noFeedback", "noMail"))))
-				.uniid("envomp")
-				.returnUrl(RETURN_URL)
-				.dockerExtra(EXTRA)
-				.build();
-	}
-
-	public static AreteRequest getFullSubmissionStringProlog() {
-
-		return AreteRequest.builder()
+				.uniid(UNIID_GIT)
 				.gitStudentRepo("https://gitlab.cs.ttu.ee/envomp/iti0211-2019.git")
 				.testingPlatform(TESTING_PLATFORM_PROLOG)
 				// no test access prolog
-				.uniid("envomp")
-				.returnUrl(RETURN_URL)
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.build();
 	}
 
-	public static AreteRequest getFullSubmissionStringSync(String base) throws IOException {
+	@SneakyThrows
+	public static AreteRequest getFullSubmissionStringSync(String base) {
 		String hash = getRandomHash();
 		return AreteRequest.builder()
+				.uniid(UNIID_GIT)
 				.gitTestSource(TESTER_REPO_JAVA)
 				.testingPlatform(TESTING_PLATFORM_JAVA)
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.gitTestSource(PROJECT_GIT)
 				.dockerExtra((new HashSet<>(Collections.singletonList("-r ~CHECKSTYLE"))))
-				.systemExtra((new HashSet<>(Collections.singletonList("noMail"))))
+				.systemExtra((new HashSet<>(Arrays.asList("noMail", "anonymous"))))
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequest.SourceFile.builder()
 								.path("EX01IdCode/src/ee/taltech/iti0202/idcode/IDCode.java")
@@ -264,17 +246,17 @@ public class SubmissionInitializer {
 				.build();
 	}
 
-	public static AreteRequest getFullSubmissionStringSyncBadRequest(String base) throws IOException {
+	@SneakyThrows
+	public static AreteRequest getFullSubmissionStringSyncBadRequest(String base) {
 		String hash = getRandomHash();
 		return AreteRequest.builder()
+				.uniid(UNIID_GIT)
 				.gitTestSource(TESTER_REPO_JAVA)
 				.testingPlatform(TESTING_PLATFORM_JAVA)
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.gitTestSource(PROJECT_GIT)
-				.systemExtra((new HashSet<>(Arrays.asList(
-////						, "noMail"
-				))))
+				.systemExtra((new HashSet<>(Arrays.asList("integration_tests", "noMail"))))
 				.source(new ArrayList<>(Collections.singletonList(
 						AreteRequest.SourceFile.builder()
 								.path("EX01IdCode/src/ee/taltech/iti0202/idcode/IDCode.java")
@@ -283,17 +265,16 @@ public class SubmissionInitializer {
 				.build();
 	}
 
-
-	public static AreteRequest getFullSubmissionStringPythonSync(String base) throws IOException {
+	@SneakyThrows
+	public static AreteRequest getFullSubmissionStringPythonSync(String base) {
 		String hash = getRandomHash();
 		return AreteRequest.builder()
+				.uniid(UNIID_GIT)
 				.gitTestSource(TESTER_REPO_PYTHON)
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.dockerExtra(EXTRA)
 				.hash(hash)
-				.systemExtra((new HashSet<>(Arrays.asList(
-////						, "noMail"
-				))))
+				.systemExtra((new HashSet<>(Arrays.asList("integration_tests", "noMail"))))
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.gitTestSource(PROJECT_GIT_PYTHON)
 				.source(new ArrayList<>(Collections.singletonList(
@@ -304,16 +285,16 @@ public class SubmissionInitializer {
 				.build();
 	}
 
-	public static AreteRequest getFullSubmissionStringPythonSyncNoStyle(String base) throws IOException {
+	@SneakyThrows
+	public static AreteRequest getFullSubmissionStringPythonSyncNoStyle(String base) {
 		String hash = getRandomHash();
 		return AreteRequest.builder()
+				.uniid(UNIID_GIT)
 				.gitTestSource(TESTER_REPO_PYTHON)
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.dockerExtra(new HashSet<>())
 				.hash(hash)
-				.systemExtra((new HashSet<>(Arrays.asList(
-////						, "noMail"
-				))))
+				.systemExtra((new HashSet<>(Arrays.asList("integration_tests", "noMail"))))
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.gitTestSource(PROJECT_GIT_PYTHON)
 				.source(new ArrayList<>(Collections.singletonList(
@@ -324,16 +305,15 @@ public class SubmissionInitializer {
 				.build();
 	}
 
-
-	public static AreteRequest getFullSubmissionStringPythonSyncNoStdout(String base) throws IOException {
+	@SneakyThrows
+	public static AreteRequest getFullSubmissionStringPythonSyncNoStdout(String base) {
 		String hash = getRandomHash();
 		return AreteRequest.builder()
+				.uniid(UNIID_GIT)
 				.gitTestSource(TESTER_REPO_PYTHON)
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.dockerExtra(EXTRA)
-				.systemExtra(new HashSet<>(Arrays.asList("noStd"
-//						, "noMail"
-				)))
+				.systemExtra((new HashSet<>(Arrays.asList("noStd", "integration_tests", "noMail"))))
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.gitTestSource(PROJECT_GIT_PYTHON)
@@ -345,15 +325,15 @@ public class SubmissionInitializer {
 				.build();
 	}
 
-	public static AreteRequest getFullSubmissionStringPythonSyncNoTesterFiles(String base) throws IOException {
+	@SneakyThrows
+	public static AreteRequest getFullSubmissionStringPythonSyncNoTesterFiles(String base) {
 		String hash = getRandomHash();
 		return AreteRequest.builder()
+				.uniid(UNIID_GIT)
 				.gitTestSource(TESTER_REPO_PYTHON)
 				.testingPlatform(TESTING_PLATFORM_PYTHON)
 				.dockerExtra(EXTRA)
-				.systemExtra(new HashSet<>(Arrays.asList("noTesterFiles"
-//						, "noMail"
-				)))
+				.systemExtra((new HashSet<>(Arrays.asList("noTesterFiles", "integration_tests", "noMail"))))
 				.hash(hash)
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
 				.gitTestSource(PROJECT_GIT_PYTHON)
@@ -370,10 +350,17 @@ public class SubmissionInitializer {
 	}
 
 
-	public static void assertFullSubmission(Submission submission) {
+	public static void assertFullSubmission(AreteResponse submission) {
 		assert submission.getUniid() != null;
-//		assert submission.getHash() != null;
-		assert submission.getReturnUrl().equals(RETURN_URL);
+		assert submission.getHash() != null;
+		assert submission.getTimestamp() != null;
+		assert !submission.getFailed();
+		assert submission.getTestSuites().size() > 0;
+		assert submission.getTestSuites().get(0).getUnitTests().size() != 0;
+		assert submission.getTestSuites().get(0).getUnitTests().get(0).getName() != null;
+		assert submission.getTotalGrade() != null;
+		assert submission.getType() != null;
+		assert submission.getVersion() != null;
 //		assert submission.getTestingPlatform().equals(TESTING_PLATFORM);
 //		assert !submission.getDockerExtra().isEmpty();
 	}
