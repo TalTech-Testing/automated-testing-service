@@ -345,6 +345,7 @@ public class SubmissionInitializer {
 				.build();
 	}
 
+
 	private static String getRandomHash() {
 		return RandomStringUtils.random(64, true, true).toLowerCase();
 	}

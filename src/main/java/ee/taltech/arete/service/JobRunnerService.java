@@ -307,6 +307,9 @@ public class JobRunnerService {
 		} else {
 			areteResponse = new AreteResponse(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
 		}
+		if (submission.getSystemExtra().contains("integration_tests")) {
+			LOGGER.error("FAILED WITH MESSAGE: {}", message);
+		}
 
 		reportSubmission(submission, areteResponse, message, "Failed submission", false, Optional.empty());
 	}
@@ -317,9 +320,6 @@ public class JobRunnerService {
 		if (submission.getSystemExtra().contains("integration_tests")) {
 			reportService.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
 			LOGGER.info("INTEGRATION TEST: Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
-
-			submission.setUniid("integration_test");
-			reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), objectMapper.writeValueAsString(areteResponse));
 			return;
 		}
 
