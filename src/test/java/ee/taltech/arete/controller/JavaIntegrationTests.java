@@ -138,4 +138,25 @@ public class JavaIntegrationTests {
 
 		assertTrue(answer.getFailed());
 	}
+
+
+	@Test
+	public void addNewSubmissionSyncReturnsFullSubmission() {
+
+		AreteRequest payload = getFullSubmissionStringControllerEndpoint(String.format("http://localhost:%s", port));
+		AreteResponse response = given()
+				.when()
+				.body(payload)
+				.post(":testSync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		// then
+		assertFullSubmission(response);
+		assertEquals(23, response.getTotalCount());
+		assertEquals(19, response.getTotalPassedCount());
+	}
 }

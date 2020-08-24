@@ -1,7 +1,10 @@
 package ee.taltech.arete.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import ee.taltech.arete.AreteApplication;
+import ee.taltech.arete.api.data.request.AreteRequest;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
@@ -19,6 +22,7 @@ import static ee.taltech.arete.initializers.SubmissionInitializer.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
@@ -95,5 +99,127 @@ public class PythonIntegrationTests {
 		assertEquals(16, response.getTotalPassedCount());
 	}
 
+	@Test
+	public void addNewSubmissionSyncExamReturnsOutputAndReturnExtra() {
+		ObjectNode root = objectMapper.createObjectNode();
+		root.put("some", "stuff");
+		AreteRequest submission = getFullSubmissionStringExamControllerEndpoint(String.format("http://localhost:%s", port));
+		submission.setReturnExtra(root);
+
+		JsonNode response = given()
+				.when()
+				.body(submission)
+				.post(":testSync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(JsonNode.class);
+		// then
+		assertNotNull(response.get("output"));
+		assertNotNull(response.get("returnExtra"));
+	}
+
+	@Test
+	public void addNewSubmissionSyncExamReturnsFullSubmission() {
+
+		AreteRequest payload = getFullSubmissionStringExamControllerEndpoint(String.format("http://localhost:%s", port));
+		AreteResponse response = given()
+				.when()
+				.body(payload)
+				.post(":testSync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		//then
+		assertFullSubmission(response);
+		assertEquals(55, response.getTotalCount());
+		assertEquals(46, response.getTotalPassedCount());
+		assertEquals("envomp@ttu.ee", response.getEmail());
+	}
+
+	@Test
+	public void addNewSubmissionSyncPythonCustomConfigurationReturnsFullSubmission() {
+		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonCustomConfiguration(String.format("http://localhost:%s", port));
+		AreteResponse response = given()
+				.when()
+				.body(payload)
+				.post(":testSync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		//then
+		assertFullSubmission(response);
+		assertEquals(18, response.getTotalCount());
+		assertEquals(18, response.getTotalPassedCount());
+		assertEquals("envomp@ttu.ee", response.getEmail());
+	}
+
+	@Test
+	public void addNewSubmissionSyncPythonRecursionReturnsOutputEmail() {
+		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonRecursion(String.format("http://localhost:%s", port));
+		AreteResponse response = given()
+				.when()
+				.body(payload)
+				.post(":testSync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		// then
+		assertFullSubmission(response);
+		assertEquals(1, response.getTotalCount());
+		assertEquals(0, response.getTotalPassedCount());
+		assertEquals("envomp@ttu.ee", response.getEmail());
+	}
+
+	@Test
+	public void addNewSubmissionSyncPythonBigReturnsFullSubmission() {
+
+		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonLong(String.format("http://localhost:%s", port));
+		AreteResponse response = given()
+				.when()
+				.body(payload)
+				.post(":testSync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		// then
+		assertFullSubmission(response);
+		assertEquals(21, response.getTotalCount());
+		assertEquals(13, response.getTotalPassedCount());
+	}
+
+
+	@Test
+	public void addNewSubmissionSyncPythonReturnsFullSubmission() {
+
+		AreteRequest payload = getFullSubmissionStringControllerEndpointPython(String.format("http://localhost:%s", port));
+		AreteResponse response = given()
+				.when()
+				.body(payload)
+				.post(":testSync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		// then
+		assertFullSubmission(response);
+		assertEquals(18, response.getTotalCount());
+		assertEquals(18, response.getTotalPassedCount());
+	}
 
 }

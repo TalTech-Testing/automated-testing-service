@@ -345,7 +345,6 @@ public class SubmissionInitializer {
 				.build();
 	}
 
-
 	private static String getRandomHash() {
 		return RandomStringUtils.random(64, true, true).toLowerCase();
 	}
@@ -364,29 +363,5 @@ public class SubmissionInitializer {
 		assert submission.getVersion() != null;
 //		assert submission.getTestingPlatform().equals(TESTING_PLATFORM);
 //		assert !submission.getDockerExtra().isEmpty();
-	}
-
-	public static void endTest() {
-
-		try {
-			File f = new File("students/");
-			deleteDirectory(f);
-		} catch (Exception ignored) {
-		}
-
-		try {
-			File f = new File("tests/");
-			deleteDirectory(f);
-		} catch (Exception ignored) {
-		}
-	}
-
-	private static void deleteDirectory(File directoryToBeDeleted) {
-		File[] allContents = directoryToBeDeleted.listFiles();
-		if (allContents != null) {
-			for (File file : allContents) {
-				deleteDirectory(file);
-			}
-		}
 	}
 }

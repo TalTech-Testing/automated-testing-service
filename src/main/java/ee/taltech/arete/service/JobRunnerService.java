@@ -320,6 +320,11 @@ public class JobRunnerService {
 		if (submission.getSystemExtra().contains("integration_tests")) {
 			reportService.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
 			LOGGER.info("INTEGRATION TEST: Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
+
+			String integrationTestMail = System.getenv("INTEGRATION_TEST_MAIL");
+			if (!integrationTestMail.isEmpty()) {
+				reportService.sendTextMail(integrationTestMail, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, output);
+			}
 			return;
 		}
 

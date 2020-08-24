@@ -2,11 +2,13 @@ package ee.taltech.arete.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.AreteApplication;
-import ee.taltech.arete.api.data.request.AreteTestUpdate;
+import ee.taltech.arete.api.data.request.AreteRequest;
+import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +17,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-
+import static ee.taltech.arete.initializers.SubmissionInitializer.assertFullSubmission;
+import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmissionStringProlog;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
-
 
 @AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
 @SpringBootTest(
 		classes = AreteApplication.class,
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SubmissionControllerTest {
+public class PrologIntegrationTests {
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -41,28 +42,25 @@ public class SubmissionControllerTest {
 		RestAssured.port = port;
 	}
 
-
 	@Test
-	public void updateImage() {
-		given()
-				.when()
-				.put("/image/prolog-tester")
-				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED));
+	@Ignore
+	public void addNewSubmissionProlog() {
 
-	}
-
-	@Test
-	public void updateTests() {
-		AreteTestUpdate update = new AreteTestUpdate(
-				new AreteTestUpdate.Project("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019/ex", "iti0102-2019"),
-				new ArrayList<>());
-		given()
-				.body(update)
+		AreteRequest payload = getFullSubmissionStringProlog(String.format("http://localhost:%s", port));
+		AreteResponse submission = given()
 				.when()
-				.put("/tests")
+				.body(payload)
+				.post("/test")
 				.then()
-				.statusCode(is(HttpStatus.SC_ACCEPTED));
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		assertFullSubmission(submission);
+
+		//TODO To actually check if it tests
+		// I dont have access to prolog tests
 
 	}
 }
