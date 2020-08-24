@@ -10,6 +10,7 @@ import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.service.docker.DockerService;
 import ee.taltech.arete.service.git.GitPullService;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -21,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
 import static org.h2.store.fs.FileUtils.createDirectory;
@@ -48,19 +48,22 @@ public class JobRunnerService {
 		this.objectMapper = objectMapper;
 	}
 
-	public List<String> runJob(Submission submission) {
+	public void runJob(Submission submission) {
 
-		ArrayList<String> outputPaths = new ArrayList<>();
+		if (folderMaintenance(submission)) return; // if error, done
 
-		if (folderMaintenance(submission)) return outputPaths; // if error, done
-
-		if (createDirs(submission)) return outputPaths; // if error, done
+		if (createDirs(submission)) return; // if error, done
 
 		formatSlugs(submission);
 
 		LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
 
 		for (String slug : submission.getSlugs()) {
+
+			if (createDirs(submission)) {
+				deleteDirs(submission);
+				continue;
+			}
 
 			rootProperties(submission);
 
@@ -81,10 +84,16 @@ public class JobRunnerService {
 
 			reportSuccessfulSubmission(slug, submission, outputPath);
 
-			outputPaths.add(outputPath);
-
+			deleteDirs(submission);
 		}
-		return outputPaths;
+	}
+
+	private void deleteDirs(Submission submission) {
+		try {
+			FileUtils.deleteDirectory(new File(String.format("input_and_output/%s", submission.getHash())));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
 	}
 
 	public void formatSlugs(Submission submission) {
@@ -233,7 +242,7 @@ public class JobRunnerService {
 					html = true;
 					areteResponse = getAreteResponse(slug, submission, json);
 
-				}  else {
+				} else {
 					areteResponse = new AreteResponse(slug, submission, "Unsupported tester type.");
 				}
 			} catch (Exception e1) {
