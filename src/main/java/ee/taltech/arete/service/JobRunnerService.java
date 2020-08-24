@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.api.data.response.hodor_studenttester.hodorStudentTesterResponse;
-import ee.taltech.arete.api.data.response.legacy.LegacyTestJobResult;
 import ee.taltech.arete.configuration.DevProperties;
 import ee.taltech.arete.domain.DefaultParameters;
 import ee.taltech.arete.domain.Submission;
@@ -234,10 +233,7 @@ public class JobRunnerService {
 					html = true;
 					areteResponse = getAreteResponse(slug, submission, json);
 
-				} else if ("hodor_legacy".equals(jsonObject.get("type"))) {
-					LegacyTestJobResult response = objectMapper.readValue(json, LegacyTestJobResult.class);
-					areteResponse = new AreteResponse(slug, submission, response);
-				} else {
+				}  else {
 					areteResponse = new AreteResponse(slug, submission, "Unsupported tester type.");
 				}
 			} catch (Exception e1) {

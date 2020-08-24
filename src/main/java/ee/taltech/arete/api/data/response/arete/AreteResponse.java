@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.databind.JsonNode;
 import ee.taltech.arete.api.data.response.hodor_studenttester.*;
-import ee.taltech.arete.api.data.response.legacy.LegacyTestJobResult;
-import ee.taltech.arete.api.data.response.legacy.LegacyTestingResult;
 import ee.taltech.arete.domain.Submission;
 import lombok.*;
 
@@ -231,29 +229,6 @@ public class AreteResponse {
 		}
 
 		output = constructOutput(submission);
-		fillFromSubmission(slug, submission);
-	}
-
-	public AreteResponse(String slug, Submission submission, LegacyTestJobResult response) {
-
-		for (LegacyTestingResult result : response.getResults()) {
-			TestContext textContext = new TestContext();
-			textContext.name = result.getName();
-			textContext.weight = 1;
-			textContext.grade = result.getPercentage();
-			this.totalGrade = String.valueOf(result.getPercentage());
-			this.testSuites.add(textContext);
-		}
-		this.output = response.getOutput();
-
-		if (!submission.getSystemExtra().contains("noFiles")) {
-			this.files = response.getFiles();
-		}
-
-		if (response.getPercent() != null) {
-			this.totalGrade = String.valueOf(response.getPercent());
-		}
-
 		fillFromSubmission(slug, submission);
 	}
 
