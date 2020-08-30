@@ -36,7 +36,7 @@ import java.util.Optional;
 @Service
 public class GitPullService {
 
-    private static final List<String> TESTABLES = List.of("ADD", "MODIFY");
+    private static final List<String> TESTABLES = List.of("ADD", "MODIFY", "RENAME", "COPY");
     private static final Logger LOGGER = LoggerFactory.getLogger(GitPullService.class);
     private static final TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback(); // failed ssh will fallback onto password
 
