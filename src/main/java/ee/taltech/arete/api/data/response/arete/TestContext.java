@@ -22,10 +22,10 @@ public class TestContext {
 	@JsonPropertyDescription("Test file path")
 	String file;
 
-	@JsonPropertyDescription("Test start time")
+	@JsonPropertyDescription("Test start time in milliseconds")
 	Long startDate;
 
-	@JsonPropertyDescription("Test end time")
+	@JsonPropertyDescription("Test end time in milliseconds")
 	Long endDate;
 
 //	String mode;

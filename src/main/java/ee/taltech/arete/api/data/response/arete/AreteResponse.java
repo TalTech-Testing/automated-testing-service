@@ -79,13 +79,13 @@ public class AreteResponse {
 	@JsonPropertyDescription("(Overridden by arete if left empty) Students mail")
 	String email;
 
-	@JsonPropertyDescription("(Overridden by arete if left empty) Testing timestamp")
+	@JsonPropertyDescription("(Overridden by arete if left empty) Testing timestamp in seconds")
 	Long timestamp;
 
-	@JsonPropertyDescription("Time when submission was received")
+	@JsonPropertyDescription("Time when submission was received in seconds")
 	Long received_timestamp;
 
-	@JsonPropertyDescription("Timestamp when testing was finished")
+	@JsonPropertyDescription("Timestamp when testing was finished in seconds")
 	Long finished_timestamp;
 
 	@JsonPropertyDescription("(Overridden by arete) Commit message by student when pushing to repository")
@@ -288,7 +288,7 @@ public class AreteResponse {
 		this.uniid = submission.getUniid();
 		this.timestamp = submission.getTimestamp();
 		this.received_timestamp = submission.getRecievedTimeStamp();
-		this.finished_timestamp = System.currentTimeMillis();
+		this.finished_timestamp = System.currentTimeMillis() / 1000;
 		this.commitMessage = submission.getCommitMessage();
 		this.testingPlatform = submission.getTestingPlatform();
 		this.root = submission.getCourse();

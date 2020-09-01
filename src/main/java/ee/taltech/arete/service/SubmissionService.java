@@ -160,9 +160,9 @@ public class SubmissionService {
 		}
 
 		if (submission.getTimestamp() == null) {
-			submission.setTimestamp(System.currentTimeMillis());
+			submission.setTimestamp(System.currentTimeMillis() / 1000);
 		}
-		submission.setRecievedTimeStamp(System.currentTimeMillis());
+		submission.setRecievedTimeStamp(System.currentTimeMillis() / 1000);
 
 		if (submission.getDockerTimeout() == null) {
 			if (devProperties.getDebug()) {
