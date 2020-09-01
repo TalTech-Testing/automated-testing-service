@@ -113,7 +113,7 @@ public class PriorityQueueService {
 
 		try {
 			for (Submission submission : getActiveSubmissions()) {
-				if (submission.getRecievedTimeStamp() + Math.min(submission.getDockerTimeout() + 10, stuckQueue) < System.currentTimeMillis() / 1000) {
+				if (submission.getRecievedTimeStamp() + Math.min(submission.getDockerTimeout() + 10, stuckQueue) * 1000 < System.currentTimeMillis()) {
 					killThread(submission);
 					try {
 						reportService.sendTextMail(devProperties.getDeveloper(), objectWriter.writeValueAsString(submission), "Removed submission", false, Optional.empty());
@@ -161,7 +161,7 @@ public class PriorityQueueService {
 			}
 
 			if (job.getTimestamp() == null) {
-				job.setTimestamp(System.currentTimeMillis() / 1000);
+				job.setTimestamp(System.currentTimeMillis());
 			}
 
 			activeSubmissions.add(job);

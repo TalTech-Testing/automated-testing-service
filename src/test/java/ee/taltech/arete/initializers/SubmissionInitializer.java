@@ -57,7 +57,7 @@ public class SubmissionInitializer {
 				.result("Everything went ok but in Python. Here are some LOGS LOGS LOGS LOGS LOGS ...")
 				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
-				.timestamp(System.currentTimeMillis() / 1000)
+				.timestamp(System.currentTimeMillis())
 				.priority(10)
 				.build();
 	}
@@ -79,7 +79,7 @@ public class SubmissionInitializer {
 				.result("Everything went ok. Here are some LOGS LOGS LOGS LOGS LOGS ...")
 				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
 				.dockerExtra(new HashSet<>(Collections.singletonList("stylecheck")))
-				.timestamp(System.currentTimeMillis() / 1000)
+				.timestamp(System.currentTimeMillis())
 				.priority(10)
 				.build();
 	}
