@@ -222,4 +222,24 @@ public class PythonIntegrationTests {
 		assertEquals(18, response.getTotalPassedCount());
 	}
 
+	@Test
+	public void addNewSubmissionSyncPythonFirstPushReturnsFullSubmission() {
+
+		AreteRequest payload = getFullSubmissionStringControllerEndpointPythonFirstPush(String.format("http://localhost:%s", port));
+		AreteResponse response = given()
+				.when()
+				.body(payload)
+				.post(":testSync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponse.class);
+
+		// then
+		assertFullSubmission(response);
+		assertEquals(12, response.getTotalCount());
+		assertEquals(12, response.getTotalPassedCount());
+	}
+
 }

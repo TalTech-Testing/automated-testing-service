@@ -18,11 +18,13 @@ import java.util.HashSet;
 public class SubmissionInitializer {
 	private final static String UNIID_GIT = "envomp";
 
+	private static final String ARETE_STUDENT_REPO_PYTHON = "https://gitlab.cs.ttu.ee/envomp/arete-student-repo";
 	private static final String STUDENT_REPO_PYTHON = "https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git";
 	private static final String STUDENT_REPO_JAVA = "https://gitlab.cs.ttu.ee/envomp/iti0202-2019.git";
 	private static final String STUDENT_REPO_EXAM = "https://gitlab.cs.ttu.ee/iti0102-2018/exams/exam2-envomp.git";
 	private static final String STUDENT_REPO_GITHUB = "https://github.com/envomp/CV.git";
 
+	private static final String ARETE_TEST_REPO_PYTHON = "https://gitlab.cs.ttu.ee/envomp/ex";
 	private static final String TESTER_REPO_PYTHON = "https://gitlab.cs.ttu.ee/iti0102-2019/ex.git";
 	private static final String TESTER_REPO_EXAM = "https://gitlab.cs.ttu.ee/iti0102-2018/ex.git";
 	private static final String TESTER_REPO_JAVA = "https://gitlab.cs.ttu.ee/iti0202-2019/ex.git";
@@ -322,6 +324,20 @@ public class SubmissionInitializer {
 								.path("ex04_cipher/cipher.py")
 								.contents(Files.readString(Paths.get(home + "/src/test/java/ee/taltech/arete/initializers/cipher.py"), StandardCharsets.UTF_8))
 								.build())))
+				.build();
+	}
+
+	public static AreteRequest getFullSubmissionStringControllerEndpointPythonFirstPush(String base) {
+		String hash = "3a576489c3b3db981dcc93badbf2665bb5c1be1f";
+		return AreteRequest.builder()
+				.uniid(UNIID_GIT)
+				.gitStudentRepo(ARETE_STUDENT_REPO_PYTHON)
+				.gitTestSource(ARETE_TEST_REPO_PYTHON)
+				.hash(hash)
+				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
+				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
+				.dockerExtra(EXTRA)
 				.build();
 	}
 

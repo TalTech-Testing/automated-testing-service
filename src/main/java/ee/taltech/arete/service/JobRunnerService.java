@@ -102,11 +102,11 @@ public class JobRunnerService {
 		HashSet<String> formattedSlugs = new HashSet<>();
 
 		for (String changed_file : submission.getSlugs()) {
-			String potentialSlug = changed_file.split("/")[0];
+			String potentialSlug = changed_file.split("[/\\\\]")[0];
 			if (potentialSlug.matches(devProperties.getNameMatcher())) {
 				if (submission.getGroupingFolders().contains(potentialSlug)) {
 					try {
-						String innerPotentialSlug = changed_file.split("/")[1];
+						String innerPotentialSlug = changed_file.split("[/\\\\]")[1];
 						if (innerPotentialSlug.matches(devProperties.getNameMatcher())) {
 							formattedSlugs.add(potentialSlug + "/" + innerPotentialSlug);
 						}
