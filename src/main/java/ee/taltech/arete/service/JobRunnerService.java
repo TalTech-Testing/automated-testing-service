@@ -374,13 +374,15 @@ public class JobRunnerService {
 			if (areteResponse.getFailed()) {
 				try {
 					reportService.sendTextMail(devProperties.getAgo(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, output);
-					reportService.sendTextMail(devProperties.getDeveloper(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, output);
+					if (!devProperties.getAgo().equals(devProperties.getDeveloper())) {
+						reportService.sendTextMail(devProperties.getDeveloper(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, output);
+					}
 				} catch (Exception e) {
 					reportService.sendTextMail(devProperties.getAgo(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, Optional.empty());
-					reportService.sendTextMail(devProperties.getDeveloper(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, Optional.empty());
+					if (!devProperties.getAgo().equals(devProperties.getDeveloper())) {
+						reportService.sendTextMail(devProperties.getDeveloper(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, Optional.empty());
+					}
 				}
-			} else {
-				reportService.sendTextMail(devProperties.getDeveloper(), message, header, html, output);
 			}
 
 		} catch (Exception e1) {
