@@ -10,6 +10,7 @@ import lombok.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Data
@@ -325,8 +326,19 @@ public class AreteResponse {
 		long totalWeight = 0;
 		long totalPassedWeight = 0;
 
-		errorTable(output);
+		if (submission.getSystemExtra().contains("noStyle")) {
+			errors = errors.stream().filter(x -> x.kind.toLowerCase().contains("style")).collect(Collectors.toList());
+		}
 
+		if (errors.size() > 0) {
+			errorTable(output, submission);
+		}
+
+		if (!submission.getSystemExtra().contains("noStyle")) {
+			output.append("<br>");
+			output.append(String.format("Style percentage: %s%s", style, "%"));
+			output.append("<br>");
+		}
 
 		for (TestContext context : testSuites) {
 
@@ -411,7 +423,7 @@ public class AreteResponse {
 		output.append("</th>");
 	}
 
-	private void errorTable(StringBuilder output) {
+	private void errorTable(StringBuilder output, Submission submission) {
 		output.append("<br>");
 		output.append("<table style='width:100%;border: 1px solid black;border-collapse: collapse;' id='errors'>");
 
@@ -485,10 +497,6 @@ public class AreteResponse {
 		}
 
 		output.append("</table>");
-
-		output.append("<br>");
-		output.append(String.format("Style percentage: %s%s", style, "%"));
-		output.append("<br>");
 	}
 
 	private void testsTable(Submission submission, StringBuilder output, TestContext context, boolean bright) {
