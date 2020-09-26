@@ -327,7 +327,7 @@ public class AreteResponse {
 		long totalPassedWeight = 0;
 
 		if (submission.getSystemExtra().contains("noStyle")) {
-			errors = errors.stream().filter(x -> x.kind.toLowerCase().contains("style")).collect(Collectors.toList());
+			errors = errors.stream().filter(x -> !x.kind.toLowerCase().contains("style")).collect(Collectors.toList());
 		}
 
 		if (errors.size() > 0) {
