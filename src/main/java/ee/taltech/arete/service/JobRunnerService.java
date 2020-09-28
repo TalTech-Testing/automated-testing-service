@@ -55,8 +55,8 @@ public class JobRunnerService {
 		if (createDirs(submission)) return; // if error, done
 
 		formatSlugs(submission);
-
 		LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
+		String initialEmail = submission.getEmail();
 
 		for (String slug : submission.getSlugs()) {
 
@@ -66,9 +66,8 @@ public class JobRunnerService {
 			}
 
 			rootProperties(submission);
-
 			slugProperties(submission, slug);
-
+			modifyEmail(submission, initialEmail);
 			String outputPath;
 
 			try {
@@ -77,14 +76,22 @@ public class JobRunnerService {
 
 			} catch (Exception e) {
 				LOGGER.error("job {} has failed for user {} with exception: {}", slug, submission.getUniid(), e.getMessage());
-
 				reportFailedSubmission(submission, e);
 				continue;
 			}
 
 			reportSuccessfulSubmission(slug, submission, outputPath);
-
 			deleteDirs(submission);
+		}
+	}
+
+	public void modifyEmail(Submission submission, String initialEmail) {
+		submission.setEmail(initialEmail);
+
+		if (!submission.getSystemExtra().contains("allowExternalMail")) {
+			if (!submission.getEmail().matches(devProperties.getSchoolMailMatcher())) {
+				submission.setEmail(submission.getUniid() + "@ttu.ee");
+			}
 		}
 	}
 

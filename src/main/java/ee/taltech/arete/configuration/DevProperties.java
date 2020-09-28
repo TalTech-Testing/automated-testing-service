@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class DevProperties {
 
     private String nameMatcher = "^[a-zA-Z0-9\\p{L}-_]*$"; // regex
+    private String schoolMailMatcher = "^[a-zA-Z0-9\\p{L}-_.]+@(ttu|taltech)\\.ee$"; // regex
 	private Boolean debug = false; // if unlock features for debug
     private String developer = "ago.luberg@ttu.ee"; // send all submissions
     private String ago = "ago.luberg@ttu.ee"; // send only failed submissions
