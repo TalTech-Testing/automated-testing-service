@@ -69,6 +69,10 @@ public class JobRunnerService {
 
 			slugProperties(submission, slug);
 
+			studentRootProperties(submission);
+
+			studentSlugProperties(submission);
+
 			String outputPath;
 
 			try {
@@ -140,10 +144,24 @@ public class JobRunnerService {
 		return false;
 	}
 
+	public void rootProperties(Submission submission) {
+		if (!submission.getSystemExtra().contains("noOverride")) {
+			try {
+				String path = String.format("tests/%s/arete.json", submission.getCourse());
+				DefaultParameters params = objectMapper.readValue(new File(path), DefaultParameters.class);
+				params.overrideParametersForStudentValidation(submission);
+				LOGGER.info("Overrode default parameters: {}", params);
+			} catch (Exception e) {
+				LOGGER.info("Using default parameters: {}", e.getMessage());
+			}
+		}
+	}
+
 	public void slugProperties(Submission submission, String slug) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
-				DefaultParameters params = objectMapper.readValue(new File(String.format("tests/%s/%s/arete.json", submission.getCourse(), slug)), DefaultParameters.class);
+				String path = String.format("tests/%s/%s/arete.json", submission.getCourse(), slug);
+				DefaultParameters params = objectMapper.readValue(new File(path), DefaultParameters.class);
 				params.overrideParametersForStudentValidation(submission);
 				LOGGER.info("Overrode default parameters: {}", params);
 			} catch (Exception e) {
@@ -153,11 +171,26 @@ public class JobRunnerService {
 	}
 
 
-	public void rootProperties(Submission submission) {
+	public void studentRootProperties(Submission submission) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
-				DefaultParameters params = objectMapper.readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class);
-				params.overrideParametersForStudentValidation(submission);
+				String path = String.format("students/%s/%s/arete.json", submission.getUniid(), submission.getFolder());
+				DefaultParameters params = objectMapper.readValue(new File(path), DefaultParameters.class);
+				params.overrideParametersForStudent(submission);
+				LOGGER.info("Overrode default parameters: {}", params);
+			} catch (Exception e) {
+				LOGGER.info("Using default parameters: {}", e.getMessage());
+			}
+		}
+	}
+
+
+	public void studentSlugProperties(Submission submission, String slug) {
+		if (!submission.getSystemExtra().contains("noOverride")) {
+			try {
+				String path = String.format("students/%s/%s/%s/arete.json", submission.getUniid(), submission.getFolder(), slug);
+				DefaultParameters params = objectMapper.readValue(new File(path), DefaultParameters.class);
+				params.overrideParametersForStudent(submission);
 				LOGGER.info("Overrode default parameters: {}", params);
 			} catch (Exception e) {
 				LOGGER.info("Using default parameters: {}", e.getMessage());

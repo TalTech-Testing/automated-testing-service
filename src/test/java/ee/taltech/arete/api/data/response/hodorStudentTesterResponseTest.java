@@ -93,6 +93,16 @@ public class hodorStudentTesterResponseTest {
 	}
 
 	@Test
+	public void FsharpParsingFullResponse() throws IOException {
+		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/fsharp-arete.json");
+		Submission test = getFullSubmissionPython(String.format("http://localhost:%s", port));
+		AreteResponse response = jobRunnerService.getAreteResponse("ex01_geometry", test, json);
+
+		System.out.println(objectMapper.writeValueAsString(response));
+	}
+
+
+	@Test
 	public void JavaParsingFullResponse() throws IOException {
 		// given
 		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java2.json");

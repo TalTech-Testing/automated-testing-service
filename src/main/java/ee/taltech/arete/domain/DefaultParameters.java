@@ -24,6 +24,14 @@ public class DefaultParameters {
 
 	private String programmingLanguage;
 
+	public void overrideParametersForStudent(Submission submission) {
+		if (systemExtra != null) {
+			if (systemExtra.contains("noMail")) {
+				submission.getSystemExtra().add("noMail");
+			}
+		}
+	}
+
 	public void overrideParametersForTestValidation(Submission submission) {
 		overrideDefaultParameters(submission);
 
