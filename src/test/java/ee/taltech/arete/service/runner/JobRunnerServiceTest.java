@@ -36,8 +36,21 @@ class JobRunnerServiceTest {
 		jobRunnerService.formatSlugs(submission);
 
 		// then
-		System.out.println(submission.getSlugs());
 		assert submission.getSlugs().containsAll(new HashSet<>(Arrays.asList("EX01IdCode", "TK/tk_tsükkel_1")));
+	}
+
+	@Test
+	void revertToInitialMail() {
+		// given
+		Submission submission = getGitPullEndpointSubmissionGitlab(String.format("http://localhost:%s", port));
+		submission.setEmail("enrico.vompa@gmail.com");
+		String initial = submission.getEmail();
+
+		// when
+		jobRunnerService.modifyEmail(submission, initial);
+
+		// then
+		assert submission.getEmail().equals("envomp@ttu.ee");
 	}
 
 }
