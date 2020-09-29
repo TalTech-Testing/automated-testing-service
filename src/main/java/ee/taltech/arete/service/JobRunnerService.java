@@ -71,7 +71,7 @@ public class JobRunnerService {
 
 			studentRootProperties(submission);
 
-			studentSlugProperties(submission);
+			studentSlugProperties(submission, slug);
 
 			String outputPath;
 
