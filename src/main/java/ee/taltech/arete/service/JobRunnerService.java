@@ -67,9 +67,7 @@ public class JobRunnerService {
 
 			rootProperties(submission);
 			slugProperties(submission, slug);
-
 			studentRootProperties(submission);
-
 			studentSlugProperties(submission, slug);
 
 			modifyEmail(submission, initialEmail);
