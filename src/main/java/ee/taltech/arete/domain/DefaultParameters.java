@@ -45,28 +45,24 @@ public class DefaultParameters {
 	}
 
 	private void overrideDefaultParameters(Submission submission) {
-		if (dockerTimeout != null && willOverride(submission)) {
+		if (dockerTimeout != null) {
 			submission.setDockerTimeout(dockerTimeout);
 		}
 
-		if (dockerExtra != null && willOverride(submission)) {
+		if (dockerExtra != null) {
 			submission.setDockerExtra(dockerExtra);
 		}
 
-		if (systemExtra != null && willOverride(submission)) {
+		if (systemExtra != null) {
 			submission.setSystemExtra(systemExtra);
 		}
 
-		if (groupingFolders != null && willOverride(submission)) {
+		if (groupingFolders != null) {
 			submission.setGroupingFolders(groupingFolders);
 		}
 
-		if (programmingLanguage != null && willOverride(submission)) {
+		if (programmingLanguage != null) {
 			submission.setTestingPlatform(programmingLanguage);
 		}
-	}
-
-	private boolean willOverride(Submission submission) {
-		return !submission.getDockerExtra().contains("noOverride");
 	}
 }

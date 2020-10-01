@@ -66,8 +66,11 @@ public class JobRunnerService {
 			}
 
 			rootProperties(submission);
+			groupingFolderProperties(submission, slug);
 			slugProperties(submission, slug);
+
 			studentRootProperties(submission);
+			studentGroupingFolderProperties(submission, slug);
 			studentSlugProperties(submission, slug);
 
 			modifyEmail(submission, initialEmail);
@@ -163,6 +166,20 @@ public class JobRunnerService {
 		}
 	}
 
+	public void groupingFolderProperties(Submission submission, String slug) {
+		Optional<String> group = extractGroupFromSlug(slug);
+		if (!submission.getSystemExtra().contains("noOverride") && group.isPresent()) {
+			try {
+				String path = String.format("tests/%s/%s/arete.json", submission.getCourse(), group.get());
+				DefaultParameters params = objectMapper.readValue(new File(path), DefaultParameters.class);
+				params.overrideParametersForStudentValidation(submission);
+				LOGGER.info("Overrode default parameters: {}", params);
+			} catch (Exception e) {
+				LOGGER.info("Using default parameters: {}", e.getMessage());
+			}
+		}
+	}
+
 	public void slugProperties(Submission submission, String slug) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
@@ -190,6 +207,20 @@ public class JobRunnerService {
 		}
 	}
 
+	public void studentGroupingFolderProperties(Submission submission, String slug) {
+		Optional<String> group = extractGroupFromSlug(slug);
+		if (!submission.getSystemExtra().contains("noOverride") && group.isPresent()) {
+			try {
+				String path = String.format("students/%s/%s/%s/arete.json", submission.getUniid(), submission.getFolder(), group.get());
+				DefaultParameters params = objectMapper.readValue(new File(path), DefaultParameters.class);
+				params.overrideParametersForStudent(submission);
+				LOGGER.info("Overrode default parameters: {}", params);
+			} catch (Exception e) {
+				LOGGER.info("Using default parameters: {}", e.getMessage());
+			}
+		}
+	}
+
 
 	public void studentSlugProperties(Submission submission, String slug) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
@@ -202,6 +233,14 @@ public class JobRunnerService {
 				LOGGER.info("Using default parameters: {}", e.getMessage());
 			}
 		}
+	}
+
+	public Optional<String> extractGroupFromSlug(String slug) {
+		String[] groups = slug.split("[/\\\\]");
+		if (groups.length > 1) {
+			return Optional.of(groups[0]);
+		}
+		return Optional.empty();
 	}
 
 	public void testingProperties(Submission submission) {
