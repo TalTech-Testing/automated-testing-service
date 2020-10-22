@@ -30,8 +30,7 @@
             <groupId>ee.taltech.arete.java</groupId>
             <artifactId>client</artifactId>
             <version>1.0.3</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/client-1.0.3.jar</systemPath>
+            <scope>compile</scope>
         </dependency>
 
         <!-- Spring boot stuffs -->
