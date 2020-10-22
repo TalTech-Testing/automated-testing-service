@@ -41,6 +41,10 @@ public class DefaultParameters {
 		if (uvaConfiguration != null && uvaConfiguration.getUserID() != null) {
 			submission.getUvaConfiguration().setUserID(uvaConfiguration.getUserID());
 		}
+
+		if (testingEnvironment != null) {
+			submission.setTestingEnvironment(testingEnvironment);
+		}
 	}
 
 	public void overrideParametersForTestValidation(Submission submission) {
