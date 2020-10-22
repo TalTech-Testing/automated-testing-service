@@ -39,7 +39,11 @@ public class DefaultParameters {
 		}
 
 		if (uvaConfiguration != null && uvaConfiguration.getUserID() != null) {
-			submission.getUvaConfiguration().setUserID(uvaConfiguration.getUserID());
+			if (submission.getUvaConfiguration() == null) {
+				submission.setUvaConfiguration(new UvaConfiguration(uvaConfiguration.getUserID(), null));
+			} else {
+				submission.getUvaConfiguration().setUserID(uvaConfiguration.getUserID());
+			}
 		}
 
 		if (testingEnvironment != null) {

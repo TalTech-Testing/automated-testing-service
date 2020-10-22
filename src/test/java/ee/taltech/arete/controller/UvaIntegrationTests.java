@@ -1,8 +1,8 @@
 package ee.taltech.arete.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.taltech.arete_testing_service.AreteApplication;
 import ee.taltech.arete.java.response.arete.AreteResponseDTO;
+import ee.taltech.arete_testing_service.AreteApplication;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import org.apache.http.HttpStatus;
@@ -23,37 +23,37 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
 @SpringBootTest(
-        classes = AreteApplication.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+		classes = AreteApplication.class,
+		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UvaIntegrationTests {
 
-    @Autowired
-    private ObjectMapper objectMapper;
+	@Autowired
+	private ObjectMapper objectMapper;
 
-    @LocalServerPort
-    private int port;
+	@LocalServerPort
+	private int port;
 
-    @Before
-    public void init() {
-        RestAssured.defaultParser = Parser.JSON;
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = port;
-    }
+	@Before
+	public void init() {
+		RestAssured.defaultParser = Parser.JSON;
+		RestAssured.baseURI = "http://localhost";
+		RestAssured.port = port;
+	}
 
-    @Test
-    public void uvaGetAsAreteResponse() {
+	@Test
+	public void uvaGetAsAreteResponse() {
 
-        AreteResponseDTO response = given()
-                .when()
-                .body(getFullSubmissionUva(String.format("http://localhost:%s", port)))
-                .post(":testSync")
-                .then()
-                .statusCode(is(HttpStatus.SC_ACCEPTED))
-                .extract()
-                .body()
-                .as(AreteResponseDTO.class);
+		AreteResponseDTO response = given()
+				.when()
+				.body(getFullSubmissionUva(String.format("http://localhost:%s", port)))
+				.post(":testSync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponseDTO.class);
 
-        assertEquals(100, response.getStyle());
-        assertEquals(100.0, response.getTotalGrade());
-    }
+		assertEquals(100, response.getStyle());
+		assertEquals(100.0, response.getTotalGrade());
+	}
 }
