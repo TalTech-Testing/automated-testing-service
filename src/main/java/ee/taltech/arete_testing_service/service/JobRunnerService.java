@@ -98,51 +98,59 @@ public class JobRunnerService {
     }
 
     private void readStudentFiles(Submission submission, String slug) {
-        if (submission.getGitStudentRepo() != null && submission.getGitStudentRepo().contains("git") && submission.getSource() == null) {
-            String student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getFolder(), slug);
+    	try {
+			if (submission.getGitStudentRepo() != null && submission.getGitStudentRepo().contains("git") && submission.getSource() == null) {
+				String student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getFolder(), slug);
 
-            FileUtils.listFiles(
-                    new File(student),
-                    new RegexFileFilter("^(.*?)"),
-                    DirectoryFileFilter.DIRECTORY
-            ).parallelStream().sequential()
-                    .forEach(x -> {
-                        try {
-                            submission.setSource(new ArrayList<>());
-                            submission.getSource()
-                                    .add(FileDTO.builder()
-                                            .contents(Files.readString(x.toPath(), StandardCharsets.UTF_8))
-                                            .path(x.getPath())
-                                            .build());
-                        } catch (IOException e) {
-                            submission.setSource(null);
-                        }
-                    });
-        }
+				FileUtils.listFiles(
+						new File(student),
+						new RegexFileFilter("^(.*?)"),
+						DirectoryFileFilter.DIRECTORY
+				).parallelStream().sequential()
+						.forEach(x -> {
+							try {
+								submission.setSource(new ArrayList<>());
+								submission.getSource()
+										.add(FileDTO.builder()
+												.contents(Files.readString(x.toPath(), StandardCharsets.UTF_8))
+												.path(x.getPath())
+												.build());
+							} catch (IOException e) {
+								submission.setSource(null);
+							}
+						});
+			}
+		} catch (Exception e) {
+			submission.setSource(null);
+		}
     }
 
     private void readTesterFiles(Submission submission, String slug) {
-        if (submission.getGitTestRepo() != null && submission.getGitTestRepo().contains("git") && submission.getTestSource() == null) {
-            String tester = String.format("tests/%s/%s", submission.getCourse(), slug);
+    	try {
+			if (submission.getGitTestRepo() != null && submission.getGitTestRepo().contains("git") && submission.getTestSource() == null) {
+				String tester = String.format("tests/%s/%s", submission.getCourse(), slug);
 
-            FileUtils.listFiles(
-                    new File(tester),
-                    new RegexFileFilter("^(.*?)"),
-                    DirectoryFileFilter.DIRECTORY
-            ).parallelStream().sequential()
-                    .forEach(x -> {
-                        try {
-                            submission.setTestSource(new ArrayList<>());
-                            submission.getTestSource()
-                                    .add(FileDTO.builder()
-                                            .contents(Files.readString(x.toPath(), StandardCharsets.UTF_8))
-                                            .path(x.getPath())
-                                            .build());
-                        } catch (IOException e) {
-                            submission.setTestSource(null);
-                        }
-                    });
-        }
+				FileUtils.listFiles(
+						new File(tester),
+						new RegexFileFilter("^(.*?)"),
+						DirectoryFileFilter.DIRECTORY
+				).parallelStream().sequential()
+						.forEach(x -> {
+							try {
+								submission.setTestSource(new ArrayList<>());
+								submission.getTestSource()
+										.add(FileDTO.builder()
+												.contents(Files.readString(x.toPath(), StandardCharsets.UTF_8))
+												.path(x.getPath())
+												.build());
+							} catch (IOException e) {
+								submission.setTestSource(null);
+							}
+						});
+			}
+		} catch (Exception e) {
+			submission.setTestSource(null);
+		}
     }
 
     @SneakyThrows
