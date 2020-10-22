@@ -29,9 +29,9 @@
         <dependency>
             <groupId>ee.taltech.arete.java</groupId>
             <artifactId>client</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/client-1.0.3.jar</systemPath>
+            <systemPath>${project.basedir}/src/main/resources/client-1.0.4.jar</systemPath>
         </dependency>
 
         <!-- Spring boot stuffs -->
@@ -196,7 +196,6 @@
 
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -219,7 +218,6 @@
                     <useSystemClassLoader>false</useSystemClassLoader>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
