@@ -123,7 +123,6 @@ public class PriorityQueueService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
