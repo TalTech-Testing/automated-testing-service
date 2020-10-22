@@ -1,7 +1,7 @@
 package ee.taltech.arete.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.taltech.arete.AreteApplication;
+import ee.taltech.arete_testing_service.AreteApplication;
 import ee.taltech.arete.java.request.AreteRequestDTO;
 import ee.taltech.arete.java.response.arete.AreteResponseDTO;
 import io.restassured.RestAssured;

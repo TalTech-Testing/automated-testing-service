@@ -11,11 +11,11 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.2.1.RELEASE</version>
     </parent>
-
-    <groupId>ee.taltech</groupId>
-    <artifactId>arete</artifactId>
+    <packaging>jar</packaging>
+    <groupId>ee.taltech.arete_testing_service</groupId>
+    <artifactId>arete_testing_service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>arete</name>
+    <name>arete_testing_service</name>
     <description>Automated testing service</description>
 
     <properties>

@@ -1,6 +1,6 @@
 package ee.taltech.arete.initializers;
 
-import ee.taltech.arete.domain.Submission;
+import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete.java.TestingEnvironment;
 import ee.taltech.arete.java.UvaConfiguration;
 import ee.taltech.arete.java.request.AreteRequestDTO;
