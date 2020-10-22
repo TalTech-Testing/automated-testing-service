@@ -2,11 +2,9 @@ package ee.taltech.arete.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.AreteApplication;
-import ee.taltech.arete.java.request.hook.AreteTestUpdateDTO;
-import ee.taltech.arete.java.request.hook.ProjectDTO;
+import ee.taltech.arete.java.response.arete.AreteResponseDTO;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
-import lombok.SneakyThrows;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,18 +15,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-
+import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmissionUva;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         classes = AreteApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SubmissionControllerTest {
+public class UvaIntegrationTests {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -43,30 +40,20 @@ public class SubmissionControllerTest {
         RestAssured.port = port;
     }
 
-
     @Test
-    public void updateImage() {
-        given()
+    public void uvaGetAsAreteResponse() {
+
+        AreteResponseDTO response = given()
                 .when()
-                .put("/image/prolog-tester")
+                .body(getFullSubmissionUva(String.format("http://localhost:%s", port)))
+                .post(":testSync")
                 .then()
-                .statusCode(is(HttpStatus.SC_ACCEPTED));
+                .statusCode(is(HttpStatus.SC_ACCEPTED))
+                .extract()
+                .body()
+                .as(AreteResponseDTO.class);
 
-    }
-
-    @SneakyThrows
-    @Test
-    public void updateTests() {
-        AreteTestUpdateDTO update = new AreteTestUpdateDTO(
-                new ProjectDTO("https://gitlab.cs.ttu.ee/iti0102-2019/ex.git", "iti0102-2019/ex", "iti0102-2019"),
-                new ArrayList<>());
-
-        given()
-                .body(update)
-                .when()
-                .put("/tests")
-                .then()
-                .statusCode(is(HttpStatus.SC_ACCEPTED));
-
+        assertEquals(100, response.getStyle());
+        assertEquals(100.0, response.getTotalGrade());
     }
 }

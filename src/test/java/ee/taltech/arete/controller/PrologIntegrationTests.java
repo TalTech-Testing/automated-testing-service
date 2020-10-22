@@ -2,8 +2,8 @@ package ee.taltech.arete.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.AreteApplication;
-import ee.taltech.arete.api.data.request.AreteRequest;
-import ee.taltech.arete.api.data.response.arete.AreteResponse;
+import ee.taltech.arete.java.request.AreteRequestDTO;
+import ee.taltech.arete.java.response.arete.AreteResponseDTO;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import org.apache.http.HttpStatus;
@@ -46,8 +46,8 @@ public class PrologIntegrationTests {
 	@Ignore
 	public void addNewSubmissionProlog() {
 
-		AreteRequest payload = getFullSubmissionStringProlog(String.format("http://localhost:%s", port));
-		AreteResponse submission = given()
+		AreteRequestDTO payload = getFullSubmissionStringProlog(String.format("http://localhost:%s", port));
+		AreteResponseDTO submission = given()
 				.when()
 				.body(payload)
 				.post("/test")
@@ -55,7 +55,7 @@ public class PrologIntegrationTests {
 				.statusCode(is(HttpStatus.SC_ACCEPTED))
 				.extract()
 				.body()
-				.as(AreteResponse.class);
+				.as(AreteResponseDTO.class);
 
 		assertFullSubmission(submission);
 

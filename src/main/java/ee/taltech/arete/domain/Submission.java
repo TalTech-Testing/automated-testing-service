@@ -2,7 +2,9 @@ package ee.taltech.arete.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
-import ee.taltech.arete.api.data.response.arete.File;
+import ee.taltech.arete.java.TestingEnvironment;
+import ee.taltech.arete.java.UvaConfiguration;
+import ee.taltech.arete.java.response.arete.FileDTO;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -10,7 +12,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Data
+@ToString
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,18 +27,18 @@ public class Submission {
 
     private String gitStudentRepo;
     //  or
-    private List<File> source;
+    private List<FileDTO> source;
 
-    private String gitTestSource;
+    private String gitTestRepo;
     // or
-    private List<File> testSource;
+    private List<FileDTO> testSource;
 
     private String hash;
 
-	@NotNull
+    @NotNull
     private String uniid; // gitlab namespace: envomp
 
-	private String email;
+    private String email;
 
     private String course; // gitlab namespace with path for tester: iti0102-2019/ex
 
@@ -42,24 +46,27 @@ public class Submission {
 
     private Set<String> slugs;
 
-	private Set<String> initialSlugs;
+    private Set<String> initialSlugs;
 
     private String commitMessage;
 
     @JsonIgnore
     private String result;
 
+    @Builder.Default
     private Set<String> dockerExtra = new HashSet<>();
 
+    @Builder.Default
     private Set<String> systemExtra = new HashSet<>();
 
-	private Set<String> groupingFolders = new HashSet<>();
+    @Builder.Default
+    private Set<String> groupingFolders = new HashSet<>();
 
     private Integer dockerTimeout;
 
     private Long timestamp;
 
-	private Long recievedTimeStamp;
+    private Long receivedTimestamp;
 
     private Integer priority;
 
@@ -68,5 +75,10 @@ public class Submission {
     private JsonNode returnExtra; // private stuff here
 
     private String waitingroom;
+
+    @Builder.Default
+    private TestingEnvironment testingEnvironment = TestingEnvironment.DOCKER;
+
+    private UvaConfiguration uvaConfiguration; // when using TestingEnvironment.UVA
 
 }

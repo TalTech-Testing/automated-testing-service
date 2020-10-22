@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallbackTemplate;
 import com.github.dockerjava.api.command.CreateContainerResponse;
-import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.api.model.Volume;
@@ -12,10 +11,12 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
-import ee.taltech.arete.api.data.response.arete.File;
 import ee.taltech.arete.domain.InputWriter;
 import ee.taltech.arete.domain.Submission;
+import ee.taltech.arete.exception.DockerRunnerException;
+import ee.taltech.arete.exception.DockerTimeoutException;
 import ee.taltech.arete.exception.ImageNotFoundException;
+import ee.taltech.arete.java.response.arete.FileDTO;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,16 +25,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
 import static com.github.dockerjava.api.model.AccessMode.rw;
 import static com.github.dockerjava.api.model.HostConfig.newHostConfig;
 
-public class Docker {
+public class DockerTestRunner {
 
-	private static final String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
-	private static final Logger LOGGER = LoggerFactory.getLogger(Docker.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DockerTestRunner.class);
 	public String outputPath;
 	private final ObjectMapper mapper = new ObjectMapper();
 
@@ -47,7 +46,7 @@ public class Docker {
 
 	private boolean done = false;
 
-	public Docker(Submission submission, String slug) {
+	public DockerTestRunner(Submission submission, String slug) {
 		this.submission = submission;
 		this.slug = slug;
 		this.containerName = String.format("%s_%s", submission.getHash().substring(0, 16).toLowerCase(), 100000 + Math.abs(new Random().nextInt()) * 900000);
@@ -94,10 +93,10 @@ public class Docker {
 
 			try {
 				// copy student files to tester
-				if (submission.getSource() == null) {
+				if (submission.getFolder() != null) {
 					FileUtils.copyDirectory(new java.io.File(student), new java.io.File(tempStudent));
 				} else {
-					for (File file : submission.getSource()) {
+					for (FileDTO file : submission.getSource()) {
 						copyFilesFromSource(tempStudent, file);
 					}
 				}
@@ -109,10 +108,10 @@ public class Docker {
 			try {
 
 				// copy tester files to tester
-				if (submission.getTestSource() == null) {
+				if (submission.getCourse() != null) {
 					FileUtils.copyDirectory(new java.io.File(tester), new java.io.File(tempTester));
 				} else {
-					for (File file : submission.getTestSource()) {
+					for (FileDTO file : submission.getTestSource()) {
 						copyFilesFromSource(tempTester, file);
 					}
 				}
@@ -167,7 +166,7 @@ public class Docker {
 						public void onComplete() {
 							submission.setResult(builder.toString());
 							done = true;
-							LOGGER.info("Docker for user {} with slug {} finished", submission.getUniid(), slug);
+							LOGGER.info("DockerTestRunner for user {} with slug {} finished", submission.getUniid(), slug);
 							super.onComplete();
 						}
 					});
@@ -178,17 +177,16 @@ public class Docker {
 				TimeUnit.SECONDS.sleep(1);
 				seconds--;
 				if (seconds == 0) {
-					throw new TimeoutException("Timed out");
+					throw new DockerTimeoutException("Timed out");
 				}
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("Exception caught while running docker: {}", e.getMessage());
-			throw new DockerException("Exception in docker, message: " + e.getMessage(), 1);
+			throw new DockerRunnerException("Exception in docker, message: " + e.getMessage());
 		}
 	}
 
-	private void copyFilesFromSource(String tempStudent, File file) throws IOException {
+	private void copyFilesFromSource(String tempStudent, FileDTO file) throws IOException {
 		String temp;
 		try {
 			temp = file.getPath().substring(file.getPath().indexOf("\\"));

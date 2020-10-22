@@ -1,5 +1,8 @@
 package ee.taltech.arete.domain;
 
+
+import ee.taltech.arete.java.TestingEnvironment;
+import ee.taltech.arete.java.UvaConfiguration;
 import lombok.*;
 
 import java.util.Set;
@@ -11,6 +14,10 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DefaultParameters {
+
+	private TestingEnvironment testingEnvironment;
+
+	private UvaConfiguration uvaConfiguration;
 
 	private Integer dockerTimeout;
 
@@ -30,6 +37,10 @@ public class DefaultParameters {
 				submission.getSystemExtra().add("noMail");
 			}
 		}
+
+		if (uvaConfiguration != null && uvaConfiguration.getUserID() != null) {
+			submission.getUvaConfiguration().setUserID(uvaConfiguration.getUserID());
+		}
 	}
 
 	public void overrideParametersForTestValidation(Submission submission) {
@@ -40,7 +51,7 @@ public class DefaultParameters {
 		}
 	}
 
-	public void overrideParametersForStudentValidation(Submission submission) {
+	public void overrideParameters(Submission submission) {
 		overrideDefaultParameters(submission);
 	}
 
@@ -63,6 +74,14 @@ public class DefaultParameters {
 
 		if (programmingLanguage != null) {
 			submission.setTestingPlatform(programmingLanguage);
+		}
+
+		if (uvaConfiguration != null) {
+			submission.setUvaConfiguration(uvaConfiguration);
+		}
+
+		if (testingEnvironment != null) {
+			submission.setTestingEnvironment(testingEnvironment);
 		}
 	}
 }

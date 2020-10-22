@@ -26,6 +26,14 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>ee.taltech.arete.java</groupId>
+            <artifactId>client</artifactId>
+            <version>1.0.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/client-1.0.3.jar</systemPath>
+        </dependency>
+
         <!-- Spring boot stuffs -->
 
         <dependency>
@@ -184,7 +192,6 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.10.1</version>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -209,10 +216,15 @@
                     <useSystemClassLoader>false</useSystemClassLoader>
                 </configuration>
             </plugin>
-
         </plugins>
-
     </build>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
 </project>
 

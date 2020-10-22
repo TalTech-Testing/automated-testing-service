@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
-import ee.taltech.arete.api.data.request.AreteTestUpdate;
-import ee.taltech.arete.api.data.response.arete.AreteResponse;
 import ee.taltech.arete.domain.Submission;
 import ee.taltech.arete.exception.RequestFormatException;
+import ee.taltech.arete.java.request.hook.AreteTestUpdateDTO;
+import ee.taltech.arete.java.request.hook.CommitDTO;
+import ee.taltech.arete.java.response.arete.AreteResponseDTO;
+import ee.taltech.arete.service.arete.AreteConstructor;
 import ee.taltech.arete.service.docker.ImageCheck;
 import ee.taltech.arete.service.git.GitPullService;
 import lombok.SneakyThrows;
@@ -29,7 +31,7 @@ public class RequestService {
 	private final PriorityQueueService priorityQueueService;
 	private final GitPullService gitPullService;
 	private final JobRunnerService jobRunnerService;
-	private final HashMap<String, AreteResponse> syncWaitingRoom = new HashMap<>();
+	private final HashMap<String, AreteResponseDTO> syncWaitingRoom = new HashMap<>();
 
 	public RequestService(ObjectMapper objectMapper, SubmissionService submissionService, PriorityQueueService priorityQueueService, GitPullService gitPullService, JobRunnerService jobRunnerService) {
 		this.objectMapper = objectMapper;
@@ -48,14 +50,9 @@ public class RequestService {
 	}
 
 	@SneakyThrows
-	public AreteResponse testSync(HttpEntity<String> request) {
+	public AreteResponseDTO testSync(HttpEntity<String> request) {
 		Submission submission = objectMapper.readValue(request.getBody(), Submission.class);
-		String waitingroom;
-		try {
-			waitingroom = submissionService.populateSyncFields(submission);
-		} catch (Exception e) {
-			return new AreteResponse("Nan", new Submission(), e.getMessage());
-		}
+		String waitingroom = submissionService.populateSyncFields(submission);
 		priorityQueueService.enqueue(submission);
 		int timeout = submission.getDockerTimeout() == null ? 120 : submission.getDockerTimeout();
 		while (!syncWaitingRoom.containsKey(waitingroom) && timeout > 0) {
@@ -69,10 +66,10 @@ public class RequestService {
 
 	public void waitingroom(HttpEntity<String> httpEntity, String hash) {
 		try {
-			syncWaitingRoom.put(hash, objectMapper.readValue(Objects.requireNonNull(httpEntity.getBody()), AreteResponse.class));
+			syncWaitingRoom.put(hash, objectMapper.readValue(Objects.requireNonNull(httpEntity.getBody()), AreteResponseDTO.class));
 		} catch (Exception e) {
 			LOGGER.error("Processing sync job failed: {}", e.getMessage());
-			syncWaitingRoom.put(hash, new AreteResponse("NaN", new Submission(), e.getMessage()));
+			syncWaitingRoom.put(hash, AreteConstructor.failedSubmission("NaN", new Submission(), e.getMessage()));
 		}
 	}
 
@@ -93,41 +90,50 @@ public class RequestService {
 	}
 
 	public String updateTests(HttpEntity<String> httpEntity) {
+		String requestBody = httpEntity.getBody();
+		LOGGER.info("Parsing request body: " + requestBody);
+
+		AreteTestUpdateDTO update = mapUpdateRequest(requestBody);
+		update.getProject().setUrl(submissionService.fixRepository(update.getProject().getUrl()));
+		String pathToTesterFolder = String.format("tests/%s/", update.getProject().getPath_with_namespace());
+		String pathToTesterRepo = update.getProject().getUrl();
+
 		try {
-			String requestBody = httpEntity.getBody();
-			LOGGER.info("Parsing request body: " + requestBody);
-			if (requestBody == null) throw new RequestFormatException("Empty input!");
-			AreteTestUpdate update = objectMapper.readValue(requestBody, AreteTestUpdate.class);
-
-			assert update.getProject().getPath_with_namespace() != null;
-			assert update.getProject().getUrl() != null;
-			update.getProject().setUrl(submissionService.fixRepository(update.getProject().getUrl()));
-
-			String pathToTesterFolder = String.format("tests/%s/", update.getProject().getPath_with_namespace());
-			String pathToTesterRepo = update.getProject().getUrl();
-
 			priorityQueueService.halt();
 			gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
 			priorityQueueService.go();
-
-			try {
-				runVerifyingTests(update);
-			} catch (Exception ignored) {
-				// no testing
-			}
-
-			return "Successfully updated tests: " + update.getProject().getPath_with_namespace();
 		} catch (Exception e) {
 			throw new RequestFormatException(e.getMessage());
 		}
+
+		try {
+			runVerifyingTests(update);
+		} catch (Exception ignored) {
+			// no testing
+		}
+
+		return "Successfully updated tests: " + update.getProject().getPath_with_namespace();
 	}
 
-	private void runVerifyingTests(AreteTestUpdate update) {
+	private AreteTestUpdateDTO mapUpdateRequest(String requestBody) {
+		if (requestBody == null) throw new RequestFormatException("Empty input!");
+		AreteTestUpdateDTO update;
+		try {
+			update = objectMapper.readValue(requestBody, AreteTestUpdateDTO.class);
+			assert update.getProject().getPath_with_namespace() != null;
+			assert update.getProject().getUrl() != null;
+		} catch (Exception e) {
+			throw new RequestFormatException(e.getMessage());
+		}
+		return update;
+	}
+
+	private void runVerifyingTests(AreteTestUpdateDTO update) {
 		Submission submission = new Submission();
-		AreteTestUpdate.Commit latest = update.getCommits().get(0);
+		CommitDTO latest = update.getCommits().get(0);
 		submission.setEmail(latest.getAuthor().getEmail());
 		submission.setUniid(update.getProject().getNamespace());
-		submission.setGitTestSource(update.getProject().getUrl());
+		submission.setGitTestRepo(update.getProject().getUrl());
 		jobRunnerService.testingProperties(submission);
 		Set<String> slugs = new HashSet<>();
 		slugs.addAll(latest.getAdded());

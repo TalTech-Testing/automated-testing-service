@@ -39,7 +39,7 @@ public class DockerService {
 	 */
 	public String runDocker(Submission submission, String slug) throws Exception {
 
-		Docker docker = new Docker(submission, slug);
+		DockerTestRunner docker = new DockerTestRunner(submission, slug);
 		Exception exception = null;
 
 		try {

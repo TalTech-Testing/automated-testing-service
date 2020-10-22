@@ -1,9 +1,9 @@
 package ee.taltech.arete.controller;
 
 import ee.taltech.arete.Utils;
-import ee.taltech.arete.api.data.response.arete.AreteResponse;
-import ee.taltech.arete.api.data.response.arete.SystemState;
 import ee.taltech.arete.domain.Submission;
+import ee.taltech.arete.java.response.arete.AreteResponseDTO;
+import ee.taltech.arete.java.response.arete.SystemStateDTO;
 import ee.taltech.arete.service.PriorityQueueService;
 import ee.taltech.arete.service.RequestService;
 import lombok.SneakyThrows;
@@ -34,7 +34,7 @@ public class SubmissionController {
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping(path = {"/test/sync", "/:testSync"}, produces = MediaType.APPLICATION_JSON_VALUE)
-	public AreteResponse TestSync(HttpEntity<String> httpEntity) {
+	public AreteResponseDTO TestSync(HttpEntity<String> httpEntity) {
 		return requestService.testSync(httpEntity);
 	}
 
@@ -84,8 +84,8 @@ public class SubmissionController {
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@GetMapping(path = "/state", produces = MediaType.APPLICATION_JSON_VALUE)
-	public SystemState GetSystemState() {
-		return new SystemState();
+	public SystemStateDTO GetSystemState() {
+		return new SystemStateDTO();
 	}
 
 }
