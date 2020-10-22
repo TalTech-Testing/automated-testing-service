@@ -1,5 +1,6 @@
 package ee.taltech.arete.service.runner;
 
+import ee.taltech.arete_testing_service.AreteApplication;
 import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.service.JobRunnerService;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ import static ee.taltech.arete.initializers.SubmissionInitializer.getGitPullEndp
 
 @AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = AreteApplication.class)
 class JobRunnerServiceTest {
 
 	@Autowired

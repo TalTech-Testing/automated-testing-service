@@ -1,5 +1,6 @@
 package ee.taltech.arete.service.git;
 
+import ee.taltech.arete_testing_service.AreteApplication;
 import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.service.git.GitPullService;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import static ee.taltech.arete.initializers.SubmissionInitializer.getGitPullEndp
 
 @AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = AreteApplication.class)
 class GitPullServiceTest {
 
 	@Autowired

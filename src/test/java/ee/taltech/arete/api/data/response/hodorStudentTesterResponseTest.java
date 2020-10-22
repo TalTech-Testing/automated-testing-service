@@ -3,6 +3,7 @@ package ee.taltech.arete.api.data.response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.java.response.arete.AreteResponseDTO;
 import ee.taltech.arete.java.response.hodor_studenttester.HodorStudentTesterResponse;
+import ee.taltech.arete_testing_service.AreteApplication;
 import ee.taltech.arete_testing_service.service.JobRunnerService;
 import ee.taltech.arete_testing_service.service.hodor.HodorParser;
 import org.junit.Test;
@@ -19,7 +20,7 @@ import java.nio.file.Paths;
 
 @AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = AreteApplication.class)
 public class hodorStudentTesterResponseTest {
 
 	private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
