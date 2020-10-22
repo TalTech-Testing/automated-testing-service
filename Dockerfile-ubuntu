@@ -48,6 +48,6 @@ RUN apt install -y postfix iptables net-tools
 RUN cp postfix.conf /etc/postfix/main.cf
 
 # Fire up our Spring Boot app by default and start mail service.
-ENTRYPOINT [ "sh", "-c", "service postfix start && java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /arete/target/arete-0.0.1-SNAPSHOT.jar" ]
+ENTRYPOINT [ "sh", "-c", "service postfix start && java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /arete/target/arete_testing_service-0.0.1-SNAPSHOT.jar" ]
 
 EXPOSE 8098:8098
