@@ -33,7 +33,9 @@ public class SubmissionService {
 	}
 
 	private void populateTesterRelatedFields(Submission submission) {
-		if (submission.getSystemExtra() != null && submission.getSystemExtra().contains("skipCopyingTests")) {
+		if (submission.getSystemExtra() != null &&
+				(submission.getSystemExtra().contains("skipCopyingTests")
+						|| submission.getSystemExtra().contains("skipCopying"))) {
 			return;
 		}
 
@@ -69,7 +71,9 @@ public class SubmissionService {
 	}
 
 	private void populateStudentRelatedFields(Submission submission) {
-		if (submission.getSystemExtra() != null && submission.getSystemExtra().contains("skipCopyingStudent")) {
+		if (submission.getSystemExtra() != null &&
+				(submission.getSystemExtra().contains("skipCopyingStudent")
+						|| submission.getSystemExtra().contains("skipCopying"))) {
 			return;
 		}
 

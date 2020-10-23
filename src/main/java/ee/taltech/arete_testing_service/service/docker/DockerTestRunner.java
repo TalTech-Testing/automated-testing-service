@@ -97,8 +97,12 @@ public class DockerTestRunner {
 			Volume volumeTester = new Volume("/tester");
 			Volume volumeOutput = new Volume("/host");
 
-			copyFiles(student, tempStudent, submission.getFolder(), submission.getSource(), "Failed to copy files from student folder to temp folder.");
-			copyFiles(tester, tempTester, submission.getCourse(), submission.getTestSource(), "Failed to copy files from tester folder to temp folder.");
+			if (!submission.getSystemExtra().contains("skipCopying") && !submission.getSystemExtra().contains("skipCopyingStudent")) {
+				copyFiles(student, tempStudent, submission.getFolder(), submission.getSource(), "Failed to copy files from student folder to temp folder.");
+			}
+			if (!submission.getSystemExtra().contains("skipCopying") && !submission.getSystemExtra().contains("skipCopyingTests")) {
+				copyFiles(tester, tempTester, submission.getCourse(), submission.getTestSource(), "Failed to copy files from tester folder to temp folder.");
+			}
 
 			mapper.writeValue(new java.io.File(String.format("input_and_output/%s/host/input.json", submission.getHash())),
 					InputWriter.builder()
