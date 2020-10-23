@@ -29,10 +29,6 @@ public class TableGenerator {
 		output.append("<td style='color:#D5DDE5;background:#393939;border: 1px solid black;border-collapse: collapse;padding: 5px;text-align: left;' ").append(extra).append(">");
 	}
 
-	public static void th(StringBuilder output) {
-		output.append("<th style='color:#D5DDE5;background:#1b1e24;border: 1px solid black;border-collapse: collapse;padding: 5px;text-align: left;'>");
-	}
-
 	public static void TestsHeader(StringBuilder output, String headerName) {
 		th(output);
 		output.append(headerName);
@@ -49,6 +45,10 @@ public class TableGenerator {
 		th(output);
 		output.append("Weight");
 		output.append("</th>");
+	}
+
+	public static void th(StringBuilder output) {
+		output.append("<th style='color:#D5DDE5;background:#1b1e24;border: 1px solid black;border-collapse: collapse;padding: 5px;text-align: left;'>");
 	}
 
 }

@@ -28,21 +28,28 @@ import java.util.concurrent.TimeUnit;
 public class PriorityQueueService {
 
 	private final OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+
 	private final Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
+
 	private final ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
 	private final DevProperties devProperties;
+
 	private final JobRunnerService jobRunnerService;
+
 	private final ReportService reportService;
 
 	private final CopyOnWriteArrayList<Submission> activeSubmissions = new CopyOnWriteArrayList<>();
+
 	private final PriorityQueue<Submission> submissionPriorityQueue = new PriorityQueue<>(Comparator
 			.comparingInt(Submission::getPriority)
 			.reversed()
 			.thenComparing(Submission::getReceivedTimestamp));
 
 	private Boolean halted = true;
+
 	private Integer jobsRan = 0;
+
 	private Integer stuckQueue = 3000; // just some protection against stuck queue
 
 	@Lazy
@@ -52,33 +59,8 @@ public class PriorityQueueService {
 		this.reportService = reportService;
 	}
 
-	private boolean isCPUAvaiable() {
-		return osBean.getSystemCpuLoad() < devProperties.getMaxCpuUsage() && devProperties.getParallelJobs() > activeSubmissions.size();
-	}
-
-	public void enqueue(Submission submission) {
-		submissionPriorityQueue.add(submission);
-	}
-
-	public void killThread(Submission submission) {
-		jobsRan++;
-		activeSubmissions.remove(submission);
-
-		try {
-			FileUtils.deleteDirectory(new File(String.format("input_and_output/%s", submission.getHash())));
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-		}
-
-		LOGGER.info("All done for submission on thread: {}", submission.getHash());
-	}
-
 	public Integer getJobsRan() {
 		return jobsRan;
-	}
-
-	public Integer getQueueSize() {
-		return submissionPriorityQueue.size();
 	}
 
 	public void halt() throws InterruptedException {
@@ -103,10 +85,6 @@ public class PriorityQueueService {
 		halted = false;
 	}
 
-	public List<Submission> getActiveSubmissions() {
-		return activeSubmissions;
-	}
-
 	@Async
 	@Scheduled(fixedRate = 1000)
 	public void clearCache() {
@@ -124,6 +102,23 @@ public class PriorityQueueService {
 			}
 		} catch (Exception e) {
 		}
+	}
+
+	public List<Submission> getActiveSubmissions() {
+		return activeSubmissions;
+	}
+
+	public void killThread(Submission submission) {
+		jobsRan++;
+		activeSubmissions.remove(submission);
+
+		try {
+			FileUtils.deleteDirectory(new File(String.format("input_and_output/%s", submission.getHash())));
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+
+		LOGGER.info("All done for submission on thread: {}", submission.getHash());
 	}
 
 	@Async
@@ -177,5 +172,17 @@ public class PriorityQueueService {
 
 			killThread(job);
 		}
+	}
+
+	public Integer getQueueSize() {
+		return submissionPriorityQueue.size();
+	}
+
+	private boolean isCPUAvaiable() {
+		return osBean.getSystemCpuLoad() < devProperties.getMaxCpuUsage() && devProperties.getParallelJobs() > activeSubmissions.size();
+	}
+
+	public void enqueue(Submission submission) {
+		submissionPriorityQueue.add(submission);
 	}
 }

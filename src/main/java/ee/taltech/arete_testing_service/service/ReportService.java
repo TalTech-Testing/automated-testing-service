@@ -28,8 +28,10 @@ import java.util.Optional;
 public class ReportService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReportService.class);
-	private final JavaMailSender javaMailSender;
+
 	final DevProperties devProperties;
+
+	private final JavaMailSender javaMailSender;
 
 	public ReportService(JavaMailSender javaMailSender, DevProperties devProperties) {
 		this.javaMailSender = javaMailSender;

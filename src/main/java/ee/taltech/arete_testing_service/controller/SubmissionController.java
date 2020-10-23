@@ -1,9 +1,9 @@
 package ee.taltech.arete_testing_service.controller;
 
-import ee.taltech.arete_testing_service.Utils;
-import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete.java.response.arete.AreteResponseDTO;
 import ee.taltech.arete.java.response.arete.SystemStateDTO;
+import ee.taltech.arete_testing_service.Utils;
+import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.service.PriorityQueueService;
 import ee.taltech.arete_testing_service.service.RequestService;
 import lombok.SneakyThrows;
@@ -19,6 +19,7 @@ import java.util.List;
 public class SubmissionController {
 
 	private final RequestService requestService;
+
 	private final PriorityQueueService priorityQueueService;
 
 	public SubmissionController(RequestService requestService, PriorityQueueService priorityQueueService) {

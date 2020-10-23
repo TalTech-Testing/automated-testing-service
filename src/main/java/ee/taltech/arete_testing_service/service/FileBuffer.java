@@ -6,7 +6,9 @@ import java.util.stream.IntStream;
 
 public class FileBuffer {
 	private final int noOfLines;
+
 	private final String[] lines;
+
 	private int offset = 0;
 
 	public FileBuffer(int noOfLines) {

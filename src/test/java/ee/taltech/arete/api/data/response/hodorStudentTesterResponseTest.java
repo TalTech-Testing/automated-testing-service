@@ -6,6 +6,7 @@ import ee.taltech.arete.java.response.hodor_studenttester.HodorStudentTesterResp
 import ee.taltech.arete_testing_service.AreteApplication;
 import ee.taltech.arete_testing_service.service.JobRunnerService;
 import ee.taltech.arete_testing_service.service.hodor.HodorParser;
+import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,6 @@ import java.nio.file.Paths;
 public class hodorStudentTesterResponseTest {
 
 	private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv("HOME") + "/arete");
-
-	int port = 8080;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -132,11 +131,14 @@ public class hodorStudentTesterResponseTest {
 		return Files.readString(Paths.get(home + s), StandardCharsets.UTF_8);
 	}
 
+	@SneakyThrows
 	private void assertSuccessfulParsing(AreteResponseDTO areteResponse) {
-		assert areteResponse.getOutput() != null;
 		assert areteResponse.getErrors() != null;
 		assert areteResponse.getConsoleOutputs() != null;
 		assert areteResponse.getFiles() != null;
 		assert areteResponse.getTestFiles() != null;
+		assert areteResponse.getSystemExtra() != null;
+		assert areteResponse.getTestSuites() != null;
+		assert areteResponse.getType().equals("arete");
 	}
 }

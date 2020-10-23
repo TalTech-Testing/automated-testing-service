@@ -1,10 +1,9 @@
 package ee.taltech.arete_testing_service.domain;
 
 
-import ee.taltech.arete.java.TestingEnvironment;
-import ee.taltech.arete.java.UvaConfiguration;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @ToString
@@ -15,21 +14,37 @@ import java.util.Set;
 @NoArgsConstructor
 public class DefaultParameters {
 
-	private TestingEnvironment testingEnvironment;
+	private String dockerContentRoot;
 
-	private UvaConfiguration uvaConfiguration;
+	private String dockerContentRootBefore;
+
+	private String dockerExtra;
+
+	private String dockerExtraBefore;
+
+	private String dockerTestRoot;
+
+	private String dockerTestRootBefore;
 
 	private Integer dockerTimeout;
 
-	private Set<String> dockerExtra;
-
-	private Set<String> systemExtra;
+	private Integer dockerTimeoutBefore;
 
 	private Set<String> groupingFolders;
 
+	private Set<String> groupingFoldersBefore;
+
 	private String solutionsRepository;
 
-	private String programmingLanguage;
+	private String solutionsRepositoryBefore;
+
+	private Set<String> systemExtra;
+
+	private Set<String> systemExtraBefore;
+
+	private String testingPlatform;
+
+	private String testingPlatformBefore;
 
 	public void overrideParametersForStudent(Submission submission) {
 		if (systemExtra != null) {
@@ -38,21 +53,34 @@ public class DefaultParameters {
 			}
 		}
 
-		if (uvaConfiguration != null && uvaConfiguration.getUserID() != null) {
-			if (submission.getUvaConfiguration() == null) {
-				submission.setUvaConfiguration(new UvaConfiguration(uvaConfiguration.getUserID(), null));
-			} else {
-				submission.getUvaConfiguration().setUserID(uvaConfiguration.getUserID());
+		if (submission.getSystemExtra().contains("overrideContentRoot")) {
+			if (dockerContentRoot != null) {
+				submission.setDockerContentRoot(dockerContentRoot);
 			}
 		}
 
-		if (testingEnvironment != null) {
-			submission.setTestingEnvironment(testingEnvironment);
+		if (submission.getSystemExtra().contains("overrideTestRoot")) {
+			if (dockerTestRoot != null) {
+				submission.setDockerTestRoot(dockerTestRoot);
+			}
 		}
+
+		if (submission.getSystemExtra().contains("overrideExtra")) {
+			if (dockerExtra != null) {
+				submission.setDockerExtra(dockerExtra);
+			}
+		}
+
+		if (submission.getSystemExtra().contains("overrideTestingPlatform")) {
+			if (testingPlatform != null) {
+				submission.setTestingPlatform(testingPlatform);
+			}
+		}
+
 	}
 
 	public void overrideParametersForTestValidation(Submission submission) {
-		overrideDefaultParameters(submission);
+		overrideParameters(submission);
 
 		if (solutionsRepository != null) {
 			submission.setGitStudentRepo(solutionsRepository);
@@ -60,12 +88,16 @@ public class DefaultParameters {
 	}
 
 	public void overrideParameters(Submission submission) {
-		overrideDefaultParameters(submission);
-	}
-
-	private void overrideDefaultParameters(Submission submission) {
 		if (dockerTimeout != null) {
 			submission.setDockerTimeout(dockerTimeout);
+		}
+
+		if (dockerContentRoot != null) {
+			submission.setDockerContentRoot(dockerContentRoot);
+		}
+
+		if (dockerTestRoot != null) {
+			submission.setDockerTestRoot(dockerTestRoot);
 		}
 
 		if (dockerExtra != null) {
@@ -73,23 +105,47 @@ public class DefaultParameters {
 		}
 
 		if (systemExtra != null) {
-			submission.setSystemExtra(systemExtra);
+			if (submission.getSystemExtra().contains("allowAppending") || systemExtra.contains("allowAppending")) {
+				submission.getSystemExtra().addAll(systemExtra);
+			} else {
+				submission.setSystemExtra(systemExtra);
+			}
 		}
 
 		if (groupingFolders != null) {
-			submission.setGroupingFolders(groupingFolders);
+			if (submission.getSystemExtra().contains("allowAppending") || systemExtra.contains("allowAppending")) {
+				submission.getGroupingFolders().addAll(groupingFolders);
+			} else {
+				submission.setGroupingFolders(groupingFolders);
+			}
 		}
 
-		if (programmingLanguage != null) {
-			submission.setTestingPlatform(programmingLanguage);
+		if (testingPlatform != null) {
+			submission.setTestingPlatform(testingPlatform);
 		}
+	}
 
-		if (uvaConfiguration != null) {
-			submission.setUvaConfiguration(uvaConfiguration);
-		}
+	public void invoke(Submission submission) {
+		dockerContentRootBefore = submission.getDockerContentRoot();
+		dockerExtraBefore = submission.getDockerExtra();
+		dockerTestRootBefore = submission.getDockerTestRoot();
+		dockerTimeoutBefore = submission.getDockerTimeout();
+		groupingFoldersBefore = new HashSet<>();
+		groupingFoldersBefore.addAll(submission.getGroupingFolders());
+		solutionsRepositoryBefore = submission.getGitStudentRepo();
+		systemExtraBefore = new HashSet<>();
+		systemExtraBefore.addAll(submission.getSystemExtra());
+		testingPlatformBefore = submission.getTestingPlatform();
+	}
 
-		if (testingEnvironment != null) {
-			submission.setTestingEnvironment(testingEnvironment);
-		}
+	public void revert(Submission submission) {
+		submission.setDockerContentRoot(dockerContentRootBefore);
+		submission.setDockerExtra(dockerExtraBefore);
+		submission.setDockerTestRoot(dockerTestRootBefore);
+		submission.setDockerTimeout(dockerTimeoutBefore);
+		submission.setGroupingFolders(groupingFoldersBefore);
+		submission.setGitStudentRepo(solutionsRepositoryBefore);
+		submission.setSystemExtra(systemExtraBefore);
+		submission.setTestingPlatform(testingPlatformBefore);
 	}
 }

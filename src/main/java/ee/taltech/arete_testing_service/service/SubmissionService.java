@@ -3,7 +3,6 @@ package ee.taltech.arete_testing_service.service;
 import ee.taltech.arete_testing_service.configuration.DevProperties;
 import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.exception.RequestFormatException;
-import ee.taltech.arete.java.TestingEnvironment;
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,183 +15,179 @@ import java.util.HashSet;
 @Service
 public class SubmissionService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
 
-    private final DevProperties devProperties;
-    private final JobRunnerService jobRunnerService;
+	private final DevProperties devProperties;
 
-    public SubmissionService(DevProperties devProperties, JobRunnerService jobRunnerService) {
-        this.devProperties = devProperties;
-        this.jobRunnerService = jobRunnerService;
-    }
+	private final JobRunnerService jobRunnerService;
 
-    private static String getRandomHash() {
-        return RandomStringUtils.random(40, true, true).toLowerCase(); // git hash is 40 long
-    }
+	public SubmissionService(DevProperties devProperties, JobRunnerService jobRunnerService) {
+		this.devProperties = devProperties;
+		this.jobRunnerService = jobRunnerService;
+	}
 
-    public void populateAsyncFields(Submission submission) {
-        populateTesterRelatedFields(submission);
-        populateStudentRelatedFields(submission);
-        populateDefaultValues(submission);
-        jobRunnerService.rootProperties(submission);
-    }
+	public void populateAsyncFields(Submission submission) {
+		populateTesterRelatedFields(submission);
+		populateStudentRelatedFields(submission);
+		populateDefaultValues(submission);
+	}
 
-    public String populateSyncFields(Submission submission) {
+	private void populateTesterRelatedFields(Submission submission) {
+		if (submission.getSystemExtra() != null && submission.getSystemExtra().contains("skipCopyingTests")) {
+			return;
+		}
 
-        if (!submission.getSystemExtra().contains("integration_tests")) {
-            submission.setHash(getRandomHash());
-            submission.setWaitingroom(submission.getHash());
-            submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
-        } else {
-            String[] parts = submission.getReturnUrl().split("/");
-            submission.setWaitingroom(parts[parts.length - 1]);
-        }
+		if (submission.getGitTestRepo() != null) {
+			try {
+				submission.setGitTestRepo(fixRepository(submission.getGitTestRepo()));
+				String namespace = submission.getGitTestRepo()
+						.replace(".git", "")
+						.replace("://", "")
+						.split("[:/]", 2)[1];
 
-        populateTesterRelatedFields(submission);
-        populateStudentRelatedFields(submission);
-        populateDefaultValues(submission);
-        jobRunnerService.rootProperties(submission);
+				if (namespace.length() == 0) {
+					throw new RequestFormatException("Git test source namespace is needed size non zero.");
+				}
 
-        return submission.getWaitingroom();
-    }
+				if (submission.getCourse() == null) {
+					submission.setCourse(namespace);
+				}
 
-    private void populateStudentRelatedFields(Submission submission) {
-        if (submission.getGitStudentRepo() != null) {
-            submission.setGitStudentRepo(fixRepository(submission.getGitStudentRepo()));
-            String repo; //set OtherDefaults
+			} catch (Exception e) {
+				throw new RequestFormatException(e.getMessage());
+			}
+		} else if (submission.getTestSource() != null) {
 
-            repo = submission.getGitStudentRepo().replaceAll("\\.git", "");
-            String[] url = repo.replace("://", "").split("[/:]");
+			if (submission.getTestSource().size() == 0) {
+				throw new RequestFormatException("Test source is needed size non zero.");
+			}
 
-            if (submission.getUniid() == null) {
-                if (url[1].length() == 0) {
-                    throw new RequestFormatException("Git student repo namespace is size 0");
-                }
-                assert url[1].matches(devProperties.getNameMatcher());
-                submission.setUniid(url[1]); // user identificator - this is 100% unique
-            }
+		} else {
+			throw new RequestFormatException("Git test repo or test source is needed.");
+		}
 
-            if (submission.getFolder() == null) {
-                if (url[url.length - 1].length() == 0) {
-                    throw new RequestFormatException("Git student repo namespace with path is size 0");
-                }
-                submission.setFolder(url[url.length - 1]); // Just the folder where file is saved - user cant have multiple of those
-            }
+	}
 
-        } else if (submission.getSource() != null) {
+	private void populateStudentRelatedFields(Submission submission) {
+		if (submission.getSystemExtra() != null && submission.getSystemExtra().contains("skipCopyingStudent")) {
+			return;
+		}
 
-            if (submission.getSource().size() == 0) {
-                throw new RequestFormatException("Source is needed size non zero.");
-            }
+		if (submission.getGitStudentRepo() != null) {
+			submission.setGitStudentRepo(fixRepository(submission.getGitStudentRepo()));
+			String repo; //set OtherDefaults
 
-            if (submission.getSlugs() == null) {
-                String path = submission.getSource().get(0).getPath().split("\\\\")[0];
-                if (path.equals(submission.getSource().get(0).getPath())) {
-                    path = submission.getSource().get(0).getPath().split("/")[0];
-                }
-                submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
-            }
+			repo = submission.getGitStudentRepo().replaceAll("\\.git", "");
+			String[] url = repo.replace("://", "").split("[/:]");
 
-        } else {
-            throw new RequestFormatException("Git student repo or student source is needed.");
-        }
-    }
+			if (submission.getUniid() == null) {
+				if (url[1].length() == 0) {
+					throw new RequestFormatException("Git student repo namespace is size 0");
+				}
+				assert url[1].matches(devProperties.getNameMatcher());
+				submission.setUniid(url[1]); // user identificator - this is 100% unique
+			}
 
-    private void populateTesterRelatedFields(Submission submission) {
-        if (submission.getTestingEnvironment() == TestingEnvironment.DOCKER) {
-            if (submission.getGitTestRepo() != null) {
-                try {
-                    submission.setGitTestRepo(fixRepository(submission.getGitTestRepo()));
-                    String namespace = submission.getGitTestRepo()
-                            .replace(".git", "")
-                            .replace("://", "")
-                            .split("[:/]", 2)[1];
+			if (submission.getFolder() == null) {
+				if (url[url.length - 1].length() == 0) {
+					throw new RequestFormatException("Git student repo namespace with path is size 0");
+				}
+				submission.setFolder(url[url.length - 1]); // Just the folder where file is saved - user cant have multiple of those
+			}
 
-                    if (namespace.length() == 0) {
-                        throw new RequestFormatException("Git test source namespace is needed size non zero.");
-                    }
+		} else if (submission.getSource() != null) {
 
-                    if (submission.getCourse() == null) {
-                        submission.setCourse(namespace);
-                    }
+			if (submission.getSource().size() == 0) {
+				throw new RequestFormatException("Source is needed size non zero.");
+			}
 
-                } catch (Exception e) {
-                    throw new RequestFormatException(e.getMessage());
-                }
-            } else if (submission.getTestSource() != null) {
+			if (submission.getSlugs() == null) {
+				String path = submission.getSource().get(0).getPath().split("\\\\")[0];
+				if (path.equals(submission.getSource().get(0).getPath())) {
+					path = submission.getSource().get(0).getPath().split("/")[0];
+				}
+				submission.setSlugs(new HashSet<>(Collections.singletonList(path)));
+			}
 
-                if (submission.getTestSource().size() == 0) {
-                    throw new RequestFormatException("Test source is needed size non zero.");
-                }
+		} else {
+			throw new RequestFormatException("Git student repo or student source is needed.");
+		}
+	}
 
-            } else {
-                throw new RequestFormatException("Git test repo or test source is needed.");
-            }
-        }
-    }
+	public void populateDefaultValues(Submission submission) {
+		if (submission.getHash() != null && !submission.getHash().matches("^[a-zA-Z0-9]+$")) {
+			submission.setHash(getRandomHash()); // in case of a faulty input
+		}
 
-    public String fixRepository(String url) {
-        if (System.getenv().containsKey("GIT_PASSWORD")) {
-            if (url.startsWith("git")) {
-                url = url.replaceFirst(":", "/");
-                url = url.replace("git@", "https://");
-            }
-        } else {
-            if (url.startsWith("http")) {
-                url = url.replace("https://", "git@");
-                url = url.replace("http://", "git@");
-                url = url.replaceFirst("/", ":");
-            }
-            if (!url.contains(":")) {
-                url = url.replaceFirst("/", ":");
-            }
-        }
+		if (submission.getPriority() == null) {
+			submission.setPriority(5);
+		}
 
-        if (!url.endsWith(".git")) {
-            return url + ".git";
-        }
-        return url;
-    }
+		if (submission.getTimestamp() == null) {
+			submission.setTimestamp(System.currentTimeMillis());
+		}
+		submission.setReceivedTimestamp(System.currentTimeMillis());
 
+		if (submission.getDockerTimeout() == null) {
+			submission.setDockerTimeout(devProperties.getDefaultDockerTimeout()); // 120 sec
+		}
 
-    public void populateDefaultValues(Submission submission) {
-        if (submission.getHash() != null && !submission.getHash().matches("^[a-zA-Z0-9]+$")) {
-            submission.setHash(getRandomHash()); // in case of a faulty input
-        }
+		if (submission.getSystemExtra() == null) {
+			submission.setSystemExtra(new HashSet<>());
+		}
 
-        if (submission.getPriority() == null) {
-            submission.setPriority(5);
-        }
+		if (submission.getUniid() == null) {
+			throw new RequestFormatException("uniid is required");
+		}
 
-        if (submission.getTimestamp() == null) {
-            submission.setTimestamp(System.currentTimeMillis());
-        }
-        submission.setReceivedTimestamp(System.currentTimeMillis());
+		if (submission.getEmail() == null) {
+			submission.setEmail(submission.getUniid() + "@ttu.ee");
+		}
+	}
 
-        if (submission.getDockerTimeout() == null) {
-            submission.setDockerTimeout(devProperties.getDefaultDockerTimeout()); // 120 sec
-        }
+	public String fixRepository(String url) {
+		if (System.getenv().containsKey("GIT_PASSWORD")) {
+			if (url.startsWith("git")) {
+				url = url.replaceFirst(":", "/");
+				url = url.replace("git@", "https://");
+			}
+		} else {
+			if (url.startsWith("http")) {
+				url = url.replace("https://", "git@");
+				url = url.replace("http://", "git@");
+				url = url.replaceFirst("/", ":");
+			}
+			if (!url.contains(":")) {
+				url = url.replaceFirst("/", ":");
+			}
+		}
 
-        if (submission.getDockerExtra() == null) {
-            submission.setDockerExtra(new HashSet<>());
-        }
+		if (!url.endsWith(".git")) {
+			return url + ".git";
+		}
+		return url;
+	}
 
-        if (submission.getSystemExtra() == null) {
-            submission.setSystemExtra(new HashSet<>());
-        }
+	private static String getRandomHash() {
+		return RandomStringUtils.random(40, true, true).toLowerCase(); // git hash is 40 long
+	}
 
-        if (submission.getUniid() == null) {
-            throw new RequestFormatException("uniid is required");
-        }
+	public String populateSyncFields(Submission submission) {
 
-        if (submission.getEmail() == null) {
-            submission.setEmail(submission.getUniid() + "@ttu.ee");
-        }
+		if (!submission.getSystemExtra().contains("integration_tests")) {
+			submission.setHash(getRandomHash());
+			submission.setWaitingroom(submission.getHash());
+			submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
+		} else {
+			String[] parts = submission.getReturnUrl().split("/");
+			submission.setWaitingroom(parts[parts.length - 1]);
+		}
 
-        if (submission.getTestingEnvironment() == null) {
-            submission.setTestingEnvironment(TestingEnvironment.DOCKER);
-        }
+		populateTesterRelatedFields(submission);
+		populateStudentRelatedFields(submission);
+		populateDefaultValues(submission);
 
-    }
+		return submission.getWaitingroom();
+	}
 
 }

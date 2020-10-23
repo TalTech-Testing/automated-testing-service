@@ -2,8 +2,6 @@ package ee.taltech.arete_testing_service.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
-import ee.taltech.arete.java.TestingEnvironment;
-import ee.taltech.arete.java.UvaConfiguration;
 import ee.taltech.arete.java.response.arete.FileDTO;
 import lombok.*;
 
@@ -20,65 +18,61 @@ import java.util.Set;
 @NoArgsConstructor
 public class Submission {
 
-    @NotNull
-    private String testingPlatform;
+	private String commitMessage;
 
-    private String returnUrl;
+	private String course; // gitlab namespace with path for tester: iti0102-2019/ex
 
-    private String gitStudentRepo;
-    //  or
-    private List<FileDTO> source;
+	private String dockerContentRoot;
 
-    private String gitTestRepo;
-    // or
-    private List<FileDTO> testSource;
+	private String dockerExtra;
 
-    private String hash;
+	private String dockerTestRoot;
 
-    @NotNull
-    private String uniid; // gitlab namespace: envomp
+	private Integer dockerTimeout;
 
-    private String email;
+	private String email;
 
-    private String course; // gitlab namespace with path for tester: iti0102-2019/ex
+	private String folder; // gitlab path for student: iti0102-2019
 
-    private String folder; // gitlab path for student: iti0102-2019
+	private String gitStudentRepo;
 
-    private Set<String> slugs;
+	private String gitTestRepo;
 
-    private Set<String> initialSlugs;
+	@Builder.Default
+	private Set<String> groupingFolders = new HashSet<>();
 
-    private String commitMessage;
+	private String hash;
 
-    @JsonIgnore
-    private String result;
+	private Set<String> initialSlugs;
 
-    @Builder.Default
-    private Set<String> dockerExtra = new HashSet<>();
+	private Integer priority;
 
-    @Builder.Default
-    private Set<String> systemExtra = new HashSet<>();
+	private Long receivedTimestamp;
 
-    @Builder.Default
-    private Set<String> groupingFolders = new HashSet<>();
+	@JsonIgnore
+	private String result;
 
-    private Integer dockerTimeout;
+	private JsonNode returnExtra; // private stuff here
 
-    private Long timestamp;
+	private String returnUrl;
 
-    private Long receivedTimestamp;
+	private Set<String> slugs;
 
-    private Integer priority;
+	private List<FileDTO> source;
 
-    private Integer thread;
+	@Builder.Default
+	private Set<String> systemExtra = new HashSet<>();
 
-    private JsonNode returnExtra; // private stuff here
+	private List<FileDTO> testSource;
 
-    private String waitingroom;
+	@NotNull
+	private String testingPlatform;
 
-    @Builder.Default
-    private TestingEnvironment testingEnvironment = TestingEnvironment.DOCKER;
+	private Integer thread;
 
-    private UvaConfiguration uvaConfiguration; // when using TestingEnvironment.UVA
+	private Long timestamp;
 
+	private String uniid; // gitlab namespace: envomp
+
+	private String waitingroom;
 }

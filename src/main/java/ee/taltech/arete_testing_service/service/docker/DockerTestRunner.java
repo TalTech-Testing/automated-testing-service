@@ -11,18 +11,20 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
+import ee.taltech.arete.java.response.arete.FileDTO;
 import ee.taltech.arete_testing_service.domain.InputWriter;
 import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.exception.DockerRunnerException;
 import ee.taltech.arete_testing_service.exception.DockerTimeoutException;
 import ee.taltech.arete_testing_service.exception.ImageNotFoundException;
-import ee.taltech.arete.java.response.arete.FileDTO;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -33,16 +35,22 @@ import static com.github.dockerjava.api.model.HostConfig.newHostConfig;
 public class DockerTestRunner {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DockerTestRunner.class);
-	public String outputPath;
+
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	private DockerClient dockerClient;
-	private CreateContainerResponse container;
 	private final String containerName;
+
 	private final String image;
 
 	private final Submission submission;
+
 	private final String slug;
+
+	public String outputPath;
+
+	private CreateContainerResponse container;
+
+	private DockerClient dockerClient;
 
 	private boolean done = false;
 
@@ -82,46 +90,21 @@ public class DockerTestRunner {
 			String tester = String.format("tests/%s/%s", submission.getCourse(), slug);
 			String tempTester = String.format("input_and_output/%s/tester", submission.getHash());
 
-			String student;
-
-			student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getFolder(), slug);
+			String student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getFolder(), slug);
 			String tempStudent = String.format("input_and_output/%s/student", submission.getHash());
 
 			Volume volumeStudent = new Volume("/student");
 			Volume volumeTester = new Volume("/tester");
 			Volume volumeOutput = new Volume("/host");
 
-			try {
-				// copy student files to tester
-				if (submission.getFolder() != null) {
-					FileUtils.copyDirectory(new java.io.File(student), new java.io.File(tempStudent));
-				} else {
-					for (FileDTO file : submission.getSource()) {
-						copyFilesFromSource(tempStudent, file);
-					}
-				}
-			} catch (IOException e) {
-				LOGGER.error("Failed to copy files from student folder to temp folder.");
-				throw new IOException(e.getMessage());
-			}
+			copyFiles(student, tempStudent, submission.getFolder(), submission.getSource(), "Failed to copy files from student folder to temp folder.");
+			copyFiles(tester, tempTester, submission.getCourse(), submission.getTestSource(), "Failed to copy files from tester folder to temp folder.");
 
-			try {
-
-				// copy tester files to tester
-				if (submission.getCourse() != null) {
-					FileUtils.copyDirectory(new java.io.File(tester), new java.io.File(tempTester));
-				} else {
-					for (FileDTO file : submission.getTestSource()) {
-						copyFilesFromSource(tempTester, file);
-					}
-				}
-
-			} catch (IOException e) {
-				LOGGER.error("Failed to copy files from tester folder to temp folder.");
-				throw new IOException(e.getMessage());
-			}
-
-			mapper.writeValue(new java.io.File(String.format("input_and_output/%s/host/input.json", submission.getHash())), new InputWriter(String.join(",", submission.getDockerExtra())));
+			mapper.writeValue(new java.io.File(String.format("input_and_output/%s/host/input.json", submission.getHash())),
+					InputWriter.builder()
+							.contentRoot(submission.getDockerContentRoot())
+							.testRoot(submission.getDockerTestRoot())
+							.extra(submission.getDockerExtra()).build());
 
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
@@ -186,6 +169,34 @@ public class DockerTestRunner {
 		}
 	}
 
+	private String getImage(DockerClient dockerClient, String image) {
+
+		try {
+			ImageCheck imageCheck = new ImageCheck(dockerClient, image);
+			imageCheck.invoke();
+			return imageCheck.getTester().getId();
+		} catch (Exception e) {
+			throw new ImageNotFoundException(e.getMessage());
+		}
+	}
+
+	@SneakyThrows
+	private void copyFiles(String from, String to, String folder, List<FileDTO> source, String error) {
+		try {
+			// copy files to tester
+			if (folder != null) {
+				FileUtils.copyDirectory(new java.io.File(from), new java.io.File(to));
+			} else {
+				for (FileDTO file : source) {
+					copyFilesFromSource(to, file);
+				}
+			}
+		} catch (IOException e) {
+			LOGGER.error(error);
+			throw new IOException(e.getMessage());
+		}
+	}
+
 	private void copyFilesFromSource(String tempStudent, FileDTO file) throws IOException {
 		String temp;
 		try {
@@ -217,17 +228,6 @@ public class DockerTestRunner {
 			} catch (Exception remove) {
 				LOGGER.error("Container {} has already been removed", submission.getHash());
 			}
-		}
-	}
-
-	private String getImage(DockerClient dockerClient, String image) {
-
-		try {
-			ImageCheck imageCheck = new ImageCheck(dockerClient, image);
-			imageCheck.invoke();
-			return imageCheck.getTester().getId();
-		} catch (Exception e) {
-			throw new ImageNotFoundException(e.getMessage());
 		}
 	}
 

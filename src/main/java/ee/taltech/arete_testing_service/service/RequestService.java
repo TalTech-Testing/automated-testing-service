@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
-import ee.taltech.arete_testing_service.domain.Submission;
-import ee.taltech.arete_testing_service.exception.RequestFormatException;
 import ee.taltech.arete.java.request.hook.AreteTestUpdateDTO;
 import ee.taltech.arete.java.request.hook.CommitDTO;
 import ee.taltech.arete.java.response.arete.AreteResponseDTO;
+import ee.taltech.arete_testing_service.domain.Submission;
+import ee.taltech.arete_testing_service.exception.RequestFormatException;
 import ee.taltech.arete_testing_service.service.arete.AreteConstructor;
 import ee.taltech.arete_testing_service.service.docker.ImageCheck;
 import ee.taltech.arete_testing_service.service.git.GitPullService;
@@ -27,10 +27,15 @@ public class RequestService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
 
 	private final ObjectMapper objectMapper;
+
 	private final SubmissionService submissionService;
+
 	private final PriorityQueueService priorityQueueService;
+
 	private final GitPullService gitPullService;
+
 	private final JobRunnerService jobRunnerService;
+
 	private final HashMap<String, AreteResponseDTO> syncWaitingRoom = new HashMap<>();
 
 	public RequestService(ObjectMapper objectMapper, SubmissionService submissionService, PriorityQueueService priorityQueueService, GitPullService gitPullService, JobRunnerService jobRunnerService) {

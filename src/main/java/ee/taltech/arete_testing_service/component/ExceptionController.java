@@ -15,7 +15,7 @@ import java.util.Map;
 
 
 @ControllerAdvice
-public class ExceptionController extends ResponseEntityExceptionHandler  {
+public class ExceptionController extends ResponseEntityExceptionHandler {
 
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@ExceptionHandler(value = ImageNotFoundException.class)

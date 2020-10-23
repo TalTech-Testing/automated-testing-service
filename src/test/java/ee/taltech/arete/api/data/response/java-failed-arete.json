@@ -214,8 +214,6 @@
   "totalPassedCount": 0,
   "style": 0,
   "timestamp": 1590687952872,
-  "dockerExtra": [
-    "i did something here"
-  ],
+  "dockerExtra": "i did something here",
   "failed": true
 }
