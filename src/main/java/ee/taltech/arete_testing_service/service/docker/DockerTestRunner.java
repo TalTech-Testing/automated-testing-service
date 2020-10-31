@@ -110,8 +110,18 @@ public class DockerTestRunner {
 							.testRoot(submission.getDockerTestRoot())
 							.extra(submission.getDockerExtra()).build());
 
+			final String uniidEnv = "uniid=" + submission.getUniid();
+			final String systemExtraEnv = "system_extra=" + String.join(", ", submission.getSystemExtra().toArray(new String[0]));
+			final String dockerExtraEnv = "docker_extra=" + submission.getDockerExtra();
+			final String dockerTimeoutEnv = "docker_timeout=" + submission.getDockerTimeout();
+			final String dockerContentRootEnv = "docker_content_root=" + submission.getDockerContentRoot();
+			final String dockerTestRootEnv = "docker_test_root=" + submission.getDockerTestRoot();
+			final String groupingFoldersEnv = "grouping_folders=" + String.join(", ", submission.getGroupingFolders().toArray(new String[0]));
+			final String commitMessageEnv = "commit_message=" + submission.getCommitMessage();
+
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
+					.withEnv(uniidEnv, systemExtraEnv, dockerExtraEnv, dockerTimeoutEnv, dockerContentRootEnv, dockerTestRootEnv, groupingFoldersEnv, commitMessageEnv)
 					.withVolumes(volumeStudent, volumeTester, volumeOutput)
 					.withAttachStdout(true)
 					.withAttachStderr(true)
