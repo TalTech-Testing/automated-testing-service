@@ -12,7 +12,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DefaultParameters {
+public class OverrideParameters {
 
 	private String dockerContentRoot;
 

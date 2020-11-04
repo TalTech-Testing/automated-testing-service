@@ -56,23 +56,18 @@ public class SubmissionInitializer {
 
 	private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv().getOrDefault("HOME", ".") + "/arete");
 
-//    public static Submission getFullSubmissionUva(String base) {
-//        String hash = "1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f";
-//        return Submission.builder()
-//                .uniid(UNIID_GIT)
-//                .gitStudentRepo(STUDENT_REPO_PYTHON)
-//                .testingPlatform("mixed")
-//                .returnUrl(String.format("%s/waitingroom/%s", base, hash))
-//                .dockerTimeout(120)
-//                .commitMessage("First commit!!!")
-//                .hash("12dacy372642hc3642c3v423xd34v5yb534bn7354")
-//                .systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
-//                .timestamp(System.currentTimeMillis())
-//                .testingEnvironment(TestingEnvironment.UVA)
-//                .uvaConfiguration(new UvaConfiguration("1027043", "567"))
-//                .priority(10)
-//                .build();
-//    }
+    public static Submission getFullSubmissionUva(String base) {
+        String hash = "1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f";
+        return Submission.builder()
+                .uniid(UNIID_GIT)
+                .gitStudentRepo(STUDENT_REPO_PYTHON)
+                .testingPlatform("uva")
+                .returnUrl(String.format("%s/waitingroom/%s", base, hash))
+                .systemExtra((new HashSet<>(Arrays.asList("skipCopying", "noMail", "integration_tests"))))
+                .dockerContentRoot("1027043")
+				.dockerTestRoot("567")
+                .build();
+    }
 
 	public static Submission getFullSubmissionPython(String base) {
 		String hash = "1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f";

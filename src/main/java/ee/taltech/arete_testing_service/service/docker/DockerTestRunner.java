@@ -11,8 +11,8 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
+import ee.taltech.arete.java.request.tester.DockerParameters;
 import ee.taltech.arete.java.response.arete.FileDTO;
-import ee.taltech.arete_testing_service.domain.InputWriter;
 import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.exception.DockerRunnerException;
 import ee.taltech.arete_testing_service.exception.DockerTimeoutException;
@@ -64,11 +64,7 @@ public class DockerTestRunner {
 
 	public void run() {
 		try {
-
 			String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
-//			String certPath = System.getenv().getOrDefault("DOCKER_CERT_PATH", "/home/user/.docker/certs");
-//			String tlsVerify = System.getenv().getOrDefault("DOCKER_TLS_VERIFY", "1");
-//			String dockerConfig = System.getenv().getOrDefault("DOCKER_CONFIG", "/home/user/.docker");
 
 			DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
 					.withDockerHost(dockerHost)
@@ -80,8 +76,6 @@ public class DockerTestRunner {
 			String imageId = getImage(dockerClient, image);
 
 			LOGGER.info("Got image with id: {}", imageId);
-
-			///  PROCEED TO MODIFY WITH CAUTION  ///
 
 			String output = String.format("input_and_output/%s/host", submission.getHash());
 			String testerHost = String.format("input_and_output/%s/tester", submission.getHash());
@@ -105,10 +99,14 @@ public class DockerTestRunner {
 			}
 
 			mapper.writeValue(new java.io.File(String.format("input_and_output/%s/host/input.json", submission.getHash())),
-					InputWriter.builder()
+					DockerParameters.builder()
 							.contentRoot(submission.getDockerContentRoot())
 							.testRoot(submission.getDockerTestRoot())
-							.extra(submission.getDockerExtra()).build());
+							.extra(submission.getDockerExtra())
+							.commitMessage(submission.getCommitMessage())
+							.systemExtra(submission.getSystemExtra())
+							.timeout(submission.getDockerTimeout())
+							.uniid(submission.getUniid()).build());
 
 			final String uniidEnv = "uniid=" + submission.getUniid();
 			final String systemExtraEnv = "system_extra=" + String.join(", ", submission.getSystemExtra().toArray(new String[0]));
@@ -116,12 +114,11 @@ public class DockerTestRunner {
 			final String dockerTimeoutEnv = "docker_timeout=" + submission.getDockerTimeout();
 			final String dockerContentRootEnv = "docker_content_root=" + submission.getDockerContentRoot();
 			final String dockerTestRootEnv = "docker_test_root=" + submission.getDockerTestRoot();
-			final String groupingFoldersEnv = "grouping_folders=" + String.join(", ", submission.getGroupingFolders().toArray(new String[0]));
 			final String commitMessageEnv = "commit_message=" + submission.getCommitMessage();
 
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
-					.withEnv(uniidEnv, systemExtraEnv, dockerExtraEnv, dockerTimeoutEnv, dockerContentRootEnv, dockerTestRootEnv, groupingFoldersEnv, commitMessageEnv)
+					.withEnv(uniidEnv, systemExtraEnv, dockerExtraEnv, dockerTimeoutEnv, dockerContentRootEnv, dockerTestRootEnv, commitMessageEnv)
 					.withVolumes(volumeStudent, volumeTester, volumeOutput)
 					.withAttachStdout(true)
 					.withAttachStderr(true)
@@ -133,17 +130,12 @@ public class DockerTestRunner {
 							.withCpuCount((submission.getPriority() > 7 ? 4L : 2L))
 					).exec();
 
-			///   END OF WARNING   ///
-
 			LOGGER.info("Created container with id: {}", container.getId());
 
 			dockerClient.startContainerCmd(container.getId()).exec();
 			LOGGER.info("Started container with id: {}", container.getId());
 
-//			dockerClient.waitContainerCmd(container.getId())
-//					.exec(new WaitContainerResultCallback());
-
-			StringBuilder builder = new StringBuilder(); //intermediate variable to get std
+			StringBuilder readStd = new StringBuilder();
 
 			dockerClient
 					.logContainerCmd(containerName)
@@ -155,13 +147,13 @@ public class DockerTestRunner {
 						@Override
 						public void onNext(Frame frame) {
 							if (!submission.getSystemExtra().contains("noStd")) {
-								builder.append(new String(frame.getPayload()));
+								readStd.append(new String(frame.getPayload()));
 							}
 						}
 
 						@Override
 						public void onComplete() {
-							submission.setResult(builder.toString());
+							submission.setResult(readStd.toString());
 							done = true;
 							LOGGER.info("DockerTestRunner for user {} with slug {} finished", submission.getUniid(), slug);
 							super.onComplete();
@@ -197,7 +189,6 @@ public class DockerTestRunner {
 	@SneakyThrows
 	private void copyFiles(String from, String to, String folder, List<FileDTO> source, String error) {
 		try {
-			// copy files to tester
 			if (folder != null) {
 				FileUtils.copyDirectory(new java.io.File(from), new java.io.File(to));
 			} else {

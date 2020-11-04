@@ -7,9 +7,7 @@ import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -17,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmissionUva;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,19 +41,18 @@ public class UvaIntegrationTests {
 	}
 
 	@Test
-	@Ignore
 	public void uvaGetAsAreteResponse() {
-//		AreteResponseDTO response = given()
-//				.when()
-//				.body(getFullSubmissionUva(String.format("http://localhost:%s", port)))
-//				.post(":testSync")
-//				.then()
-//				.statusCode(is(HttpStatus.SC_ACCEPTED))
-//				.extract()
-//				.body()
-//				.as(AreteResponseDTO.class);
-//
-//		assertEquals(100, response.getStyle());
-//		assertEquals(100.0, response.getTotalGrade());
+		AreteResponseDTO response = given()
+				.when()
+				.body(getFullSubmissionUva(String.format("http://localhost:%s", port)))
+				.post(":testSync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponseDTO.class);
+
+		assertEquals(100, response.getStyle());
+		assertEquals(100.0, response.getTotalGrade());
 	}
 }

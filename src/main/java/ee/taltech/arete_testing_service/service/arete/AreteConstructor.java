@@ -28,10 +28,8 @@ public class AreteConstructor {
 	public static void fillFromSubmission(String slug, Submission submission, AreteResponseDTO response) {
 		response.getConsoleOutputs().add(new ConsoleOutputDTO(submission.getResult()));
 		response.setReturnExtra(submission.getReturnExtra());
-		response.setSlug(slug);
 		response.setHash(submission.getHash());
 		response.setUniid(submission.getUniid());
-		response.setTimestamp(submission.getTimestamp());
 		response.setReceivedTimestamp(submission.getReceivedTimestamp());
 		response.setFinishedTimestamp(System.currentTimeMillis());
 		response.setCommitMessage(submission.getCommitMessage());
@@ -42,11 +40,20 @@ public class AreteConstructor {
 		response.setPriority(submission.getPriority());
 		response.setDockerTimeout(submission.getDockerTimeout());
 		response.setEmail(submission.getEmail());
-
-		if (response.getSystemExtra() != null) {
-			submission.getSystemExtra().addAll(response.getSystemExtra()); // just in case tester returned something here
-		}
 		response.setSystemExtra(submission.getSystemExtra());
+
+		if (submission.getSystemExtra().contains("giveTestRunnerControl")) {
+			if (response.getTimestamp() == null) {
+				response.setTimestamp(submission.getTimestamp());
+			}
+
+			if (response.getSlug() == null) { // sub tester can make slug look pretty if it wants to
+				response.setSlug(slug);
+			}
+		} else {
+			response.setSlug(slug);
+			response.setTimestamp(submission.getTimestamp());
+		}
 
 		if (response.getDockerExtra() == null) {
 			response.setDockerExtra(submission.getDockerExtra());

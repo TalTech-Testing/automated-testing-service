@@ -6,7 +6,7 @@ import ee.taltech.arete.java.response.arete.AreteResponseDTO;
 import ee.taltech.arete.java.response.arete.FileDTO;
 import ee.taltech.arete.java.response.hodor_studenttester.HodorStudentTesterResponse;
 import ee.taltech.arete_testing_service.configuration.DevProperties;
-import ee.taltech.arete_testing_service.domain.DefaultParameters;
+import ee.taltech.arete_testing_service.domain.OverrideParameters;
 import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.service.arete.AreteConstructor;
 import ee.taltech.arete_testing_service.service.docker.DockerService;
@@ -78,13 +78,13 @@ public class JobRunnerService {
 				continue;
 			}
 
-			Optional<DefaultParameters> testRoot = rootProperties(submission);
-			Optional<DefaultParameters> testGroup = groupingFolderProperties(submission, slug);
-			Optional<DefaultParameters> testSlug = slugProperties(submission, slug);
+			Optional<OverrideParameters> testRoot = rootProperties(submission);
+			Optional<OverrideParameters> testGroup = groupingFolderProperties(submission, slug);
+			Optional<OverrideParameters> testSlug = slugProperties(submission, slug);
 
-			Optional<DefaultParameters> studentRoot = studentRootProperties(submission);
-			Optional<DefaultParameters> studentGroup = studentGroupingFolderProperties(submission, slug);
-			Optional<DefaultParameters> studentSlug = studentSlugProperties(submission, slug);
+			Optional<OverrideParameters> studentRoot = studentRootProperties(submission);
+			Optional<OverrideParameters> studentGroup = studentGroupingFolderProperties(submission, slug);
+			Optional<OverrideParameters> studentSlug = studentSlugProperties(submission, slug);
 
 			modifyEmail(submission, initialEmail);
 
@@ -271,11 +271,11 @@ public class JobRunnerService {
 		return false;
 	}
 
-	public Optional<DefaultParameters> rootProperties(Submission submission) {
+	public Optional<OverrideParameters> rootProperties(Submission submission) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
 				String path = String.format("tests/%s/arete.json", submission.getCourse());
-				DefaultParameters params = objectMapper.readValue(new File(path), DefaultParameters.class);
+				OverrideParameters params = objectMapper.readValue(new File(path), OverrideParameters.class);
 				params.invoke(submission);
 				params.overrideParameters(submission);
 				LOGGER.info("Overrode default parameters: {}", params);
@@ -287,12 +287,12 @@ public class JobRunnerService {
 		return Optional.empty();
 	}
 
-	public Optional<DefaultParameters> groupingFolderProperties(Submission submission, String slug) {
+	public Optional<OverrideParameters> groupingFolderProperties(Submission submission, String slug) {
 		Optional<String> group = extractGroupFromSlug(slug);
 		if (!submission.getSystemExtra().contains("noOverride") && group.isPresent()) {
 			try {
 				String path = String.format("tests/%s/%s/arete.json", submission.getCourse(), group.get());
-				DefaultParameters params = objectMapper.readValue(new File(path), DefaultParameters.class);
+				OverrideParameters params = objectMapper.readValue(new File(path), OverrideParameters.class);
 				params.invoke(submission);
 				params.overrideParameters(submission);
 				LOGGER.info("Overrode default parameters: {}", params);
@@ -304,11 +304,11 @@ public class JobRunnerService {
 		return Optional.empty();
 	}
 
-	public Optional<DefaultParameters> slugProperties(Submission submission, String slug) {
+	public Optional<OverrideParameters> slugProperties(Submission submission, String slug) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
 				String path = String.format("tests/%s/%s/arete.json", submission.getCourse(), slug);
-				DefaultParameters params = objectMapper.readValue(new File(path), DefaultParameters.class);
+				OverrideParameters params = objectMapper.readValue(new File(path), OverrideParameters.class);
 				params.invoke(submission);
 				params.overrideParameters(submission);
 				LOGGER.info("Overrode default parameters: {}", params);
@@ -321,11 +321,11 @@ public class JobRunnerService {
 	}
 
 
-	public Optional<DefaultParameters> studentRootProperties(Submission submission) {
+	public Optional<OverrideParameters> studentRootProperties(Submission submission) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
 				String path = String.format("students/%s/%s/arete.json", submission.getUniid(), submission.getFolder());
-				DefaultParameters params = objectMapper.readValue(new File(path), DefaultParameters.class);
+				OverrideParameters params = objectMapper.readValue(new File(path), OverrideParameters.class);
 				params.invoke(submission);
 				params.overrideParametersForStudent(submission);
 				LOGGER.info("Overrode default parameters: {}", params);
@@ -337,12 +337,12 @@ public class JobRunnerService {
 		return Optional.empty();
 	}
 
-	public Optional<DefaultParameters> studentGroupingFolderProperties(Submission submission, String slug) {
+	public Optional<OverrideParameters> studentGroupingFolderProperties(Submission submission, String slug) {
 		Optional<String> group = extractGroupFromSlug(slug);
 		if (!submission.getSystemExtra().contains("noOverride") && group.isPresent()) {
 			try {
 				String path = String.format("students/%s/%s/%s/arete.json", submission.getUniid(), submission.getFolder(), group.get());
-				DefaultParameters params = objectMapper.readValue(new File(path), DefaultParameters.class);
+				OverrideParameters params = objectMapper.readValue(new File(path), OverrideParameters.class);
 				params.invoke(submission);
 				params.overrideParametersForStudent(submission);
 				LOGGER.info("Overrode default parameters: {}", params);
@@ -355,11 +355,11 @@ public class JobRunnerService {
 	}
 
 
-	public Optional<DefaultParameters> studentSlugProperties(Submission submission, String slug) {
+	public Optional<OverrideParameters> studentSlugProperties(Submission submission, String slug) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
 				String path = String.format("students/%s/%s/%s/arete.json", submission.getUniid(), submission.getFolder(), slug);
-				DefaultParameters params = objectMapper.readValue(new File(path), DefaultParameters.class);
+				OverrideParameters params = objectMapper.readValue(new File(path), OverrideParameters.class);
 				params.invoke(submission);
 				params.overrideParametersForStudent(submission);
 				LOGGER.info("Overrode default parameters: {}", params);
@@ -382,7 +382,7 @@ public class JobRunnerService {
 	public void testingProperties(Submission submission) {
 		if (!submission.getSystemExtra().contains("noOverride")) {
 			try {
-				DefaultParameters params = objectMapper.readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), DefaultParameters.class);
+				OverrideParameters params = objectMapper.readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), OverrideParameters.class);
 				params.overrideParametersForTestValidation(submission);
 				LOGGER.info("Overrode default parameters: {}", params);
 			} catch (Exception e) {
@@ -470,7 +470,8 @@ public class JobRunnerService {
 				if (jsonObject.has("output") && jsonObject.get("output") != null) {
 					areteResponse = AreteConstructor.failedSubmission(slug, submission, jsonObject.get("output").toString());
 				} else {
-					areteResponse = AreteConstructor.failedSubmission(slug, submission, e1.getMessage());
+					message = "Error occurred when reading test results from TestRunner created output. This is most likely due to invalid runtime configuration, that resulted in tester not giving a result.";
+					areteResponse = AreteConstructor.failedSubmission(slug, submission, message);
 				}
 			}
 
@@ -478,8 +479,8 @@ public class JobRunnerService {
 
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			message = String.format("Error occurred when reading test results from docker created output.json.\nThis could be a result for invalid dockerExtra or other reason, that resulted in docker crashing.\n%s", e.getMessage());
-			areteResponse = AreteConstructor.failedSubmission(slug, submission, e.getMessage()); // create failed submission instead
+			message = "Error occurred when reading test results from TestRunner created output. This is most likely due to invalid runtime configuration, that resulted in tester not giving a result.";
+			areteResponse = AreteConstructor.failedSubmission(slug, submission, message);
 		}
 
 		reportSubmission(submission, areteResponse, message, slug, html, Optional.of(outputPath));
@@ -494,12 +495,12 @@ public class JobRunnerService {
 	}
 
 	private void reportFailedSubmission(Submission submission, String errorMessage) {
-		String message = String.format("Testing failed with message: %s", errorMessage); // Sent to student
+		String message = String.format("Testing failed with message: %s", errorMessage);
 		AreteResponseDTO areteResponse;
 		if (submission.getSlugs() == null) {
-			areteResponse = AreteConstructor.failedSubmission("undefined", submission, message); // Sent to Moodle
+			areteResponse = AreteConstructor.failedSubmission("undefined", submission, message);
 		} else {
-			areteResponse = AreteConstructor.failedSubmission(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message); // Sent to Moodle
+			areteResponse = AreteConstructor.failedSubmission(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message);
 		}
 		if (submission.getSystemExtra().contains("integration_tests")) {
 			LOGGER.error("FAILED WITH MESSAGE: {}", message);
