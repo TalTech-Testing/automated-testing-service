@@ -1,6 +1,7 @@
 package ee.taltech.arete_testing_service.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OverrideParameters {
 
 	private String dockerContentRoot;

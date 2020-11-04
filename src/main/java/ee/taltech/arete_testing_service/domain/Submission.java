@@ -1,6 +1,7 @@
 package ee.taltech.arete_testing_service.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import ee.taltech.arete.java.response.arete.FileDTO;
 import lombok.*;
@@ -16,6 +17,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Submission {
 
 	private String commitMessage;
