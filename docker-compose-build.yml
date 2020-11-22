@@ -3,8 +3,8 @@ version: '3.4'
 services:
 
   testing_service:
-    container_name: arete
-    image: arete:latest
+    container_name: automated_testing_service
+    image: automated_testing_service:latest
     privileged: true
     build:
       args:

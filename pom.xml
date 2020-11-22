@@ -12,10 +12,10 @@
         <version>2.2.1.RELEASE</version>
     </parent>
     <packaging>jar</packaging>
-    <groupId>ee.taltech.arete_testing_service</groupId>
-    <artifactId>arete_testing_service</artifactId>
+    <groupId>ee.taltech.automated_testing_service</groupId>
+    <artifactId>automated_testing_service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>arete_testing_service</name>
+    <name>automated_testing_service</name>
     <description>Automated testing service</description>
 
     <properties>

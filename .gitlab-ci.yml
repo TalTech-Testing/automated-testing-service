@@ -38,8 +38,8 @@ build:
   script:
     - docker-compose -f docker-compose-build.yml up --no-start --build --force-recreate --no-deps
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-    - docker tag arete $DOCKER_USER/arete:latest
-    - docker push $DOCKER_USER/arete:latest
+    - docker tag automated_testing_service $DOCKER_USER/automated_testing_service:latest
+    - docker push $DOCKER_USER/automated_testing_service:latest
   after_script:
     - docker-compose -f docker-compose-build.yml down --remove-orphans -v -f
     - docker container ls
@@ -53,7 +53,7 @@ deploy:
   tags:
     - dev
     - master
-  image: $DOCKER_USER/arete:latest
+  image: $DOCKER_USER/automated_testing_service:latest
   stage: deploy
   services:
     - name: docker:dind
@@ -63,7 +63,7 @@ deploy:
     - docker-compose -f docker-compose-deploy.yml down --remove-orphans -v -f || true
   script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-    - docker pull automatedtestingservice/arete:latest
+    - docker pull automatedtestingservice/automated_testing_service:latest
     - docker-compose -f docker-compose-deploy.yml up -d --force-recreate --no-deps
   after_script:
     - docker container ls
