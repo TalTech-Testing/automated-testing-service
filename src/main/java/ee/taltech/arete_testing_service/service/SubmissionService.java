@@ -27,18 +27,12 @@ public class SubmissionService {
 	}
 
 	public void populateAsyncFields(Submission submission) {
+		populateDefaultValues(submission);
 		populateTesterRelatedFields(submission);
 		populateStudentRelatedFields(submission);
-		populateDefaultValues(submission);
 	}
 
 	private void populateTesterRelatedFields(Submission submission) {
-		if (submission.getSystemExtra() != null &&
-				(submission.getSystemExtra().contains("skipCopyingTests")
-						|| submission.getSystemExtra().contains("skipCopying"))) {
-			return;
-		}
-
 		if (submission.getGitTestRepo() != null) {
 			try {
 				submission.setGitTestRepo(fixRepository(submission.getGitTestRepo()));
@@ -55,10 +49,20 @@ public class SubmissionService {
 					submission.setCourse(namespace);
 				}
 
+				return;
+
 			} catch (Exception e) {
 				throw new RequestFormatException(e.getMessage());
 			}
-		} else if (submission.getTestSource() != null) {
+		}
+
+		if (submission.getSystemExtra() != null &&
+				(submission.getSystemExtra().contains("skipCopyingTests")
+						|| submission.getSystemExtra().contains("skipCopying"))) {
+			return;
+		}
+
+		if (submission.getTestSource() != null) {
 
 			if (submission.getTestSource().size() == 0) {
 				throw new RequestFormatException("Test source is needed size non zero.");
@@ -71,11 +75,6 @@ public class SubmissionService {
 	}
 
 	private void populateStudentRelatedFields(Submission submission) {
-		if (submission.getSystemExtra() != null &&
-				(submission.getSystemExtra().contains("skipCopyingStudent")
-						|| submission.getSystemExtra().contains("skipCopying"))) {
-			return;
-		}
 
 		if (submission.getGitStudentRepo() != null) {
 			submission.setGitStudentRepo(fixRepository(submission.getGitStudentRepo()));
@@ -99,7 +98,16 @@ public class SubmissionService {
 				submission.setFolder(url[url.length - 1]); // Just the folder where file is saved - user cant have multiple of those
 			}
 
-		} else if (submission.getSource() != null) {
+			return;
+		}
+
+		if (submission.getSystemExtra() != null &&
+				(submission.getSystemExtra().contains("skipCopyingStudent")
+						|| submission.getSystemExtra().contains("skipCopying"))) {
+			return;
+		}
+
+		if (submission.getSource() != null) {
 
 			if (submission.getSource().size() == 0) {
 				throw new RequestFormatException("Source is needed size non zero.");
