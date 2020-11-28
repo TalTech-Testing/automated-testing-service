@@ -108,6 +108,7 @@ public class PriorityQueueService {
 		return activeSubmissions;
 	}
 
+	@Async
 	public void killThread(Submission submission) {
 		jobsRan++;
 		activeSubmissions.remove(submission);
