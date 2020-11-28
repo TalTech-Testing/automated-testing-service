@@ -47,7 +47,7 @@ public class DockerService {
 			docker.run();
 
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed running docker: {}", e.getMessage());
 			exception = e;
 
 		} finally {

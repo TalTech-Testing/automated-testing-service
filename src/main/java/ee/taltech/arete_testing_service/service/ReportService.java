@@ -60,7 +60,7 @@ public class ReportService {
 			}
 			javaMailSender.send(message);
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed sending mail: {}", e.getMessage());
 		}
 	}
 

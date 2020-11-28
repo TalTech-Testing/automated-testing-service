@@ -115,7 +115,7 @@ public class PriorityQueueService {
 		try {
 			FileUtils.deleteDirectory(new File(String.format("input_and_output/%s", submission.getHash())));
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed deleting directory after killing thread: {}", e.getMessage());
 		}
 
 		LOGGER.info("All done for submission on thread: {}", submission.getHash());

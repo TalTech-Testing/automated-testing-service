@@ -125,12 +125,12 @@ public class GitPullService {
 							}
 						}
 					} catch (Exception e) {
-						LOGGER.error(e.getMessage());
+						LOGGER.error("Failed parsing potential slugs: {}", e.getMessage());
 					}
 
 				}
 			} catch (Exception e) {
-				LOGGER.error(e.getMessage());
+				LOGGER.error("Failed extracting git tree: {}", e.getMessage());
 			}
 		}
 

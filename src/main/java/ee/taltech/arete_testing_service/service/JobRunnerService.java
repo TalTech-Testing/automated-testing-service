@@ -225,7 +225,7 @@ public class JobRunnerService {
 		try {
 			FileUtils.deleteDirectory(new File(String.format("input_and_output/%s", submission.getHash())));
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed deleting directories: {}", e.getMessage());
 		}
 	}
 
@@ -466,7 +466,7 @@ public class JobRunnerService {
 				}
 			} catch (Exception e1) {
 				html = false;
-				LOGGER.error(e1.getMessage());
+				LOGGER.error("Failed constructing areteResponse: {}", e1.getMessage());
 				if (jsonObject.has("output") && jsonObject.get("output") != null) {
 					areteResponse = AreteConstructor.failedSubmission(slug, submission, jsonObject.get("output").toString());
 				} else {
@@ -478,7 +478,7 @@ public class JobRunnerService {
 			message = areteResponse.getOutput();
 
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Generating a failed response: {}", e.getMessage());
 			message = "Error occurred when reading test results from TestRunner created output. This is most likely due to invalid runtime configuration, that resulted in tester not giving a result.";
 			areteResponse = AreteConstructor.failedSubmission(slug, submission, message);
 		}
