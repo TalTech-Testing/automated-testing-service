@@ -108,13 +108,12 @@ public class PriorityQueueService {
 		return activeSubmissions;
 	}
 
-	@Async
 	public void killThread(Submission submission) {
 		jobsRan++;
 		activeSubmissions.remove(submission);
 
 		try {
-			TimeUnit.MINUTES.sleep(submission.getDockerTimeout()); // Save the files for some time
+			TimeUnit.SECONDS.sleep(5); // Save the files for some time
 		} catch (Exception ignored) {
 		}
 
