@@ -20,6 +20,8 @@ public class SubmissionInitializer {
 
 	private static final String ARETE_STUDENT_REPO_PYTHON = "https://gitlab.cs.ttu.ee/envomp/arete-student-repo";
 
+	private static final String STUDENT_REPO_PYTHON_GROUPS = "https://gitlab.cs.ttu.ee/envomp/iti0102-2020.git";
+
 	private static final String STUDENT_REPO_PYTHON = "https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git";
 
 	private static final String STUDENT_REPO_JAVA = "https://gitlab.cs.ttu.ee/envomp/iti0202-2019.git";
@@ -29,6 +31,8 @@ public class SubmissionInitializer {
 	private static final String STUDENT_REPO_GITHUB = "https://github.com/envomp/CV.git";
 
 	private static final String ARETE_TEST_REPO_PYTHON = "https://gitlab.cs.ttu.ee/envomp/ex";
+
+	private static final String TESTER_REPO_PYTHON_GROUPS = "https://gitlab.cs.ttu.ee/iti0102-2020/ex.git";
 
 	private static final String TESTER_REPO_PYTHON = "https://gitlab.cs.ttu.ee/iti0102-2019/ex.git";
 
@@ -60,7 +64,7 @@ public class SubmissionInitializer {
         String hash = "1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f";
         return Submission.builder()
                 .uniid(UNIID_GIT)
-                .gitStudentRepo(STUDENT_REPO_PYTHON)
+                .gitStudentRepo(STUDENT_REPO_PYTHON_GROUPS)
                 .testingPlatform("uva")
                 .returnUrl(String.format("%s/waitingroom/%s", base, hash))
                 .systemExtra((new HashSet<>(Arrays.asList("skipCopying", "noMail", "integration_tests"))))
@@ -68,6 +72,7 @@ public class SubmissionInitializer {
 				.dockerTestRoot("567")
                 .build();
     }
+
 
 	public static Submission getFullSubmissionPython(String base) {
 		String hash = "1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f";

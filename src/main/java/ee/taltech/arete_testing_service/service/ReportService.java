@@ -50,7 +50,11 @@ public class ReportService {
 			if (files.isPresent()) {
 				for (File file : FileUtils.listFiles(Paths.get(files.get()).toFile(), new RegexFileFilter("^(.*?)"), DirectoryFileFilter.DIRECTORY)) {
 					if (!file.getName().equals("input.json") && !file.getName().equals("output.json")) {
-						helper.addAttachment(file.getName(), file);
+						try {
+							helper.addAttachment(file.getName(), file);
+						} catch (Exception e) {
+							LOGGER.warn("Failed attaching file: {}", e.getMessage());
+						}
 					}
 				}
 			}
