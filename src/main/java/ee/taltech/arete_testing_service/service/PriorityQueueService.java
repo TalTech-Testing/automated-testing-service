@@ -113,6 +113,11 @@ public class PriorityQueueService {
 		activeSubmissions.remove(submission);
 
 		try {
+			TimeUnit.MINUTES.sleep(submission.getDockerTimeout()); // Save the files for some time
+		} catch (Exception ignored) {
+		}
+
+		try {
 			FileUtils.deleteDirectory(new File(String.format("input_and_output/%s", submission.getHash())));
 		} catch (Exception e) {
 			LOGGER.error("Failed deleting directory after killing thread: {}", e.getMessage());
