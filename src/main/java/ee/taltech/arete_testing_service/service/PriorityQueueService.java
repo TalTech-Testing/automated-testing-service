@@ -18,7 +18,6 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -86,21 +85,17 @@ public class PriorityQueueService {
 	}
 
 	@Async
-	@Scheduled(fixedRate = 1000)
+	@Scheduled(fixedRate = 10000)
 	public void clearCache() {
 
 		try {
 			for (Submission submission : getActiveSubmissions()) {
 				if (submission.getReceivedTimestamp() + Math.min(submission.getDockerTimeout() + 10, stuckQueue) * 1000 < System.currentTimeMillis()) {
 					killThread(submission);
-					try {
-						reportService.sendTextMail(devProperties.getDeveloper(), objectWriter.writeValueAsString(submission), "Removed submission", false, Optional.empty());
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -111,11 +106,6 @@ public class PriorityQueueService {
 	public void killThread(Submission submission) {
 		jobsRan++;
 		activeSubmissions.remove(submission);
-
-		try {
-			TimeUnit.SECONDS.sleep(5); // Save the files for some time
-		} catch (Exception ignored) {
-		}
 
 		try {
 			FileUtils.deleteDirectory(new File(String.format("input_and_output/%s", submission.getHash())));
@@ -174,8 +164,6 @@ public class PriorityQueueService {
 			} catch (Exception e) {
 				LOGGER.error("Job failed with message: {}", e.getMessage());
 			}
-
-			killThread(job);
 		}
 	}
 
