@@ -33,9 +33,6 @@ import static org.hamcrest.Matchers.is;
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PrologIntegrationTests {
 
-	@Autowired
-	private ObjectMapper objectMapper;
-
 	@LocalServerPort
 	private int port;
 
@@ -49,7 +46,7 @@ public class PrologIntegrationTests {
 	@BeforeEach
 	@SneakyThrows
 	public void beforeEach() {
-		TimeUnit.SECONDS.sleep(5);
+		TimeUnit.SECONDS.sleep(30);
 	}
 
 	@Test

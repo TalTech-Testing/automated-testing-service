@@ -51,7 +51,7 @@ public class PythonIntegrationTests {
 	@BeforeEach
 	@SneakyThrows
 	public void beforeEach() {
-		TimeUnit.SECONDS.sleep(5);
+		TimeUnit.SECONDS.sleep(30);
 	}
 
 	@Test

@@ -30,9 +30,6 @@ import static org.hamcrest.Matchers.is;
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SubmissionControllerTest {
 
-	@Autowired
-	private ObjectMapper objectMapper;
-
 	@LocalServerPort
 	private int port;
 

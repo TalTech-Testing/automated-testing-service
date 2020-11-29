@@ -34,10 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class JavaIntegrationTests {
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @LocalServerPort
+	@LocalServerPort
     private int port;
 
     @Before
@@ -50,7 +47,7 @@ public class JavaIntegrationTests {
 	@BeforeEach
 	@SneakyThrows
 	public void beforeEach() {
-		TimeUnit.SECONDS.sleep(5);
+		TimeUnit.SECONDS.sleep(30);
 	}
 
     @Test

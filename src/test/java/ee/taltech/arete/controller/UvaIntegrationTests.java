@@ -31,9 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UvaIntegrationTests {
 
-	@Autowired
-	private ObjectMapper objectMapper;
-
 	@LocalServerPort
 	private int port;
 
@@ -47,7 +44,7 @@ public class UvaIntegrationTests {
 	@BeforeEach
 	@SneakyThrows
 	public void beforeEach() {
-		TimeUnit.SECONDS.sleep(5);
+		TimeUnit.SECONDS.sleep(30);
 	}
 
 	@Test
