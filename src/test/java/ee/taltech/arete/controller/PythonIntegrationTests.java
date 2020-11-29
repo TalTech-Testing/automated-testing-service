@@ -11,6 +11,7 @@ import io.restassured.parsing.Parser;
 import lombok.SneakyThrows;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
@@ -233,6 +234,7 @@ public class PythonIntegrationTests {
 	}
 
 	@Test
+	@Ignore
 	public void addNewSubmissionSyncPythonFirstPushReturnsFullSubmission() {
 
 		AreteRequestDTO payload = getFullSubmissionStringControllerEndpointPythonFirstPush(String.format("http://localhost:%s", port));
