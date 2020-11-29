@@ -16,7 +16,7 @@ test:
   services:
     - name: docker:dind
   script:
-    - docker-compose -f docker-compose-test.yml run testing_service-test
+    - docker-compose -f docker-compose-test.yml run testing_service-test --build
   only:
     - dev
     - master

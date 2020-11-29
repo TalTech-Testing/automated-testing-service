@@ -233,4 +233,25 @@ public class PythonIntegrationTests {
 		assertEquals(18, response.getTotalPassedCount());
 	}
 
+	@Test
+	@Ignore
+	public void addNewSubmissionSyncPythonFirstPushReturnsFullSubmission() {
+
+		AreteRequestDTO payload = getFullSubmissionStringControllerEndpointPythonFirstPush(String.format("http://localhost:%s", port));
+		AreteResponseDTO response = given()
+				.when()
+				.body(payload)
+				.post(":testSync")
+				.then()
+				.statusCode(is(HttpStatus.SC_ACCEPTED))
+				.extract()
+				.body()
+				.as(AreteResponseDTO.class);
+
+		// then
+		assertFullSubmission(response);
+		assertEquals(12, response.getTotalCount());
+		assertEquals(12, response.getTotalPassedCount());
+	}
+
 }
