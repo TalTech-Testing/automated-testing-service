@@ -1,7 +1,5 @@
 package ee.taltech.arete_testing_service.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.sun.management.OperatingSystemMXBean;
 import ee.taltech.arete_testing_service.configuration.DevProperties;
 import ee.taltech.arete_testing_service.domain.Submission;
@@ -30,13 +28,9 @@ public class PriorityQueueService {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
 
-	private final ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-
 	private final DevProperties devProperties;
 
 	private final JobRunnerService jobRunnerService;
-
-	private final ReportService reportService;
 
 	private final CopyOnWriteArrayList<Submission> activeSubmissions = new CopyOnWriteArrayList<>();
 
@@ -52,10 +46,9 @@ public class PriorityQueueService {
 	private Integer stuckQueue = 3000; // just some protection against stuck queue
 
 	@Lazy
-	public PriorityQueueService(DevProperties devProperties, JobRunnerService jobRunnerService, ReportService reportService) {
+	public PriorityQueueService(DevProperties devProperties, JobRunnerService jobRunnerService) {
 		this.devProperties = devProperties;
 		this.jobRunnerService = jobRunnerService;
-		this.reportService = reportService;
 	}
 
 	public Integer getJobsRan() {
@@ -108,6 +101,7 @@ public class PriorityQueueService {
 		activeSubmissions.remove(submission);
 
 		try {
+			TimeUnit.SECONDS.sleep(2); // keep files for a little bit so mail can send them
 			FileUtils.deleteDirectory(new File(String.format("input_and_output/%s", submission.getHash())));
 		} catch (Exception e) {
 			LOGGER.error("Failed deleting directory after killing thread: {}", e.getMessage());
@@ -164,6 +158,8 @@ public class PriorityQueueService {
 			} catch (Exception e) {
 				LOGGER.error("Job failed with message: {}", e.getMessage());
 			}
+
+			killThread(job);
 		}
 	}
 

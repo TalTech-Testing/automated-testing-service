@@ -6,16 +6,20 @@ import ee.taltech.arete.java.request.AreteRequestDTO;
 import ee.taltech.arete.java.response.arete.AreteResponseDTO;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
+import lombok.SneakyThrows;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.concurrent.TimeUnit;
 
 import static ee.taltech.arete.initializers.SubmissionInitializer.assertFullSubmission;
 import static ee.taltech.arete.initializers.SubmissionInitializer.getFullSubmissionStringProlog;
@@ -40,6 +44,12 @@ public class PrologIntegrationTests {
 		RestAssured.defaultParser = Parser.JSON;
 		RestAssured.baseURI = "http://localhost";
 		RestAssured.port = port;
+	}
+
+	@BeforeEach
+	@SneakyThrows
+	public void beforeEach() {
+		TimeUnit.SECONDS.sleep(5);
 	}
 
 	@Test
