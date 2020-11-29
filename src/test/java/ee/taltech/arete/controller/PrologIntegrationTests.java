@@ -1,9 +1,8 @@
 package ee.taltech.arete.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.taltech.arete_testing_service.AreteApplication;
 import ee.taltech.arete.java.request.AreteRequestDTO;
 import ee.taltech.arete.java.response.arete.AreteResponseDTO;
+import ee.taltech.arete_testing_service.AreteApplication;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import lombok.SneakyThrows;
@@ -13,7 +12,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;

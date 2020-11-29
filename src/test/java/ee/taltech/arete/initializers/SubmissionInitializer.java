@@ -18,8 +18,6 @@ import java.util.HashSet;
 public class SubmissionInitializer {
 	private final static String UNIID_GIT = "envomp";
 
-	private static final String ARETE_STUDENT_REPO_PYTHON = "https://gitlab.cs.ttu.ee/envomp/arete-student-repo";
-
 	private static final String STUDENT_REPO_PYTHON_GROUPS = "https://gitlab.cs.ttu.ee/envomp/iti0102-2020.git";
 
 	private static final String STUDENT_REPO_PYTHON = "https://gitlab.cs.ttu.ee/envomp/iti0102-2019.git";
@@ -29,10 +27,6 @@ public class SubmissionInitializer {
 	private static final String STUDENT_REPO_EXAM = "https://gitlab.cs.ttu.ee/iti0102-2018/exams/exam2-envomp.git";
 
 	private static final String STUDENT_REPO_GITHUB = "https://github.com/envomp/CV.git";
-
-	private static final String ARETE_TEST_REPO_PYTHON = "https://gitlab.cs.ttu.ee/envomp/ex";
-
-	private static final String TESTER_REPO_PYTHON_GROUPS = "https://gitlab.cs.ttu.ee/iti0102-2020/ex.git";
 
 	private static final String TESTER_REPO_PYTHON = "https://gitlab.cs.ttu.ee/iti0102-2019/ex.git";
 
@@ -60,62 +54,18 @@ public class SubmissionInitializer {
 
 	private final static String home = System.getenv().getOrDefault("ARETE_HOME", System.getenv().getOrDefault("HOME", ".") + "/arete");
 
-    public static Submission getFullSubmissionUva(String base) {
-        String hash = "1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f";
-        return Submission.builder()
-                .uniid(UNIID_GIT)
-                .gitStudentRepo(STUDENT_REPO_PYTHON_GROUPS)
-                .testingPlatform("uva")
-                .returnUrl(String.format("%s/waitingroom/%s", base, hash))
-                .systemExtra((new HashSet<>(Arrays.asList("skipCopying", "noMail", "integration_tests"))))
-                .dockerContentRoot("1027043")
-				.dockerTestRoot("567")
-                .build();
-    }
-
-
-	public static Submission getFullSubmissionPython(String base) {
+	public static Submission getFullSubmissionUva(String base) {
 		String hash = "1bf2d711ce9ff944c7c9ffd9def23d312e9c4f9f";
 		return Submission.builder()
 				.uniid(UNIID_GIT)
-				.gitStudentRepo(STUDENT_REPO_PYTHON)
-				.gitTestRepo(TESTER_REPO_PYTHON)
-				.course(PROJECT_PYTHON)
-				.folder(PROJECT_PYTHON)
-				.testingPlatform(TESTING_PLATFORM_PYTHON)
+				.gitStudentRepo(STUDENT_REPO_PYTHON_GROUPS)
+				.testingPlatform("uva")
 				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
-				.dockerTimeout(120)
-				.commitMessage("First commit!!!")
-				.hash("12dacy372642hc3642c3v423xd34v5yb534bn7354")
-				.result("Everything went ok but in Python. Here are some LOGS LOGS LOGS LOGS LOGS ...")
-				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
-				.dockerExtra("stylecheck")
-				.timestamp(System.currentTimeMillis())
-				.priority(10)
+				.systemExtra((new HashSet<>(Arrays.asList("skipCopying", "noMail", "integration_tests"))))
+				.dockerContentRoot("1027043")
+				.dockerTestRoot("567")
 				.build();
 	}
-
-
-	public static Submission getFullSubmissionJava(String base) {
-		String hash = "12dacy372642hc3642c3v423xd34v5yb534bn7354";
-		return Submission.builder()
-				.uniid(UNIID_GIT)
-				.gitStudentRepo(STUDENT_REPO_JAVA)
-				.gitTestRepo(TESTER_REPO_JAVA)
-				.course(PROJECT)
-				.folder(PROJECT)
-				.testingPlatform(TESTING_PLATFORM_JAVA)
-				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
-				.dockerTimeout(120)
-				.commitMessage("First commit!")
-				.result("Everything went ok. Here are some LOGS LOGS LOGS LOGS LOGS ...")
-				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
-				.dockerExtra("stylecheck")
-				.timestamp(System.currentTimeMillis())
-				.priority(10)
-				.build();
-	}
-
 
 	public static Submission getGitPullEndpointSubmissionGithub(String base) {
 		String hash = getRandomHash();
@@ -302,26 +252,6 @@ public class SubmissionInitializer {
 	}
 
 	@SneakyThrows
-	public static AreteRequestDTO getFullSubmissionStringPythonSync(String base) {
-		String hash = getRandomHash();
-		return AreteRequestDTO.builder()
-				.uniid(UNIID_GIT)
-				.gitTestRepo(TESTER_REPO_PYTHON)
-				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.dockerExtra(EXTRA)
-				.hash(hash)
-				.systemExtra((new HashSet<>(Arrays.asList("integration_tests", "noMail"))))
-				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
-				.gitTestRepo(PROJECT_GIT_PYTHON)
-				.source(new ArrayList<>(Collections.singletonList(
-						SourceFileDTO.builder()
-								.path("ex04_cipher/cipher.py")
-								.contents(Files.readString(Paths.get(home + "/src/test/java/ee/taltech/arete/initializers/cipher.py"), StandardCharsets.UTF_8))
-								.build())))
-				.build();
-	}
-
-	@SneakyThrows
 	public static AreteRequestDTO getFullSubmissionStringPythonSyncNoStyle(String base) {
 		String hash = getRandomHash();
 		return AreteRequestDTO.builder()
@@ -360,19 +290,6 @@ public class SubmissionInitializer {
 				.build();
 	}
 
-	public static AreteRequestDTO getFullSubmissionStringControllerEndpointPythonFirstPush(String base) {
-		String hash = "3a576489c3b3db981dcc93badbf2665bb5c1be1f";
-		return AreteRequestDTO.builder()
-				.uniid(UNIID_GIT)
-				.gitStudentRepo(ARETE_STUDENT_REPO_PYTHON)
-				.gitTestRepo(ARETE_TEST_REPO_PYTHON)
-				.hash(hash)
-				.testingPlatform(TESTING_PLATFORM_PYTHON)
-				.systemExtra((new HashSet<>(Arrays.asList("noMail", "integration_tests"))))
-				.returnUrl(String.format("%s/waitingroom/%s", base, hash))
-				.dockerExtra(EXTRA)
-				.build();
-	}
 
 	@SneakyThrows
 	public static AreteRequestDTO getFullSubmissionStringPythonSyncNoTesterFiles(String base) {
