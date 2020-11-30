@@ -242,8 +242,7 @@ public class JobRunnerService {
 	private boolean createDirs(Submission submission, String slug) {
 
 		try {
-			createDirectory(toRealPath(String.format("input_and_output/%s", submission.getHash())));
-			createDirectory(toRealPath(String.format("input_and_output/%s/%s", submission.getHash(), slug)));
+			new File(toRealPath(String.format("input_and_output/%s/%s", submission.getHash(), slug))).mkdirs();
 			createDirectory(toRealPath(String.format("input_and_output/%s/%s/tester", submission.getHash(), slug)));
 			createDirectory(toRealPath(String.format("input_and_output/%s/%s/student", submission.getHash(), slug)));
 			createDirectory(toRealPath(String.format("input_and_output/%s/%s/host", submission.getHash(), slug)));
