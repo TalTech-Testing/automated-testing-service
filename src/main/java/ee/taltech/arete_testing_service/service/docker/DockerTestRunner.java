@@ -61,7 +61,7 @@ public class DockerTestRunner {
 		this.submission = submission;
 		this.slug = slug;
 		this.containerName = String.format("%s_%s", submission.getHash().substring(0, 16).toLowerCase(), 100000 + Math.abs(new Random().nextInt()) * 900000);
-		this.outputPath = String.format("input_and_output/%s/host", submission.getHash());
+		this.outputPath = String.format("input_and_output/%s/%s/host", submission.getHash(), slug);
 		this.image = String.format("automatedtestingservice/%s-tester", submission.getTestingPlatform());
 	}
 
@@ -80,15 +80,15 @@ public class DockerTestRunner {
 
 			LOGGER.info("Got image with id: {}", imageId);
 
-			String output = String.format("input_and_output/%s/host", submission.getHash());
-			String testerHost = String.format("input_and_output/%s/tester", submission.getHash());
-			String studentHost = String.format("input_and_output/%s/student", submission.getHash());
+			String output = String.format("input_and_output/%s/%s/host", submission.getHash(), slug);
+			String testerHost = String.format("input_and_output/%s/%s/tester", submission.getHash(), slug);
+			String studentHost = String.format("input_and_output/%s/%s/student", submission.getHash(), slug);
 
 			String tester = String.format("tests/%s/%s", submission.getCourse(), slug);
-			String tempTester = String.format("input_and_output/%s/tester", submission.getHash());
+			String tempTester = String.format("input_and_output/%s/%s/tester", submission.getHash(), slug);
 
 			String student = String.format("students/%s/%s/%s", submission.getUniid(), submission.getFolder(), slug);
-			String tempStudent = String.format("input_and_output/%s/student", submission.getHash());
+			String tempStudent = String.format("input_and_output/%s/%s/student", submission.getHash(), slug);
 
 			Volume volumeStudent = new Volume("/student");
 			Volume volumeTester = new Volume("/tester");
@@ -101,7 +101,7 @@ public class DockerTestRunner {
 				copyFiles(tester, tempTester, submission.getCourse(), submission.getTestSource(), "Failed to copy files from tester folder to temp folder.");
 			}
 
-			mapper.writeValue(new java.io.File(String.format("input_and_output/%s/host/input.json", submission.getHash())),
+			mapper.writeValue(new java.io.File(String.format("input_and_output/%s/%s/host/input.json", submission.getHash(), slug)),
 					DockerParameters.builder()
 							.contentRoot(submission.getDockerContentRoot())
 							.testRoot(submission.getDockerTestRoot())

@@ -65,16 +65,13 @@ public class JobRunnerService {
 
 		if (folderMaintenance(submission)) return; // if error, done
 
-		if (createDirs(submission)) return; // if error, done
-
 		formatSlugs(submission);
 		LOGGER.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
 		String initialEmail = submission.getEmail();
 
 		for (String slug : submission.getSlugs()) {
 
-			if (createDirs(submission)) {
-				deleteDirs(submission);
+			if (createDirs(submission, slug)) {
 				continue;
 			}
 
@@ -129,8 +126,6 @@ public class JobRunnerService {
 		} catch (Exception e) {
 			LOGGER.error("job {} has failed for user {} with exception: {}", slug, submission.getUniid(), e.getMessage());
 			reportFailedSubmission(submission, e.getMessage());
-		} finally {
-			deleteDirs(submission);
 		}
 	}
 
@@ -221,14 +216,6 @@ public class JobRunnerService {
 		}
 	}
 
-	private void deleteDirs(Submission submission) {
-		try {
-			FileUtils.deleteDirectory(new File(String.format("input_and_output/%s", submission.getHash())));
-		} catch (Exception e) {
-			LOGGER.error("Failed deleting directories: {}", e.getMessage());
-		}
-	}
-
 	public void formatSlugs(Submission submission) {
 		HashSet<String> formattedSlugs = new HashSet<>();
 
@@ -252,17 +239,18 @@ public class JobRunnerService {
 		submission.setSlugs(formattedSlugs);
 	}
 
-	private boolean createDirs(Submission submission) {
+	private boolean createDirs(Submission submission, String slug) {
 
 		try {
 			createDirectory(toRealPath(String.format("input_and_output/%s", submission.getHash())));
-			createDirectory(toRealPath(String.format("input_and_output/%s/tester", submission.getHash())));
-			createDirectory(toRealPath(String.format("input_and_output/%s/student", submission.getHash())));
-			createDirectory(toRealPath(String.format("input_and_output/%s/host", submission.getHash())));
+			createDirectory(toRealPath(String.format("input_and_output/%s/%s", submission.getHash(), slug)));
+			createDirectory(toRealPath(String.format("input_and_output/%s/%s/tester", submission.getHash(), slug)));
+			createDirectory(toRealPath(String.format("input_and_output/%s/%s/student", submission.getHash(), slug)));
+			createDirectory(toRealPath(String.format("input_and_output/%s/%s/host", submission.getHash(), slug)));
 
-			new File(String.format("input_and_output/%s/host/input.json", submission.getHash())).createNewFile();
+			new File(String.format("input_and_output/%s/%s/host/input.json", submission.getHash(), slug)).createNewFile();
 
-			new File(String.format("input_and_output/%s/host/output.json", submission.getHash())).createNewFile();
+			new File(String.format("input_and_output/%s/%s/host/output.json", submission.getHash(), slug)).createNewFile();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return true;

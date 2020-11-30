@@ -16,7 +16,6 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
@@ -57,7 +56,7 @@ public class GitPullService {
 				submission.setSlugs(getChangedFolders(pathToStudentFolder));
 			}
 
-		} catch (IOException | GitAPIException e) {
+		} catch (Exception e) {
 			LOGGER.error("Failed to read student repository.");
 			return false;
 		}
@@ -65,11 +64,11 @@ public class GitPullService {
 		return true;
 	}
 
-	public boolean pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException {
+	public boolean pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) {
 
 		if (!SafePullAndClone(pathToFolder, pathToRepo, submission)) {
 			LOGGER.error("Defaulting to reset hard");
-			if (!resetHard(pathToFolder, pathToRepo)) {
+			if (!resetHard(pathToFolder)) {
 				return false;
 			}
 
@@ -137,7 +136,7 @@ public class GitPullService {
 		return repoMainFolders;
 	}
 
-	private boolean SafePullAndClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) throws GitAPIException, IOException {
+	private boolean SafePullAndClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) {
 		Path path = Paths.get(pathToFolder);
 
 		if (Files.exists(path)) {
@@ -159,7 +158,7 @@ public class GitPullService {
 		return true;
 	}
 
-	private boolean resetHard(String pathToFolder, String pathToRepo) {
+	private boolean resetHard(String pathToFolder) {
 
 		try {
 			FileUtils.deleteDirectory(new File(pathToFolder));
@@ -261,20 +260,20 @@ public class GitPullService {
 
 	private void fetch(Git git) throws GitAPIException {
 		if (System.getenv().containsKey("GIT_PASSWORD")) {
-			FetchResult result = git.fetch()
+			git.fetch()
 					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
 							System.getenv().get("GIT_USERNAME"), System.getenv().get("GIT_PASSWORD")))
 					.call();
 
 		} else {
-			FetchResult result = git.fetch()
+			git.fetch()
 					.setTransportConfigCallback(transportConfigCallback)
 					.call();
 		}
 	}
 
 	private void reset(Git git, Submission user) throws GitAPIException {
-		Ref command = git.reset().setMode(ResetCommand.ResetType.HARD).setRef(user.getHash()).call();
+		git.reset().setMode(ResetCommand.ResetType.HARD).setRef(user.getHash()).call();
 	}
 
 	private RevCommit getLatestCommit(Git git) throws GitAPIException, IOException {
@@ -338,7 +337,7 @@ public class GitPullService {
 			Git.open(new File(pathToStudentFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
 		} catch (Exception e) {
 			LOGGER.error("Failed to reset HEAD for student. Defaulting to hard reset: {}", e.getMessage());
-			if (!resetHard(pathToStudentFolder, submission.getGitStudentRepo())) {
+			if (!resetHard(pathToStudentFolder)) {
 				return false;
 			}
 		}
