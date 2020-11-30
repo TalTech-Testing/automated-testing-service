@@ -6,6 +6,7 @@ import com.github.dockerjava.api.async.ResultCallbackTemplate;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Frame;
+import com.github.dockerjava.api.model.RestartPolicy;
 import com.github.dockerjava.api.model.Volume;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
@@ -50,6 +51,8 @@ public class DockerTestRunner {
 
 	private CreateContainerResponse container;
 
+	private String containerId;
+
 	private DockerClient dockerClient;
 
 	private boolean done = false;
@@ -62,7 +65,7 @@ public class DockerTestRunner {
 		this.image = String.format("automatedtestingservice/%s-tester", submission.getTestingPlatform());
 	}
 
-	public void run() {
+	public String run() {
 		try {
 			String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
 
@@ -109,6 +112,7 @@ public class DockerTestRunner {
 							.uniid(submission.getUniid()).build());
 
 			final String uniidEnv = "uniid=" + submission.getUniid();
+			final String hashEnv = "submission_hash=" + submission.getHash();
 			final String systemExtraEnv = "system_extra=" + String.join(", ", submission.getSystemExtra().toArray(new String[0]));
 			final String dockerExtraEnv = "docker_extra=" + submission.getDockerExtra();
 			final String dockerTimeoutEnv = "docker_timeout=" + submission.getDockerTimeout();
@@ -118,7 +122,7 @@ public class DockerTestRunner {
 
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
-					.withEnv(uniidEnv, systemExtraEnv, dockerExtraEnv, dockerTimeoutEnv, dockerContentRootEnv, dockerTestRootEnv, commitMessageEnv)
+					.withEnv(uniidEnv, hashEnv, systemExtraEnv, dockerExtraEnv, dockerTimeoutEnv, dockerContentRootEnv, dockerTestRootEnv, commitMessageEnv)
 					.withVolumes(volumeStudent, volumeTester, volumeOutput)
 					.withAttachStdout(true)
 					.withAttachStderr(true)
@@ -128,8 +132,14 @@ public class DockerTestRunner {
 									new Bind(new java.io.File(studentHost).getAbsolutePath(), volumeStudent, rw),
 									new Bind(new java.io.File(testerHost).getAbsolutePath(), volumeTester, ro))
 							.withCpuCount((submission.getPriority() > 7 ? 4L : 2L))
+							.withMemory((submission.getPriority() > 7 ? 8000000000L : 4000000000L))
+							.withMemorySwap((submission.getPriority() > 7 ? 8000000000L : 4000000000L))
+							.withAutoRemove(true)
+							.withPidsLimit(8192L)
+							.withRestartPolicy(RestartPolicy.noRestart())
 					).exec();
 
+			containerId = container.getId();
 			LOGGER.info("Created container with id: {}", container.getId());
 
 			dockerClient.startContainerCmd(container.getId()).exec();
@@ -173,6 +183,7 @@ public class DockerTestRunner {
 		} catch (Exception e) {
 			throw new DockerRunnerException("Exception in docker, message: " + e.getMessage());
 		}
+		return containerId;
 	}
 
 	private String getImage(DockerClient dockerClient, String image) {
@@ -222,17 +233,26 @@ public class DockerTestRunner {
 
 			try {
 				dockerClient.stopContainerCmd(container.getId()).exec();
-				LOGGER.info("Stopped container: {}", container.getId());
+				LOGGER.info("Stopped container: {}", containerId);
 			} catch (Exception stop) {
-				LOGGER.info("Container {} has already been stopped", container.getId());
+				LOGGER.info("Container {} has already been stopped", containerId);
+			}
+
+			try {
+				dockerClient.killContainerCmd(containerId).exec();
+				LOGGER.info("Killed container: {}", containerId);
+			} catch (Exception stop) {
+				LOGGER.info("Container {} has already been killed", containerId);
 			}
 
 			try {
 				dockerClient.removeContainerCmd(container.getId()).exec();
 				LOGGER.info("Removed container: {}", container.getId());
 			} catch (Exception remove) {
-				LOGGER.error("Container {} has already been removed", submission.getHash());
+				LOGGER.error("Container {} has already been removed", containerId);
 			}
+
+			LOGGER.info("Cleaned up for submission: {}", submission.getHash());
 		}
 	}
 

@@ -17,22 +17,6 @@ public class DockerService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DockerService.class);
 
-	private static void unTar(TarArchiveInputStream tis, File destFile) throws IOException {
-		TarArchiveEntry tarEntry = null;
-		while ((tarEntry = tis.getNextTarEntry()) != null) {
-			if (tarEntry.isDirectory()) {
-				if (!destFile.exists()) {
-					boolean a = destFile.mkdirs();
-				}
-			} else {
-				FileOutputStream fos = new FileOutputStream(destFile);
-				IOUtils.copy(tis, fos);
-				fos.close();
-			}
-		}
-		tis.close();
-	}
-
 	/**
 	 * @param submission : test job to be tested.
 	 * @return test job result path

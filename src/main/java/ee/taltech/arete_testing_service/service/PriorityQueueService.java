@@ -101,7 +101,7 @@ public class PriorityQueueService {
 		activeSubmissions.remove(submission);
 
 		try {
-			TimeUnit.SECONDS.sleep(2); // keep files for a little bit so mail can send them
+			TimeUnit.SECONDS.sleep(10); // keep files for a little bit so mail can send them and prevent spam pushing
 			FileUtils.deleteDirectory(new File(String.format("input_and_output/%s", submission.getHash())));
 		} catch (Exception e) {
 			LOGGER.error("Failed deleting directory after killing thread: {}", e.getMessage());
@@ -157,9 +157,10 @@ public class PriorityQueueService {
 				jobRunnerService.runJob(job);
 			} catch (Exception e) {
 				LOGGER.error("Job failed with message: {}", e.getMessage());
+			} finally {
+				killThread(job);
 			}
 
-			killThread(job);
 		}
 	}
 
