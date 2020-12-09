@@ -18,10 +18,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "testCompilation",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "The tests did not compile for task '4'. Please check if the types of the functions match specification",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         }
       ]
     },
@@ -42,10 +42,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "myFirstList exists",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -57,10 +57,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "myFirstList is float list",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -72,10 +72,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "myFirstList is empty",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         }
       ]
     },
@@ -96,10 +96,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "elem ix e",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -111,10 +111,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "elem ix a",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -126,10 +126,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "elem ix d",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -141,10 +141,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "elem is implemented",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -156,10 +156,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "elem ix g",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -171,10 +171,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "elem ix f",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -186,10 +186,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "elem ix b",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -201,10 +201,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "elem has correct return type",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -216,10 +216,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "elem ix h",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -231,10 +231,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "elem has correct parameter types",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -246,10 +246,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "elem ix c",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         }
       ]
     },
@@ -270,10 +270,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "pilots is pilot list",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -285,10 +285,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "pilots has 5 or more",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -300,10 +300,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "pilots exists",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         }
       ]
     },
@@ -324,10 +324,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "pilotsOf double",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "  Expected: < (\"Louis\", 1901, \"A\", 2), (\"Wynton\", 1961, \"A\", 0), (\"Louis\", 1901, \"A\", 2), (\"Wynton\", 1961, \"A\", 0) > or < (\"Louis\", 1901, \"A\", 2), (\"Wynton\", 1961, \"A\", 0), (\"Louis\", 1901, \"A\", 2), (\"Wynton\", 1961, \"A\", 0) >\n  But was:  <empty>\n",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -339,10 +339,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "pilotsOf another team",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -354,10 +354,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "pilotsOf existing team",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "  Expected: < (\"Louis\", 1901, \"A\", 2), (\"Wynton\", 1961, \"A\", 0) > or < (\"Louis\", 1901, \"A\", 2), (\"Wynton\", 1961, \"A\", 0) >\n  But was:  <empty>\n",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -369,10 +369,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "pilotsOf a nonexistent team",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -384,10 +384,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "pilotsOf double filter 2",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -399,10 +399,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "pilotsOf empty",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -414,10 +414,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "pilotsOf double filter",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         }
       ]
     },
@@ -438,10 +438,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "successful works with emtpy list",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -453,10 +453,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "successful filters",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -468,10 +468,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "successful does not filter when there is nothing to filter",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         }
       ]
     },
@@ -492,10 +492,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "names sngl",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -507,10 +507,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "names myPilots",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -522,10 +522,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "names empty",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -537,10 +537,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "names myPilots double",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         }
       ]
     },
@@ -561,10 +561,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "spoblt empty",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -576,10 +576,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "spoblt w",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "System.InvalidCastException : Unable to cast object of type 'Microsoft.FSharp.Collections.FSharpList`1[System.String]' to type 'Microsoft.FSharp.Collections.FSharpList`1[System.Object]'.",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -591,10 +591,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "spoblt z",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -606,10 +606,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "spoblt y",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -621,10 +621,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "spoblt sngl",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "  Expected: < \"Louis\" > or < \"Louis\" >\n  But was:  <empty>\n",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         },
         {
           "groupsDependedUpon": null,
@@ -636,10 +636,10 @@
           "methodsDependedUpon": [],
           "stackTrace": "",
           "name": "spoblt x",
-          "stdout": [],
+          "stdout": "stdout",
           "exceptionMessage": "",
           "exceptionClass": "",
-          "stderr": []
+          "stderr": "stderr"
         }
       ]
     }

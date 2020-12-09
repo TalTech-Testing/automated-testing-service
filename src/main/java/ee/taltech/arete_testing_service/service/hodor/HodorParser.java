@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HodorParser {
 
@@ -105,8 +106,8 @@ public class HodorParser {
 								.methodsDependedUpon(test.getMethodsDependedUpon())
 								.printStackTrace(test.getPrintStackTrace())
 								.stackTrace(test.getStackTrace())
-								.stdout(test.getStdout())
-								.stderr(test.getStderr())
+								.stdout(handleConsoleOutput(test.getStdout()))
+								.stderr(handleConsoleOutput(test.getStderr()))
 								.name(test.getName())
 								.timeElapsed(test.getTimeElapsed())
 								.weight(test.getWeight())
@@ -135,5 +136,12 @@ public class HodorParser {
 		}
 
 		return areteResponse;
+	}
+
+	private static String handleConsoleOutput(List<ConsoleOutputDTO> stdout) {
+		if (stdout == null) {
+			return "";
+		}
+		return stdout.stream().map(ConsoleOutputDTO::getContent).collect(Collectors.joining());
 	}
 }

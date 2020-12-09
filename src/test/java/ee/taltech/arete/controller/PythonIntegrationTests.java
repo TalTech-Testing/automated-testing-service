@@ -84,7 +84,7 @@ public class PythonIntegrationTests {
 				.body()
 				.as(AreteResponseDTO.class);
 
-		assertEquals(0, response.getConsoleOutputs().size());
+		assertEquals("", response.getConsoleOutputs());
 		assertFullSubmission(response);
 		assertEquals(23, response.getTotalCount());
 		assertEquals(16, response.getTotalPassedCount());

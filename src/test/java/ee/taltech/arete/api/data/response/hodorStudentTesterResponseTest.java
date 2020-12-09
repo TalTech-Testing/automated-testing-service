@@ -134,7 +134,6 @@ public class hodorStudentTesterResponseTest {
 	@SneakyThrows
 	private void assertSuccessfulParsing(AreteResponseDTO areteResponse) {
 		assert areteResponse.getErrors() != null;
-		assert areteResponse.getConsoleOutputs() != null;
 		assert areteResponse.getFiles() != null;
 		assert areteResponse.getTestFiles() != null;
 		assert areteResponse.getSystemExtra() != null;

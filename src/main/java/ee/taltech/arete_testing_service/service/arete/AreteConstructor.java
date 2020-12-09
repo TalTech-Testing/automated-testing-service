@@ -26,7 +26,7 @@ public class AreteConstructor {
 	}
 
 	public static void fillFromSubmission(String slug, Submission submission, AreteResponseDTO response) {
-		response.getConsoleOutputs().add(new ConsoleOutputDTO(submission.getResult()));
+		response.setConsoleOutputs(submission.getResult());
 		response.setReturnExtra(submission.getReturnExtra());
 		response.setHash(submission.getHash());
 		response.setUniid(submission.getUniid());
@@ -94,9 +94,9 @@ public class AreteConstructor {
 		}
 
 		if (submission.getSystemExtra().contains("noStd")) {
-			response.setConsoleOutputs(new ArrayList<>());
-			response.getTestSuites().forEach(x -> x.getUnitTests().forEach(y -> y.setStderr(new ArrayList<>())));
-			response.getTestSuites().forEach(x -> x.getUnitTests().forEach(y -> y.setStdout(new ArrayList<>())));
+			response.setConsoleOutputs("");
+			response.getTestSuites().forEach(x -> x.getUnitTests().forEach(y -> y.setStderr("")));
+			response.getTestSuites().forEach(x -> x.getUnitTests().forEach(y -> y.setStdout("")));
 		}
 	}
 

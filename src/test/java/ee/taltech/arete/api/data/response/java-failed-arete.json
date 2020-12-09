@@ -204,11 +204,7 @@
     }
   ],
   "testSuites": [],
-  "consoleOutputs": [
-    {
-      "content": "There's something that I'd like to say."
-    }
-  ],
+  "consoleOutputs": "There's something that I'd like to say.",
   "totalCount": 0,
   "totalGrade": "0.0",
   "totalPassedCount": 0,
