@@ -499,9 +499,7 @@ public class JobRunnerService {
 	@SneakyThrows
 	private void reportSubmission(Submission submission, AreteResponseDTO areteResponse, String message, String header, Boolean html, Optional<String> output) {
 
-		areteResponse.setConsoleOutputs("<CHARON_DEPLOY_PLS>");
 		String areteJson = objectMapper.writeValueAsString(areteResponse);
-		areteJson = areteJson.replaceAll("['\"]<CHARON_DEPLOY_PLS>['\"]", "[]");
 
 		if (submission.getSystemExtra().contains("integration_tests")) {
 			reportService.sendTextToReturnUrl(submission.getReturnUrl(), areteJson);

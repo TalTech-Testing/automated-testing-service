@@ -1,72 +1,72 @@
 variables:
-  DOCKER_DRIVER: overlay
+    DOCKER_DRIVER: overlay
 
 stages:
-#  - test
-  - build
-  - deploy
+    - test
+    - build
+    - deploy
 
-#
-#test:
-#  tags:
-#    - dev
-#    - master
-#  image: docker:latest
-#  stage: test
-#  services:
-#    - name: docker:dind
-#  script:
-#    - docker-compose -f docker-compose-test.yml build --no-cache testing_service-test
-#    - docker-compose -f docker-compose-test.yml run testing_service-test
-#  only:
-#    - dev
-#    - master
+
+test:
+    tags:
+        - dev
+        - master
+    image: docker:latest
+    stage: test
+    services:
+        -   name: docker:dind
+    script:
+        - docker-compose -f docker-compose-test.yml build --no-cache testing_service-test
+        - docker-compose -f docker-compose-test.yml run testing_service-test
+    only:
+        - dev
+        - master
 
 
 build:
-  tags:
-    - dev
-    - master
-  image: docker:latest
-  stage: build
-  services:
-    - name: docker:dind
-  before_script:
-    - docker container ls
-    - docker images
-  script:
-    - docker-compose -f docker-compose-build.yml up --no-start --build --force-recreate --no-deps
-#    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-#    - docker tag automated_testing_service $DOCKER_USER/automated_testing_service:latest
-#    - docker push $DOCKER_USER/automated_testing_service:latest
-  after_script:
-    - docker-compose -f docker-compose-build.yml down --remove-orphans -v -f
-    - docker container ls
-    - docker images
-  only:
-    - dev
-    - master
+    tags:
+        - dev
+        - master
+    image: docker:latest
+    stage: build
+    services:
+        -   name: docker:dind
+    before_script:
+        - docker container ls
+        - docker images
+    script:
+        - docker-compose -f docker-compose-build.yml up --no-start --build --force-recreate --no-deps
+    #    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    #    - docker tag automated_testing_service $DOCKER_USER/automated_testing_service:latest
+    #    - docker push $DOCKER_USER/automated_testing_service:latest
+    after_script:
+        - docker-compose -f docker-compose-build.yml down --remove-orphans -v -f
+        - docker container ls
+        - docker images
+    only:
+        - dev
+        - master
 
 
 deploy:
-  tags:
-    - dev
-    - master
-  image: $DOCKER_USER/automated_testing_service:latest
-  stage: deploy
-  services:
-    - name: docker:dind
-  before_script:
-    - docker images
-    - docker container ls
-    - docker-compose -f docker-compose-deploy.yml down --remove-orphans -v -f || true
-  script:
-    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-    - docker pull automatedtestingservice/automated_testing_service:latest
-    - docker-compose -f docker-compose-deploy.yml up -d --force-recreate --no-deps
-  after_script:
-    - docker container ls
-    - docker images
-  only:
-    - dev
-    - master
+    tags:
+        - dev
+        - master
+    image: $DOCKER_USER/automated_testing_service:latest
+    stage: deploy
+    services:
+        -   name: docker:dind
+    before_script:
+        - docker images
+        - docker container ls
+        - docker-compose -f docker-compose-deploy.yml down --remove-orphans -v -f || true
+    script:
+        - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+        - docker pull automatedtestingservice/automated_testing_service:latest
+        - docker-compose -f docker-compose-deploy.yml up -d --force-recreate --no-deps
+    after_script:
+        - docker container ls
+        - docker images
+    only:
+        - dev
+        - master
