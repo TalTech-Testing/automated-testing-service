@@ -499,6 +499,7 @@ public class JobRunnerService {
 	@SneakyThrows
 	private void reportSubmission(Submission submission, AreteResponseDTO areteResponse, String message, String header, Boolean html, Optional<String> output) {
 
+		areteResponse.setConsoleOutputs(null);
 		if (submission.getSystemExtra().contains("integration_tests")) {
 			reportService.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
 			LOGGER.info("INTEGRATION TEST: Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
