@@ -499,9 +499,12 @@ public class JobRunnerService {
 	@SneakyThrows
 	private void reportSubmission(Submission submission, AreteResponseDTO areteResponse, String message, String header, Boolean html, Optional<String> output) {
 
-		areteResponse.setConsoleOutputs(null);
+		areteResponse.setConsoleOutputs("<CHARON_DEPLOY_PLS>");
+		String areteJson = objectMapper.writeValueAsString(areteResponse);
+		areteJson = areteJson.replaceAll("['\"]<CHARON_DEPLOY_PLS>['\"]", "[]");
+
 		if (submission.getSystemExtra().contains("integration_tests")) {
-			reportService.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
+			reportService.sendTextToReturnUrl(submission.getReturnUrl(), areteJson);
 			LOGGER.info("INTEGRATION TEST: Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
 
 			String integrationTestMail = System.getenv("INTEGRATION_TEST_MAIL");
@@ -513,7 +516,7 @@ public class JobRunnerService {
 
 		try {
 			if (submission.getReturnUrl() != null) {
-				reportService.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
+				reportService.sendTextToReturnUrl(submission.getReturnUrl(), areteJson);
 				LOGGER.info("Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
 			}
 		} catch (Exception e1) {
@@ -531,7 +534,7 @@ public class JobRunnerService {
 			extra.put("shared_secret", System.getenv().getOrDefault("SHARED_SECRET", "Please make sure that shared_secret is set up properly"));
 			areteResponse.setReturnExtra(new ObjectMapper().readTree(extra.toString()));
 
-			reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), objectMapper.writeValueAsString(areteResponse));
+			reportService.sendTextToReturnUrl(devProperties.getAreteBackend(), areteJson);
 			LOGGER.info("Reported to backend");
 		} catch (Exception e1) {
 			LOGGER.error("Failed to report to backend with message: {}", e1.getMessage());
@@ -550,15 +553,16 @@ public class JobRunnerService {
 
 		try {
 			if (areteResponse.getFailed()) {
+				String submissionString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission);
 				try {
-					reportService.sendTextMail(devProperties.getAgo(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, output);
+					reportService.sendTextMail(devProperties.getAgo(), submissionString, header, html, output);
 					if (!devProperties.getAgo().equals(devProperties.getDeveloper())) {
-						reportService.sendTextMail(devProperties.getDeveloper(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, output);
+						reportService.sendTextMail(devProperties.getDeveloper(), submissionString, header, html, output);
 					}
 				} catch (Exception e) {
-					reportService.sendTextMail(devProperties.getAgo(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, Optional.empty());
+					reportService.sendTextMail(devProperties.getAgo(), submissionString, header, html, Optional.empty());
 					if (!devProperties.getAgo().equals(devProperties.getDeveloper())) {
-						reportService.sendTextMail(devProperties.getDeveloper(), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, html, Optional.empty());
+						reportService.sendTextMail(devProperties.getDeveloper(), submissionString, header, html, Optional.empty());
 					}
 				}
 			}
