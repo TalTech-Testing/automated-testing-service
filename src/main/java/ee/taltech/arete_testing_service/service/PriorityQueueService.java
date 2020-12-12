@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -31,7 +32,11 @@ public class PriorityQueueService {
 				.thenComparing(Submission::getReceivedTimestamp));
 	}
 
-	private final OperatingSystemMXBean osBean;
+	private OperatingSystemMXBean getOsBean() {
+		return ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+	}
+
+	private final OperatingSystemMXBean osBean = getOsBean();
 	private final Logger logger;
 	private final DevProperties devProperties;
 	private final JobRunnerService jobRunnerService;

@@ -2,7 +2,6 @@ package ee.taltech.arete_testing_service.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.management.OperatingSystemMXBean;
-import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.service.git.SshTransportConfigCallback;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.slf4j.Logger;
@@ -17,9 +16,6 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.lang.management.ManagementFactory;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Custom properties for Spring Boot configuration.
@@ -52,10 +48,5 @@ public class PropertyConfig {
 	@Bean
 	public TransportConfigCallback transportConfigCallback() {
 		return new SshTransportConfigCallback();
-	}
-
-	@Bean
-	public OperatingSystemMXBean operatingSystemMXBean() {
-		return ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 	}
 }
