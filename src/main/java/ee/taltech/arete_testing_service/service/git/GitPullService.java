@@ -1,6 +1,7 @@
 package ee.taltech.arete_testing_service.service.git;
 
 import ee.taltech.arete_testing_service.domain.Submission;
+import lombok.AllArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
@@ -19,7 +20,6 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -35,13 +35,13 @@ import java.util.Optional;
 //Return true = success, false = failure.
 
 @Service
+@AllArgsConstructor
 public class GitPullService {
 
 	private static final List<String> TESTABLES = List.of("ADD", "MODIFY", "RENAME", "COPY");
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GitPullService.class);
-
-	private static final TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback(); // failed ssh will fallback onto password
+	private final Logger logger;
+	private final TransportConfigCallback transportConfigCallback; // failed ssh will fallback onto password
 
 
 	public boolean repositoryMaintenance(Submission submission) {
@@ -57,7 +57,7 @@ public class GitPullService {
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("Failed to read student repository.");
+			logger.error("Failed to read student repository.");
 			return false;
 		}
 
@@ -67,13 +67,13 @@ public class GitPullService {
 	public boolean pullOrClone(String pathToFolder, String pathToRepo, Optional<Submission> submission) {
 
 		if (!SafePullAndClone(pathToFolder, pathToRepo, submission)) {
-			LOGGER.error("Defaulting to reset hard");
+			logger.error("Defaulting to reset hard");
 			if (!resetHard(pathToFolder)) {
 				return false;
 			}
 
 			if (!SafePullAndClone(pathToFolder, pathToRepo, submission)) {
-				LOGGER.error("Completely failed to pull or clone.");
+				logger.error("Completely failed to pull or clone.");
 				return false;
 			}
 		}
@@ -124,12 +124,12 @@ public class GitPullService {
 							}
 						}
 					} catch (Exception e) {
-						LOGGER.error("Failed parsing potential slugs: {}", e.getMessage());
+						logger.error("Failed parsing potential slugs: {}", e.getMessage());
 					}
 
 				}
 			} catch (Exception e) {
-				LOGGER.error("Failed extracting git tree: {}", e.getMessage());
+				logger.error("Failed extracting git tree: {}", e.getMessage());
 			}
 		}
 
@@ -140,7 +140,7 @@ public class GitPullService {
 		Path path = Paths.get(pathToFolder);
 
 		if (Files.exists(path)) {
-			LOGGER.info("Checking for update for project: {}", pathToFolder);
+			logger.info("Checking for update for project: {}", pathToFolder);
 			return SafePull(pathToFolder, submission);
 
 		} else {
@@ -148,7 +148,7 @@ public class GitPullService {
 			if (!SafeClone(pathToFolder, pathToRepo, submission)) {
 				return false;
 			}
-			LOGGER.info("Cloned to folder: {}", pathToFolder);
+			logger.info("Cloned to folder: {}", pathToFolder);
 
 			if (submission.isPresent()) { // verify and fill fields
 				return SafePull(pathToFolder, submission);
@@ -183,14 +183,14 @@ public class GitPullService {
 						reset(git, user);
 						RevCommit latest = getLatestCommit(git);
 						user.setCommitMessage(latest.getFullMessage());
-						LOGGER.info("Pulled specific hash {} for user {}", user.getHash(), user.getUniid());
+						logger.info("Pulled specific hash {} for user {}", user.getHash(), user.getUniid());
 					} catch (Exception e) {
 						try {
 							fixHash(git, user);
 							fetch(git);
 							reset(git, user);
 						} catch (Exception e1) {
-							LOGGER.info("Failed to fetch and reset.");
+							logger.info("Failed to fetch and reset.");
 							git.close();
 							return false;
 						}
@@ -202,13 +202,13 @@ public class GitPullService {
 					RevCommit latest = getLatestCommit(git);
 					user.setHash(latest.name());
 					user.setCommitMessage(latest.getFullMessage());
-					LOGGER.info("Pulled for user {} and set hash {}", user.getUniid(), user.getHash());
+					logger.info("Pulled for user {} and set hash {}", user.getUniid(), user.getHash());
 				}
 
 			} else {
 
 				SafePull(git);
-				LOGGER.info("Pulled to {} with hash {}", pathToFolder, getLatestCommit(git).name());
+				logger.info("Pulled to {} with hash {}", pathToFolder, getLatestCommit(git).name());
 			}
 			git.close();
 			return true;
@@ -217,7 +217,7 @@ public class GitPullService {
 				git.close();
 			}
 			submission.ifPresent(value -> value.setResult(e.getMessage()));
-			LOGGER.error("Pull failed with message: {}", e.getMessage());
+			logger.error("Pull failed with message: {}", e.getMessage());
 			return false;
 		}
 	}
@@ -253,7 +253,7 @@ public class GitPullService {
 			return true;
 		} catch (Exception e) {
 			submission.ifPresent(value -> value.setResult(e.getMessage()));
-			LOGGER.error("Cloning failed with message: {}", e.getMessage());
+			logger.error("Cloning failed with message: {}", e.getMessage());
 			return false;
 		}
 	}
@@ -307,7 +307,7 @@ public class GitPullService {
 			}
 		}
 		assert youngestCommit != null;
-		LOGGER.error("Detected faulty hash {}, replaced it with a correct one {}", user.getHash(), youngestCommit.name());
+		logger.error("Detected faulty hash {}, replaced it with a correct one {}", user.getHash(), youngestCommit.name());
 		user.setHash(youngestCommit.name());
 		user.setCommitMessage(youngestCommit.getFullMessage());
 
@@ -336,7 +336,7 @@ public class GitPullService {
 		try {
 			Git.open(new File(pathToStudentFolder)).reset().setMode(ResetCommand.ResetType.HARD).call();
 		} catch (Exception e) {
-			LOGGER.error("Failed to reset HEAD for student. Defaulting to hard reset: {}", e.getMessage());
+			logger.error("Failed to reset HEAD for student. Defaulting to hard reset: {}", e.getMessage());
 			if (!resetHard(pathToStudentFolder)) {
 				return false;
 			}

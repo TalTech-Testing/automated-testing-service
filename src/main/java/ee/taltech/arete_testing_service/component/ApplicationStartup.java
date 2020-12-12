@@ -5,9 +5,8 @@ import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import ee.taltech.arete_testing_service.service.PriorityQueueService;
 import ee.taltech.arete_testing_service.service.docker.ImageCheck;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -15,20 +14,14 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 
 @Component
+@AllArgsConstructor
 public class ApplicationStartup implements ApplicationRunner {
 
-	private static final Logger log = LoggerFactory.getLogger(ApplicationStartup.class);
-
-	private final PriorityQueueService priorityQueueService;
-
-	@Autowired
-	public ApplicationStartup(PriorityQueueService priorityQueueService) {
-		this.priorityQueueService = priorityQueueService;
-	}
+	private final Logger logger;
 
 	@Override
 	public void run(ApplicationArguments applicationArguments) {
-		log.info("setting up temp folders.");
+		logger.info("setting up temp folders.");
 
 		createDirectory("input_and_output");
 		createDirectory("students");
@@ -51,8 +44,8 @@ public class ApplicationStartup implements ApplicationRunner {
 		} catch (Exception ignored) {
 		}
 
-		log.info("Done setup");
-		priorityQueueService.go();
+		logger.info("Done setup");
+		PriorityQueueService.go();
 
 	}
 

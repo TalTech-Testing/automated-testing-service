@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.java.response.arete.AreteResponseDTO;
 import ee.taltech.arete.java.response.hodor_studenttester.HodorStudentTesterResponse;
 import ee.taltech.arete_testing_service.AreteApplication;
-import ee.taltech.arete_testing_service.service.JobRunnerService;
+import ee.taltech.arete_testing_service.service.ReportService;
 import ee.taltech.arete_testing_service.service.hodor.HodorParser;
 import lombok.SneakyThrows;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class hodorStudentTesterResponseTest {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	private JobRunnerService jobRunnerService;
+	private ReportService reportService;
 
 	@Test
 	public void FsharpParsingFullResponse() throws IOException {
@@ -38,7 +38,7 @@ public class hodorStudentTesterResponseTest {
 		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/fsharp-arete.json");
 
 		// when
-		AreteResponseDTO areteResponse = jobRunnerService.getAreteResponse(json);
+		AreteResponseDTO areteResponse = reportService.getAreteResponse(json);
 
 		// then
 		assertSuccessfulParsing(areteResponse);
@@ -75,7 +75,7 @@ public class hodorStudentTesterResponseTest {
 	public void JavaExamParsingParsesArete() throws IOException {
 		// given
 		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java-arete.json");
-		AreteResponseDTO response = jobRunnerService.getAreteResponse(json);
+		AreteResponseDTO response = reportService.getAreteResponse(json);
 
 		// then
 		assertSuccessfulParsing(response);
@@ -85,7 +85,7 @@ public class hodorStudentTesterResponseTest {
 	public void JavaDoesntCompileParsingParsesArete() throws IOException {
 		// given
 		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/java-failed-arete.json");
-		AreteResponseDTO response = jobRunnerService.getAreteResponse(json);
+		AreteResponseDTO response = reportService.getAreteResponse(json);
 
 		// then
 		assertSuccessfulParsing(response);
@@ -95,7 +95,7 @@ public class hodorStudentTesterResponseTest {
 	public void PythonParsingParsesArete() throws IOException {
 		// given
 		String json = getJavaJson("/src/test/java/ee/taltech/arete/api/data/response/python-arete.json");
-		AreteResponseDTO response = jobRunnerService.getAreteResponse(json);
+		AreteResponseDTO response = reportService.getAreteResponse(json);
 
 		// then
 		assertSuccessfulParsing(response);

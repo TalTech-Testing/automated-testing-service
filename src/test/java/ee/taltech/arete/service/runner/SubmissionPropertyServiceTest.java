@@ -3,6 +3,7 @@ package ee.taltech.arete.service.runner;
 import ee.taltech.arete_testing_service.AreteApplication;
 import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.service.JobRunnerService;
+import ee.taltech.arete_testing_service.service.SubmissionPropertyService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,10 @@ import static ee.taltech.arete.initializers.SubmissionInitializer.getGitPullEndp
 @AutoConfigureTestDatabase
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AreteApplication.class)
-class JobRunnerServiceTest {
+class SubmissionPropertyServiceTest {
 
 	@Autowired
-	private JobRunnerService jobRunnerService;
+	private SubmissionPropertyService submissionPropertyService;
 
 	int port = 8080;
 
@@ -31,7 +32,7 @@ class JobRunnerServiceTest {
 		Submission submission = getGitPullEndpointSubmissionGitlab(String.format("http://localhost:%s", port));
 
 		// when
-		jobRunnerService.formatSlugs(submission);
+		submissionPropertyService.formatSlugs(submission);
 
 		// then
 		assert submission.getSlugs().containsAll(new HashSet<>(Arrays.asList("EX01IdCode", "TK/tk_tsükkel_1")));
@@ -45,7 +46,7 @@ class JobRunnerServiceTest {
 		String initial = submission.getEmail();
 
 		// when
-		jobRunnerService.modifyEmail(submission, initial);
+		submissionPropertyService.modifyEmail(submission, initial);
 
 		// then
 		assert submission.getEmail().equals("envomp@ttu.ee");

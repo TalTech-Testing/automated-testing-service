@@ -3,17 +3,16 @@ package ee.taltech.arete_testing_service.service;
 import com.sun.management.OperatingSystemMXBean;
 import ee.taltech.arete_testing_service.configuration.DevProperties;
 import ee.taltech.arete_testing_service.domain.Submission;
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.lang.management.ManagementFactory;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -21,41 +20,33 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@AllArgsConstructor
 @EnableAsync
 public class PriorityQueueService {
 
-	private final OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+	private PriorityQueue<Submission> emptyQueue() {
+		return new PriorityQueue<>(Comparator
+				.comparingInt(Submission::getPriority)
+				.reversed()
+				.thenComparing(Submission::getReceivedTimestamp));
+	}
 
-	private final Logger LOGGER = LoggerFactory.getLogger(PriorityQueueService.class);
-
+	private final OperatingSystemMXBean osBean;
+	private final Logger logger;
 	private final DevProperties devProperties;
-
 	private final JobRunnerService jobRunnerService;
 
-	private final CopyOnWriteArrayList<Submission> activeSubmissions = new CopyOnWriteArrayList<>();
-
-	private final PriorityQueue<Submission> submissionPriorityQueue = new PriorityQueue<>(Comparator
-			.comparingInt(Submission::getPriority)
-			.reversed()
-			.thenComparing(Submission::getReceivedTimestamp));
-
-	private Boolean halted = true;
-
-	private Integer jobsRan = 0;
-
-	private Integer stuckQueue = 3000; // just some protection against stuck queue
-
-	@Lazy
-	public PriorityQueueService(DevProperties devProperties, JobRunnerService jobRunnerService) {
-		this.devProperties = devProperties;
-		this.jobRunnerService = jobRunnerService;
-	}
+	private final PriorityQueue<Submission> submissionPriorityQueue = emptyQueue();
+	private static final CopyOnWriteArrayList<Submission> activeSubmissions = new CopyOnWriteArrayList<>();
+	private static Boolean halted = true;
+	private static Integer jobsRan = 0;
+	private static Integer stuckQueue = 3000; // just some protection against stuck queue
 
 	public Integer getJobsRan() {
 		return jobsRan;
 	}
 
-	public void halt() throws InterruptedException {
+	public static void halt() throws InterruptedException {
 		halted = true;
 		int antiStuck = 30;
 		while (activeSubmissions.size() != 0 && antiStuck != 0) {
@@ -64,7 +55,7 @@ public class PriorityQueueService {
 		}
 	}
 
-	public void halt(int maxAllowedJobs) throws InterruptedException {
+	public static void halt(int maxAllowedJobs) throws InterruptedException {
 		halted = true;
 		int antiStuck = 30;
 		while (activeSubmissions.size() > maxAllowedJobs && antiStuck != 0) {
@@ -73,7 +64,7 @@ public class PriorityQueueService {
 		}
 	}
 
-	public void go() {
+	public static void go() {
 		halted = false;
 	}
 
@@ -104,10 +95,10 @@ public class PriorityQueueService {
 			TimeUnit.SECONDS.sleep(10); // keep files for a little bit so mail can send them and prevent spam pushing
 			FileUtils.deleteDirectory(new File(String.format("input_and_output/%s", submission.getHash())));
 		} catch (Exception e) {
-			LOGGER.error("Failed deleting directory after killing thread: {}", e.getMessage());
+			logger.error("Failed deleting directory after killing thread: {}", e.getMessage());
 		}
 
-		LOGGER.info("All done for submission on thread: {}", submission.getHash());
+		logger.info("All done for submission on thread: {}", submission.getHash());
 	}
 
 	@Async
@@ -149,14 +140,14 @@ public class PriorityQueueService {
 
 			activeSubmissions.add(job);
 
-			LOGGER.info("active: {}, queue: {}, ran: {}", activeSubmissions.size(), getQueueSize(), jobsRan);
+			logger.info("active: {}, queue: {}, ran: {}", activeSubmissions.size(), getQueueSize(), jobsRan);
 
-			LOGGER.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
+			logger.info("Running job for {} with hash {}", job.getUniid(), job.getHash());
 
 			try {
 				jobRunnerService.runJob(job);
 			} catch (Exception e) {
-				LOGGER.error("Job failed with message: {}", e.getMessage());
+				logger.error("Job failed with message: {}", e.getMessage());
 			} finally {
 				killThread(job);
 			}
@@ -172,7 +163,15 @@ public class PriorityQueueService {
 		return osBean.getSystemCpuLoad() < devProperties.getMaxCpuUsage() && devProperties.getParallelJobs() > activeSubmissions.size();
 	}
 
+	@SneakyThrows
 	public void enqueue(Submission submission) {
-		submissionPriorityQueue.add(submission);
+		for (int i = 0; i < 10; i++) {
+			try {
+				submissionPriorityQueue.add(submission);
+				break;
+			} catch (Exception ignored) {
+				TimeUnit.SECONDS.sleep(1);
+			}
+		}
 	}
 }

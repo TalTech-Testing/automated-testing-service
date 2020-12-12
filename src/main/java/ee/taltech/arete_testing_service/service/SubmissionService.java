@@ -3,9 +3,9 @@ package ee.taltech.arete_testing_service.service;
 import ee.taltech.arete_testing_service.configuration.DevProperties;
 import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.exception.RequestFormatException;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -13,18 +13,11 @@ import java.util.HashSet;
 
 
 @Service
+@AllArgsConstructor
 public class SubmissionService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionService.class);
-
+	private final Logger logger;
 	private final DevProperties devProperties;
-
-	private final JobRunnerService jobRunnerService;
-
-	public SubmissionService(DevProperties devProperties, JobRunnerService jobRunnerService) {
-		this.devProperties = devProperties;
-		this.jobRunnerService = jobRunnerService;
-	}
 
 	public void populateAsyncFields(Submission submission) {
 		populateDefaultValues(submission);
@@ -42,6 +35,7 @@ public class SubmissionService {
 						.split("[:/]", 2)[1];
 
 				if (namespace.length() == 0) {
+					logger.warn("Git test source namespace is needed size non zero. {}", submission.getGitTestRepo());
 					throw new RequestFormatException("Git test source namespace is needed size non zero.");
 				}
 
@@ -65,10 +59,12 @@ public class SubmissionService {
 		if (submission.getTestSource() != null) {
 
 			if (submission.getTestSource().size() == 0) {
+				logger.warn("Test source is needed size non zero. {}", submission.getGitTestRepo());
 				throw new RequestFormatException("Test source is needed size non zero.");
 			}
 
 		} else {
+			logger.warn("Git test repo or test source is needed. {}", submission.getGitTestRepo());
 			throw new RequestFormatException("Git test repo or test source is needed.");
 		}
 
@@ -85,6 +81,7 @@ public class SubmissionService {
 
 			if (submission.getUniid() == null) {
 				if (url[1].length() == 0) {
+					logger.warn("Git student repo namespace is size 0. {}", submission.getGitStudentRepo());
 					throw new RequestFormatException("Git student repo namespace is size 0");
 				}
 				assert url[1].matches(devProperties.getNameMatcher());
@@ -93,6 +90,7 @@ public class SubmissionService {
 
 			if (submission.getFolder() == null) {
 				if (url[url.length - 1].length() == 0) {
+					logger.warn("Git student repo namespace with path is size 0. {}", submission.getGitStudentRepo());
 					throw new RequestFormatException("Git student repo namespace with path is size 0");
 				}
 				submission.setFolder(url[url.length - 1]); // Just the folder where file is saved - user cant have multiple of those
@@ -122,6 +120,7 @@ public class SubmissionService {
 			}
 
 		} else {
+			logger.warn("Git student repo or student source is needed. {}", submission.getGitStudentRepo());
 			throw new RequestFormatException("Git student repo or student source is needed.");
 		}
 	}

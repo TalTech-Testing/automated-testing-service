@@ -4,8 +4,8 @@ import ee.taltech.arete.java.response.arete.AreteResponseDTO;
 import ee.taltech.arete.java.response.arete.SystemStateDTO;
 import ee.taltech.arete_testing_service.Utils;
 import ee.taltech.arete_testing_service.domain.Submission;
-import ee.taltech.arete_testing_service.service.PriorityQueueService;
 import ee.taltech.arete_testing_service.service.RequestService;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -16,16 +16,10 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 public class SubmissionController {
 
 	private final RequestService requestService;
-
-	private final PriorityQueueService priorityQueueService;
-
-	public SubmissionController(RequestService requestService, PriorityQueueService priorityQueueService) {
-		this.requestService = requestService;
-		this.priorityQueueService = priorityQueueService;
-	}
 
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping(path = {"/test", "/:testAsync"}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -73,7 +67,7 @@ public class SubmissionController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@GetMapping(path = "/submissions/active", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<Submission> GetActiveSubmissions() {
-		return priorityQueueService.getActiveSubmissions();
+		return requestService.getActiveSubmissions();
 	}
 
 	@SneakyThrows

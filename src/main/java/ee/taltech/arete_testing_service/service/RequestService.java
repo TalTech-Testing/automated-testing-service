@@ -7,44 +7,34 @@ import com.github.dockerjava.core.DockerClientConfig;
 import ee.taltech.arete.java.request.hook.AreteTestUpdateDTO;
 import ee.taltech.arete.java.request.hook.CommitDTO;
 import ee.taltech.arete.java.response.arete.AreteResponseDTO;
+import ee.taltech.arete_testing_service.domain.OverrideParameters;
 import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.exception.RequestFormatException;
 import ee.taltech.arete_testing_service.service.arete.AreteConstructor;
 import ee.taltech.arete_testing_service.service.docker.ImageCheck;
 import ee.taltech.arete_testing_service.service.git.GitPullService;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@AllArgsConstructor
 public class RequestService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
-
+	private final Logger logger;
 	private final ObjectMapper objectMapper;
-
 	private final SubmissionService submissionService;
-
-	private final PriorityQueueService priorityQueueService;
-
+	private final SubmissionPropertyService submissionPropertyService;
 	private final GitPullService gitPullService;
-
-	private final JobRunnerService jobRunnerService;
-
+	private final PriorityQueueService priorityQueueService;
 	private final HashMap<String, AreteResponseDTO> syncWaitingRoom = new HashMap<>();
-
-	public RequestService(ObjectMapper objectMapper, SubmissionService submissionService, PriorityQueueService priorityQueueService, GitPullService gitPullService, JobRunnerService jobRunnerService) {
-		this.objectMapper = objectMapper;
-		this.submissionService = submissionService;
-		this.priorityQueueService = priorityQueueService;
-		this.gitPullService = gitPullService;
-		this.jobRunnerService = jobRunnerService;
-	}
 
 	@SneakyThrows
 	public Submission testAsync(HttpEntity<String> request) {
@@ -73,21 +63,21 @@ public class RequestService {
 		try {
 			syncWaitingRoom.put(hash, objectMapper.readValue(Objects.requireNonNull(httpEntity.getBody()), AreteResponseDTO.class));
 		} catch (Exception e) {
-			LOGGER.error("Processing sync job failed: {}", e.getMessage());
+			logger.error("Processing sync job failed: {}", e.getMessage());
 			syncWaitingRoom.put(hash, AreteConstructor.failedSubmission("NaN", new Submission(), e.getMessage()));
 		}
 	}
 
 	public String updateImage(String image) {
 		try {
-			priorityQueueService.halt();
+			PriorityQueueService.halt();
 			String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
 			DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
 					.withDockerHost(dockerHost)
 					.withDockerTlsVerify(false)
 					.build();
 			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/" + image).pull();
-			priorityQueueService.go();
+			PriorityQueueService.go();
 			return "Successfully updated image: " + image;
 		} catch (Exception e) {
 			throw new RequestFormatException(e.getMessage());
@@ -96,7 +86,7 @@ public class RequestService {
 
 	public String updateTests(HttpEntity<String> httpEntity) {
 		String requestBody = httpEntity.getBody();
-		LOGGER.info("Parsing request body: " + requestBody);
+		logger.info("Parsing request body: " + requestBody);
 
 		AreteTestUpdateDTO update = mapUpdateRequest(requestBody);
 		update.getProject().setUrl(submissionService.fixRepository(update.getProject().getUrl()));
@@ -104,9 +94,9 @@ public class RequestService {
 		String pathToTesterRepo = update.getProject().getUrl();
 
 		try {
-			priorityQueueService.halt();
+			PriorityQueueService.halt();
 			gitPullService.pullOrClone(pathToTesterFolder, pathToTesterRepo, Optional.empty());
-			priorityQueueService.go();
+			PriorityQueueService.go();
 		} catch (Exception e) {
 			throw new RequestFormatException(e.getMessage());
 		}
@@ -133,22 +123,38 @@ public class RequestService {
 		return update;
 	}
 
+	public void testingProperties(Submission submission) {
+		if (!submission.getSystemExtra().contains("noOverride")) {
+			try {
+				OverrideParameters params = objectMapper.readValue(new File(String.format("tests/%s/arete.json", submission.getCourse())), OverrideParameters.class);
+				params.overrideParametersForTestValidation(submission);
+				logger.info("Overrode default parameters: {}", params);
+			} catch (Exception e) {
+				logger.info("Using default parameters: {}", e.getMessage());
+			}
+		}
+	}
+
 	private void runVerifyingTests(AreteTestUpdateDTO update) {
 		Submission submission = new Submission();
 		CommitDTO latest = update.getCommits().get(0);
 		submission.setEmail(latest.getAuthor().getEmail());
 		submission.setUniid(update.getProject().getNamespace());
 		submission.setGitTestRepo(update.getProject().getUrl());
-		jobRunnerService.testingProperties(submission);
+		this.testingProperties(submission);
 		Set<String> slugs = new HashSet<>();
 		slugs.addAll(latest.getAdded());
 		slugs.addAll(latest.getModified());
 		submission.setSlugs(slugs);
 		submissionService.populateAsyncFields(submission);
 		submission.setCourse(update.getProject().getPath_with_namespace());
-		LOGGER.info("Initial slugs: {}", slugs);
-		jobRunnerService.formatSlugs(submission);
-		LOGGER.info("Final submission: {}", submission);
+		logger.info("Initial slugs: {}", slugs);
+		submissionPropertyService.formatSlugs(submission);
+		logger.info("Final submission: {}", submission);
 		priorityQueueService.enqueue(submission);
+	}
+
+	public List<Submission> getActiveSubmissions() {
+		return priorityQueueService.getActiveSubmissions();
 	}
 }

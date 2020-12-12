@@ -1,21 +1,15 @@
 package ee.taltech.arete_testing_service.service.docker;
 
 import ee.taltech.arete_testing_service.domain.Submission;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.utils.IOUtils;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 @Service
+@AllArgsConstructor
 public class DockerService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DockerService.class);
+	private final Logger logger;
 
 	/**
 	 * @param submission : test job to be tested.
@@ -31,7 +25,7 @@ public class DockerService {
 			docker.run();
 
 		} catch (Exception e) {
-			LOGGER.error("Failed running docker: {}", e.getMessage());
+			logger.error("Failed running docker: {}", e.getMessage());
 			exception = e;
 
 		} finally {
