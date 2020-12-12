@@ -17,35 +17,27 @@ import java.util.Set;
 public class OverrideParameters {
 
 	private String dockerContentRoot;
-
 	private String dockerContentRootBefore;
 
 	private String dockerExtra;
-
 	private String dockerExtraBefore;
 
 	private String dockerTestRoot;
-
 	private String dockerTestRootBefore;
 
 	private Integer dockerTimeout;
-
 	private Integer dockerTimeoutBefore;
 
 	private Set<String> groupingFolders;
-
 	private Set<String> groupingFoldersBefore;
 
 	private String solutionsRepository;
-
 	private String solutionsRepositoryBefore;
 
 	private Set<String> systemExtra;
-
 	private Set<String> systemExtraBefore;
 
 	private String testingPlatform;
-
 	private String testingPlatformBefore;
 
 	public void overrideParametersForStudent(Submission submission) {
