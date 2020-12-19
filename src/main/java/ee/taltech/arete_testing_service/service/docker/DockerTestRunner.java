@@ -12,6 +12,7 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
+import com.github.dockerjava.jaxrs.JerseyDockerHttpClient;
 import ee.taltech.arete.java.request.tester.DockerParameters;
 import ee.taltech.arete.java.response.arete.FileDTO;
 import ee.taltech.arete_testing_service.domain.Submission;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -74,7 +76,14 @@ public class DockerTestRunner {
 					.withDockerTlsVerify(false)
 					.build();
 
-			dockerClient = DockerClientBuilder.getInstance(config).build();
+			dockerClient = DockerClientBuilder
+					.getInstance(config)
+					.withDockerHttpClient(
+							new JerseyDockerHttpClient.Builder()
+									.dockerHost(new URI(dockerHost))
+									.sslConfig(config.getSSLConfig())
+									.build())
+					.build();
 
 			String imageId = getImage(dockerClient, image);
 

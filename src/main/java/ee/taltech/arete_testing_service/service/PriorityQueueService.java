@@ -158,6 +158,7 @@ public class PriorityQueueService {
 			try {
 				jobRunnerService.runJob(job);
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.error("Job failed with message: {}", e.getMessage());
 			} finally {
 				killThread(job);

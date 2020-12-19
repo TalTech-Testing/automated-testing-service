@@ -20,12 +20,12 @@ public class SubmissionService {
 	private final DevProperties devProperties;
 
 	public void populateAsyncFields(Submission submission) {
-		populateDefaultValues(submission);
 		populateTesterRelatedFields(submission);
 		populateStudentRelatedFields(submission);
+		populateDefaultValues(submission);
 	}
 
-	private void populateTesterRelatedFields(Submission submission) {
+	public void populateTesterRelatedFields(Submission submission) {
 		if (submission.getGitTestRepo() != null) {
 			try {
 				submission.setGitTestRepo(fixRepository(submission.getGitTestRepo()));
@@ -71,7 +71,7 @@ public class SubmissionService {
 
 	}
 
-	private void populateStudentRelatedFields(Submission submission) {
+	public void populateStudentRelatedFields(Submission submission) {
 
 		if (submission.getGitStudentRepo() != null) {
 			submission.setGitStudentRepo(fixRepository(submission.getGitStudentRepo()));
@@ -190,9 +190,9 @@ public class SubmissionService {
 		submission.setWaitingroom(hash);
 		submission.setReturnUrl(String.format("http://127.0.0.1:8098/waitingroom/%s", hash));
 
-		populateDefaultValues(submission);
 		populateTesterRelatedFields(submission);
 		populateStudentRelatedFields(submission);
+		populateDefaultValues(submission);
 
 		return submission.getWaitingroom();
 	}

@@ -107,7 +107,8 @@ public class OverrideParameters {
 		}
 
 		if (groupingFolders != null) {
-			if (submission.getSystemExtra().contains("allowAppending") || systemExtra.contains("allowAppending")) {
+			if (submission.getSystemExtra().contains("allowAppending") ||
+					(systemExtra != null && systemExtra.contains("allowAppending"))) {
 				submission.getGroupingFolders().addAll(groupingFolders);
 			} else {
 				submission.setGroupingFolders(groupingFolders);

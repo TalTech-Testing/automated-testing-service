@@ -75,8 +75,8 @@ public class FolderManagementService {
 		}
 
 		if (submission.getGitStudentRepo() != null &&
-				!submission.getSystemExtra().contains("skipCopyingStudent")
-				&& !submission.getSystemExtra().contains("skipCopying")) {
+				!submission.getSystemExtra().contains("skipCopyingStudent") &&
+				!submission.getSystemExtra().contains("skipCopying")) {
 			try {
 
 				if (!gitPullService.repositoryMaintenance(submission)) {

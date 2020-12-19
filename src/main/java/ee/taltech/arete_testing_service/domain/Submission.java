@@ -52,4 +52,7 @@ public class Submission {
 	private String uniid; // gitlab namespace: envomp
 	private String waitingroom;
 
+	public static Submission empty() {
+		return new Submission();
+	}
 }
