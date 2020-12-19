@@ -42,7 +42,10 @@ public class FolderManagementService {
 	}
 
 	public boolean folderMaintenance(Submission submission) {
-		if (submission.getGitTestRepo() != null) {
+		if (submission.getGitTestRepo() != null &&
+				!submission.getSystemExtra().contains("skipCopyingTests") &&
+				!submission.getSystemExtra().contains("skipCopying")) {
+
 			try {
 				String pathToTesterFolder = String.format("tests/%s/", submission.getCourse());
 				String pathToTesterRepo = submission.getGitTestRepo();
@@ -71,7 +74,9 @@ public class FolderManagementService {
 			}
 		}
 
-		if (submission.getGitStudentRepo() != null) {
+		if (submission.getGitStudentRepo() != null &&
+				!submission.getSystemExtra().contains("skipCopyingStudent")
+				&& !submission.getSystemExtra().contains("skipCopying")) {
 			try {
 
 				if (!gitPullService.repositoryMaintenance(submission)) {
@@ -86,6 +91,7 @@ public class FolderManagementService {
 				return true;
 			}
 		}
+
 		return false;
 	}
 }

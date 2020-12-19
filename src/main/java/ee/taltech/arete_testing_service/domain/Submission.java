@@ -49,8 +49,7 @@ public class Submission {
 	private String testingPlatform;
 	private Integer thread;
 	private Long timestamp;
-
 	private String uniid; // gitlab namespace: envomp
-
 	private String waitingroom;
+
 }
