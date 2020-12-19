@@ -16,8 +16,9 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Comparator;
 import java.util.List;
-import java.util.PriorityQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -25,8 +26,8 @@ import java.util.concurrent.TimeUnit;
 @EnableAsync
 public class PriorityQueueService {
 
-	private PriorityQueue<Submission> emptyQueue() {
-		return new PriorityQueue<>(Comparator
+	private BlockingQueue<Submission> emptyQueue() {
+		return new PriorityBlockingQueue<>(10000, Comparator
 				.comparingInt(Submission::getPriority)
 				.reversed()
 				.thenComparing(Submission::getReceivedTimestamp));
@@ -41,7 +42,7 @@ public class PriorityQueueService {
 	private final DevProperties devProperties;
 	private final JobRunnerService jobRunnerService;
 
-	private final PriorityQueue<Submission> submissionPriorityQueue = emptyQueue();
+	private final BlockingQueue<Submission> submissionPriorityQueue = emptyQueue();
 	private static final CopyOnWriteArrayList<Submission> activeSubmissions = new CopyOnWriteArrayList<>();
 	private static Boolean halted = true;
 	private static Integer jobsRan = 0;
@@ -124,9 +125,14 @@ public class PriorityQueueService {
 			halted = false;
 		}
 
-		if (!halted && getQueueSize() != 0 && isCPUAvaiable()) {
+		if (!halted && getQueueSize() > 0 && isCPUAvaiable()) {
 
-			Submission job = submissionPriorityQueue.poll();
+			Submission job;
+			try {
+				job = submissionPriorityQueue.poll();
+			} catch (Exception e) {
+				return;
+			}
 
 			if (job == null) {
 				return;
@@ -170,13 +176,6 @@ public class PriorityQueueService {
 
 	@SneakyThrows
 	public void enqueue(Submission submission) {
-		for (int i = 0; i < 10; i++) {
-			try {
-				submissionPriorityQueue.add(submission);
-				break;
-			} catch (Exception ignored) {
-				TimeUnit.SECONDS.sleep(1);
-			}
-		}
+		submissionPriorityQueue.add(submission);
 	}
 }

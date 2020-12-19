@@ -49,6 +49,7 @@ public class JobRunnerService {
 			logger.info("DOCKER Job {} has been ran for user {}", slug, submission.getUniid());
 			reportService.reportSuccessfulSubmission(slug, submission, outputPath);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("job {} has failed for user {} with exception: {}", slug, submission.getUniid(), e.getMessage());
 			reportService.reportFailedSubmission(submission, e.getMessage());
 		}

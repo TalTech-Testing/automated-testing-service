@@ -126,7 +126,7 @@ public class SubmissionService {
 	}
 
 	public void populateDefaultValues(Submission submission) {
-		if (submission.getHash() != null && !submission.getHash().matches("^[a-zA-Z0-9]+$")) {
+		if (submission.getHash() == null || !submission.getHash().matches("^[a-zA-Z0-9]+$")) {
 			submission.setHash(getRandomHash()); // in case of a faulty input
 		}
 
@@ -184,15 +184,9 @@ public class SubmissionService {
 	}
 
 	public String populateSyncFields(Submission submission) {
-
-		if (!submission.getSystemExtra().contains("integration_tests")) {
-			submission.setHash(getRandomHash());
-			submission.setWaitingroom(submission.getHash());
-			submission.setReturnUrl(String.format("http://localhost:8098/waitingroom/%s", submission.getWaitingroom()));
-		} else {
-			String[] parts = submission.getReturnUrl().split("/");
-			submission.setWaitingroom(parts[parts.length - 1]);
-		}
+		String hash = getRandomHash();
+		submission.setWaitingroom(hash);
+		submission.setReturnUrl(String.format("http://127.0.0.1:8098/waitingroom/%s", hash));
 
 		populateTesterRelatedFields(submission);
 		populateStudentRelatedFields(submission);

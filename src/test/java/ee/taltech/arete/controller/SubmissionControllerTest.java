@@ -1,6 +1,5 @@
 package ee.taltech.arete.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.java.request.hook.AreteTestUpdateDTO;
 import ee.taltech.arete.java.request.hook.ProjectDTO;
 import ee.taltech.arete_testing_service.AreteApplication;
@@ -11,7 +10,6 @@ import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
