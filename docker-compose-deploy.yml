@@ -2,24 +2,24 @@ version: '3.4'
 
 services:
 
-  testing_service:
-    container_name: automated_testing_service
-    image: ${DOCKER_USER}/automated_testing_service:latest
-    restart: unless-stopped
-    privileged: true
-    working_dir: ${ARETE_HOME}
-    ports:
-      - "8098:8098"
-    network_mode: "host" #Communication to arete-back
-    env_file:
-      - ..env #Change to .env to run locally
-    environment:
-      BACKEND_URL: ${BACKEND_URL}
-      ARETE_HOME: ${ARETE_HOME}
-      SHARED_SECRET: ${SHARED_SECRET}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${ARETE_HOME}/input_and_output:${ARETE_HOME}/input_and_output
-      - ${ARETE_HOME}/students:${ARETE_HOME}/students
-      - ${ARETE_HOME}/tests:${ARETE_HOME}/tests
-      - ${ARETE_HOME}/ssh:/root/.ssh
+    testing_service:
+        container_name: automated_testing_service
+        image: ${DOCKER_USER}/automated_testing_service:latest
+        restart: unless-stopped
+        privileged: true
+        working_dir: ${ARETE_HOME}
+        ports:
+            - "8098:8098"
+        network_mode: "host" #Communication to arete-back
+        env_file:
+            - ..env #Change to .env to run locally
+        environment:
+            BACKEND_URL: ${BACKEND_URL}
+            ARETE_HOME: ${ARETE_HOME}
+            SHARED_SECRET: ${SHARED_SECRET}
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ${ARETE_HOME}/input_and_output:${ARETE_HOME}/input_and_output
+            - ${ARETE_HOME}/students:${ARETE_HOME}/students
+            - ${ARETE_HOME}/tests:${ARETE_HOME}/tests
+            - ${ARETE_HOME}/ssh:/root/.ssh

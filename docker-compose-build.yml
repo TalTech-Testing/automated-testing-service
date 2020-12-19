@@ -2,20 +2,20 @@ version: '3.4'
 
 services:
 
-  testing_service:
-    container_name: automated_testing_service
-    image: automated_testing_service:latest
-    privileged: true
-    build:
-      args:
-        - ARETE_HOME=/arete
-      dockerfile:
-        Dockerfile-ubuntu
-      context: .
-    ports:
-      - "8098:8098"
-    network_mode: "host"
-    env_file:
-      - ..env #Change to .env to run locally
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    testing_service:
+        container_name: automated_testing_service
+        image: automated_testing_service:latest
+        privileged: true
+        build:
+            args:
+                - ARETE_HOME=/arete
+            dockerfile:
+                Dockerfile-ubuntu
+            context: .
+        ports:
+            - "8098:8098"
+        network_mode: "host"
+        env_file:
+            - ..env #Change to .env to run locally
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock

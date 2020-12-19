@@ -2,18 +2,21 @@ version: '3.4'
 
 services:
 
-  testing_service-test:
-    privileged: true
-    build:
-      args:
-        - ARETE_HOME=${ARETE_HOME}/arete-test
-        - GIT_PASSWORD=${GITLAB_PASSWORD}
-        - GIT_USERNAME=envomp
-      dockerfile:
-        Dockerfile-ubuntu-test
-      context: .
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${ARETE_HOME}/arete-test/input_and_output:${ARETE_HOME}/arete-test/input_and_output
-      - ${ARETE_HOME}/arete-test/students:${ARETE_HOME}/arete-test/students
-      - ${ARETE_HOME}/arete-test/tests:${ARETE_HOME}/arete-test/tests
+    testing_service-test:
+        privileged: true
+        build:
+            args:
+                - ARETE_HOME=${ARETE_HOME}/arete-test
+                - GIT_PASSWORD=${GITLAB_PASSWORD}
+                - GIT_USERNAME=envomp
+            dockerfile:
+                Dockerfile-ubuntu-test
+            context: .
+        environment:
+            BACKEND_URL: ${BACKEND_URL}
+            SHARED_SECRET: ${SHARED_SECRET}
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ${ARETE_HOME}/arete-test/input_and_output:${ARETE_HOME}/arete-test/input_and_output
+            - ${ARETE_HOME}/arete-test/students:${ARETE_HOME}/arete-test/students
+            - ${ARETE_HOME}/arete-test/tests:${ARETE_HOME}/arete-test/tests
