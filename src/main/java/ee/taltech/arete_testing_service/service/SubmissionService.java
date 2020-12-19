@@ -53,6 +53,7 @@ public class SubmissionService {
 		if (submission.getSystemExtra() != null &&
 				(submission.getSystemExtra().contains("skipCopyingTests")
 						|| submission.getSystemExtra().contains("skipCopying"))) {
+			submission.setGitTestRepo(submission.getTestingPlatform());
 			return;
 		}
 
@@ -102,6 +103,7 @@ public class SubmissionService {
 		if (submission.getSystemExtra() != null &&
 				(submission.getSystemExtra().contains("skipCopyingStudent")
 						|| submission.getSystemExtra().contains("skipCopying"))) {
+			submission.setGitTestRepo(submission.getTestingPlatform());
 			return;
 		}
 
@@ -188,9 +190,9 @@ public class SubmissionService {
 		submission.setWaitingroom(hash);
 		submission.setReturnUrl(String.format("http://127.0.0.1:8098/waitingroom/%s", hash));
 
+		populateDefaultValues(submission);
 		populateTesterRelatedFields(submission);
 		populateStudentRelatedFields(submission);
-		populateDefaultValues(submission);
 
 		return submission.getWaitingroom();
 	}

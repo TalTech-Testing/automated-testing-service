@@ -31,6 +31,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.Optional;
 
 @Service
@@ -115,28 +116,28 @@ public class ReportService {
 	@SneakyThrows
 	private void reportSubmission(Submission submission, AreteResponseDTO areteResponse, String message, String header, Boolean html, Optional<String> output) {
 
-		if (returnToIntegrationTest(submission, areteResponse, header, html, output)) return;
+		if (submission.getSystemExtra().contains("integration_tests")) {
+			returnToIntegrationTest(submission, areteResponse, header, html, output);
+			areteResponse.setTestingPlatform("integration-" + areteResponse.getTestingPlatform());
+			areteResponse.setHash(MessageFormat.format("{0} {1}", areteResponse.getHash(), areteResponse.getFinishedTimestamp()));
+			reportToBackend(submission, areteResponse);
+			return;
+		}
+
 		reportToReturnUrl(submission, areteResponse);
 		reportToBackend(submission, areteResponse);
 		reportToStudent(submission, areteResponse, message, header, html, output);
 		reportToTeacher(submission, areteResponse, header, html, output);
 	}
 
-	private boolean returnToIntegrationTest(Submission submission, AreteResponseDTO areteResponse, String header, Boolean isHtml, Optional<String> output) throws JsonProcessingException {
-		if (submission.getSystemExtra().contains("integration_tests")) {
-			this.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
-			logger.info("INTEGRATION TEST: Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
+	private void returnToIntegrationTest(Submission submission, AreteResponseDTO areteResponse, String header, Boolean isHtml, Optional<String> output) throws JsonProcessingException {
+		this.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
+		logger.info("INTEGRATION TEST: Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
 
-			String integrationTestMail = System.getenv("INTEGRATION_TEST_MAIL");
-			if (integrationTestMail != null) {
-				this.sendTextMail(integrationTestMail, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, isHtml, output);
-			}
-
-			areteResponse.setTestingPlatform("integration-" + areteResponse.getTestingPlatform());
-			reportToBackend(submission, areteResponse);
-			return true;
+		String integrationTestMail = System.getenv("INTEGRATION_TEST_MAIL");
+		if (integrationTestMail != null) {
+			this.sendTextMail(integrationTestMail, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, isHtml, output);
 		}
-		return false;
 	}
 
 	private void reportToReturnUrl(Submission submission, AreteResponseDTO areteResponse) {

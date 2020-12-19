@@ -1,7 +1,6 @@
 package ee.taltech.arete.controller;
 
 import ee.taltech.arete.java.request.AreteRequestDTO;
-import ee.taltech.arete.java.response.arete.AreteResponseDTO;
 import ee.taltech.arete_testing_service.AreteApplication;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 import static ee.taltech.arete.initializers.SubmissionInitializer.getNormalSyncRequest;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AreteApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
