@@ -131,6 +131,9 @@ public class ReportService {
 			if (integrationTestMail != null) {
 				this.sendTextMail(integrationTestMail, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission), header, isHtml, output);
 			}
+
+			areteResponse.setTestingPlatform("integration-" + areteResponse.getTestingPlatform());
+			reportToBackend(submission, areteResponse);
 			return true;
 		}
 		return false;
@@ -203,7 +206,7 @@ public class ReportService {
 			}
 		}
 	}
-	
+
 	private void sendTextMail(String mail, String text, String header, Boolean html, Optional<String> files) {
 
 		try {
