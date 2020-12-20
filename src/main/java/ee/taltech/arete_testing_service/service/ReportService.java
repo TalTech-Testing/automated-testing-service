@@ -106,10 +106,8 @@ public class ReportService {
 		} else {
 			areteResponse = AreteConstructor.failedSubmission(submission.getSlugs().stream().findFirst().orElse("undefined"), submission, message);
 		}
-		if (submission.getSystemExtra().contains("integration_tests")) {
-			logger.error("FAILED WITH MESSAGE: {}", message);
-		}
 
+		areteResponse.setConsoleOutputs(areteResponse.getConsoleOutputs() + "\n" + message);
 		this.reportSubmission(submission, areteResponse, message, "Failed submission", false, Optional.empty());
 	}
 
@@ -118,7 +116,7 @@ public class ReportService {
 
 		if (submission.getSystemExtra().contains("integration_tests")) {
 			returnToIntegrationTest(submission, areteResponse, header, html, output);
-			areteResponse.setTestingPlatform("integration-" + areteResponse.getTestingPlatform());
+			areteResponse.setUniid("integration-test");
 			areteResponse.setHash(MessageFormat.format("{0} {1}", areteResponse.getHash(), areteResponse.getFinishedTimestamp()));
 			reportToBackend(submission, areteResponse);
 			return;
