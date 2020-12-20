@@ -117,7 +117,6 @@ public class ReportService {
 		if (submission.getSystemExtra().contains("integration_tests")) {
 			returnToIntegrationTest(submission, areteResponse, header, html, output);
 			areteResponse.setUniid("integration-test");
-			areteResponse.setHash(MessageFormat.format("{0} {1}", areteResponse.getHash(), areteResponse.getFinishedTimestamp()));
 			reportToBackend(submission, areteResponse);
 			return;
 		}
