@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @AllArgsConstructor
-@EnableAsync
 public class PriorityQueueService {
 
 	private BlockingQueue<Submission> emptyQueue() {
@@ -52,7 +51,8 @@ public class PriorityQueueService {
 		return jobsRan;
 	}
 
-	public static void halt() throws InterruptedException {
+	@SneakyThrows
+	public static void halt() {
 		halted = true;
 		int antiStuck = 30;
 		while (activeSubmissions.size() != 0 && antiStuck != 0) {
@@ -72,6 +72,16 @@ public class PriorityQueueService {
 
 	public static void go() {
 		halted = false;
+	}
+
+	@SneakyThrows
+	@Scheduled(cron="0 0 0 1 1/1 *")
+	public void monthlyCleanUp() {
+		logger.info("Running monthly cleanup. Deleting contents of students folder");
+
+		halt();
+		FileUtils.cleanDirectory(new File("students"));
+		go();
 	}
 
 	@Async
