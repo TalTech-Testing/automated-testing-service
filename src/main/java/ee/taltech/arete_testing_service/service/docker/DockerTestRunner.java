@@ -30,6 +30,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.github.dockerjava.api.model.AccessMode.ro;
 import static com.github.dockerjava.api.model.AccessMode.rw;
@@ -172,7 +174,7 @@ public class DockerTestRunner {
 
 						@Override
 						public void onComplete() {
-							submission.setResult(readStd.toString());
+							submission.setResult(truncateLogs(readStd.toString()));
 							done = true;
 							LOGGER.info("DockerTestRunner for user {} with slug {} finished", submission.getUniid(), slug);
 							super.onComplete();
@@ -193,6 +195,16 @@ public class DockerTestRunner {
 			throw new DockerRunnerException("Exception in docker, message: " + e.getMessage());
 		}
 		return containerId;
+	}
+
+
+	public String truncateLogs(String string) {
+		String cut = Stream.of(string.split("\n"))
+				.map(s -> s.substring(0, Math.min(s.length(), 10000)))
+				.limit(2000)
+				.collect(Collectors.joining("\n"));
+
+		return cut.substring(0, Math.min(cut.length(), 100000));
 	}
 
 	private String getImage(DockerClient dockerClient, String image) {
