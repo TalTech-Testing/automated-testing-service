@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -40,26 +41,17 @@ import static com.github.dockerjava.api.model.HostConfig.newHostConfig;
 public class DockerTestRunner {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DockerTestRunner.class);
-
 	private final ObjectMapper mapper = new ObjectMapper();
-
 	private final String containerName;
-
 	private final String image;
-
 	private final Submission submission;
-
 	private final String slug;
-
 	public String outputPath;
-
 	private CreateContainerResponse container;
-
 	private String containerId;
-
 	private DockerClient dockerClient;
-
 	private boolean done = false;
+	private List<Volume> volumes = new ArrayList<>();
 
 	public DockerTestRunner(Submission submission, String slug) {
 		this.submission = submission;
@@ -104,6 +96,9 @@ public class DockerTestRunner {
 			Volume volumeStudent = new Volume("/student");
 			Volume volumeTester = new Volume("/tester");
 			Volume volumeOutput = new Volume("/host");
+			volumes.add(volumeStudent);
+			volumes.add(volumeTester);
+			volumes.add(volumeOutput);
 
 			if (!submission.getSystemExtra().contains("skipCopying") && !submission.getSystemExtra().contains("skipCopyingStudent")) {
 				copyFiles(student, tempStudent, submission.getFolder(), submission.getSource(), "Failed to copy files from student folder to temp folder.");
@@ -274,6 +269,12 @@ public class DockerTestRunner {
 			}
 
 			LOGGER.info("Cleaned up for submission: {}", submission.getHash());
+
+			for (Volume volume: volumes) {
+				dockerClient.removeVolumeCmd(volume.toString());
+			}
+
+			LOGGER.info("Cleaned up volumes");
 		}
 	}
 
