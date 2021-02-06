@@ -207,7 +207,7 @@ public class SubmissionPropertyService {
 				OverrideParameters params = objectMapper.readValue(new File(path), OverrideParameters.class);
 				params.invoke(submission);
 				params.overrideParameters(submission);
-				logger.info("Overrode default parameters: {}", params);
+				logger.info("Overrode default path: {} parameters: {}", path, params);
 				return Optional.of(params);
 			} catch (Exception e) {
 				logger.info("Using default parameters: {}", e.getMessage());
@@ -224,7 +224,7 @@ public class SubmissionPropertyService {
 				OverrideParameters params = objectMapper.readValue(new File(path), OverrideParameters.class);
 				params.invoke(submission);
 				params.overrideParameters(submission);
-				logger.info("Overrode default parameters: {}", params);
+				logger.info("Overrode default path: {} parameters: {}", path, params);
 				return Optional.of(params);
 			} catch (Exception e) {
 				logger.info("Using default parameters: {}", e.getMessage());
@@ -240,7 +240,7 @@ public class SubmissionPropertyService {
 				OverrideParameters params = objectMapper.readValue(new File(path), OverrideParameters.class);
 				params.invoke(submission);
 				params.overrideParameters(submission);
-				logger.info("Overrode default parameters: {}", params);
+				logger.info("Overrode default path: {} parameters: {}", path, params);
 				return Optional.of(params);
 			} catch (Exception e) {
 				logger.info("Using default parameters: {}", e.getMessage());
@@ -256,7 +256,7 @@ public class SubmissionPropertyService {
 				OverrideParameters params = objectMapper.readValue(new File(path), OverrideParameters.class);
 				params.invoke(submission);
 				params.overrideParametersForStudent(submission);
-				logger.info("Overrode default parameters: {}", params);
+				logger.info("Overrode default path: {} parameters: {}", path, params);
 				return Optional.of(params);
 			} catch (Exception e) {
 				logger.info("Using default parameters: {}", e.getMessage());
@@ -273,7 +273,7 @@ public class SubmissionPropertyService {
 				OverrideParameters params = objectMapper.readValue(new File(path), OverrideParameters.class);
 				params.invoke(submission);
 				params.overrideParametersForStudent(submission);
-				logger.info("Overrode default parameters: {}", params);
+				logger.info("Overrode default path: {} parameters: {}", path, params);
 				return Optional.of(params);
 			} catch (Exception e) {
 				logger.info("Using default parameters: {}", e.getMessage());
@@ -289,7 +289,7 @@ public class SubmissionPropertyService {
 				OverrideParameters params = objectMapper.readValue(new File(path), OverrideParameters.class);
 				params.invoke(submission);
 				params.overrideParametersForStudent(submission);
-				logger.info("Overrode default parameters: {}", params);
+				logger.info("Overrode default path: {} parameters: {}", path, params);
 				return Optional.of(params);
 			} catch (Exception e) {
 				logger.info("Using default parameters: {}", e.getMessage());

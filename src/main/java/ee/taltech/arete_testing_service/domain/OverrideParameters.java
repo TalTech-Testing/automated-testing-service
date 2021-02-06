@@ -17,28 +17,14 @@ import java.util.Set;
 public class OverrideParameters {
 
 	private String dockerContentRoot;
-	private String dockerContentRootBefore;
-
 	private String dockerExtra;
-	private String dockerExtraBefore;
-
 	private String dockerTestRoot;
-	private String dockerTestRootBefore;
-
 	private Integer dockerTimeout;
-	private Integer dockerTimeoutBefore;
-
 	private Set<String> groupingFolders;
-	private Set<String> groupingFoldersBefore;
-
 	private String solutionsRepository;
-	private String solutionsRepositoryBefore;
-
 	private Set<String> systemExtra;
-	private Set<String> systemExtraBefore;
-
 	private String testingPlatform;
-	private String testingPlatformBefore;
+	private OverrideParameters before;
 
 	public void overrideParametersForStudent(Submission submission) {
 		if (systemExtra != null) {
@@ -121,26 +107,27 @@ public class OverrideParameters {
 	}
 
 	public void invoke(Submission submission) {
-		dockerContentRootBefore = submission.getDockerContentRoot();
-		dockerExtraBefore = submission.getDockerExtra();
-		dockerTestRootBefore = submission.getDockerTestRoot();
-		dockerTimeoutBefore = submission.getDockerTimeout();
-		groupingFoldersBefore = new HashSet<>();
-		groupingFoldersBefore.addAll(submission.getGroupingFolders());
-		solutionsRepositoryBefore = submission.getGitStudentRepo();
-		systemExtraBefore = new HashSet<>();
-		systemExtraBefore.addAll(submission.getSystemExtra());
-		testingPlatformBefore = submission.getTestingPlatform();
+		OverrideParameters before = new OverrideParameters();
+		before.setDockerContentRoot(submission.getDockerContentRoot());
+		before.setDockerExtra(submission.getDockerExtra());
+		before.setDockerTestRoot(submission.getDockerTestRoot());
+		before.setDockerTimeout(submission.getDockerTimeout());
+		before.setGroupingFolders(new HashSet<>());
+		before.getGroupingFolders().addAll(submission.getGroupingFolders());
+		before.setSolutionsRepository(submission.getGitStudentRepo());
+		before.setSystemExtra(new HashSet<>());
+		before.getSystemExtra().addAll(submission.getSystemExtra());
+		before.setTestingPlatform(submission.getTestingPlatform());
 	}
 
 	public void revert(Submission submission) {
-		submission.setDockerContentRoot(dockerContentRootBefore);
-		submission.setDockerExtra(dockerExtraBefore);
-		submission.setDockerTestRoot(dockerTestRootBefore);
-		submission.setDockerTimeout(dockerTimeoutBefore);
-		submission.setGroupingFolders(groupingFoldersBefore);
-		submission.setGitStudentRepo(solutionsRepositoryBefore);
-		submission.setSystemExtra(systemExtraBefore);
-		submission.setTestingPlatform(testingPlatformBefore);
+		submission.setDockerContentRoot(before.getDockerContentRoot());
+		submission.setDockerExtra(before.getDockerExtra());
+		submission.setDockerTestRoot(before.getDockerTestRoot());
+		submission.setDockerTimeout(before.getDockerTimeout());
+		submission.setGroupingFolders(before.getGroupingFolders());
+		submission.setGitStudentRepo(before.getSolutionsRepository());
+		submission.setSystemExtra(before.getSystemExtra());
+		submission.setTestingPlatform(before.getTestingPlatform());
 	}
 }
