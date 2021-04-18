@@ -1,6 +1,6 @@
 package ee.taltech.arete_testing_service.service;
 
-import ee.taltech.arete_testing_service.configuration.DevProperties;
+import ee.taltech.arete_testing_service.configuration.ServerConfiguration;
 import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.exception.RequestFormatException;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.HashSet;
 public class SubmissionService {
 
 	private final Logger logger;
-	private final DevProperties devProperties;
+	private final ServerConfiguration serverConfiguration;
 
 	public void populateAsyncFields(Submission submission) {
 		populateTesterRelatedFields(submission);
@@ -85,7 +85,7 @@ public class SubmissionService {
 					logger.warn("Git student repo namespace is size 0. {}", submission.getGitStudentRepo());
 					throw new RequestFormatException("Git student repo namespace is size 0");
 				}
-				assert url[1].matches(devProperties.getNameMatcher());
+				assert url[1].matches(serverConfiguration.getNameMatcher());
 				submission.setUniid(url[1]); // user identificator - this is 100% unique
 			}
 
@@ -142,7 +142,7 @@ public class SubmissionService {
 		submission.setReceivedTimestamp(System.currentTimeMillis());
 
 		if (submission.getDockerTimeout() == null) {
-			submission.setDockerTimeout(devProperties.getDefaultDockerTimeout()); // 120 sec
+			submission.setDockerTimeout(serverConfiguration.getDefaultDockerTimeout()); // 120 sec
 		}
 
 		if (submission.getSystemExtra() == null) {

@@ -5,14 +5,15 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@ConfigurationProperties("arete.dev")
+@ConfigurationProperties("arete")
 @Component
 @Getter
 @Setter
-public class DevProperties {
+public class ServerConfiguration {
 
 	private String ago = "ago.luberg@ttu.ee"; // send only failed submissions
 	private String areteBackend = "https://cs.ttu.ee/services/arete/api/v2/submission"; // backend url
+	private String areteBackendToken = "";
 	private String areteMail = "automated_testing_service@taltech.ee";
 	private Integer defaultDockerTimeout = 120; // default dockertimeout is 120 seconds
 	private String developer = "ago.luberg@ttu.ee"; // send all submissions

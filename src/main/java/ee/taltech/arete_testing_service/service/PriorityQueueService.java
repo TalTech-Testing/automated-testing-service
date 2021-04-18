@@ -1,14 +1,13 @@
 package ee.taltech.arete_testing_service.service;
 
 import com.sun.management.OperatingSystemMXBean;
-import ee.taltech.arete_testing_service.configuration.DevProperties;
+import ee.taltech.arete_testing_service.configuration.ServerConfiguration;
 import ee.taltech.arete_testing_service.domain.Submission;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +37,7 @@ public class PriorityQueueService {
 
 	private final OperatingSystemMXBean osBean = getOsBean();
 	private final Logger logger;
-	private final DevProperties devProperties;
+	private final ServerConfiguration serverConfiguration;
 	private final JobRunnerService jobRunnerService;
 
 	private final BlockingQueue<Submission> submissionPriorityQueue = emptyQueue();
@@ -182,7 +181,7 @@ public class PriorityQueueService {
 	}
 
 	private boolean isCPUAvaiable() {
-		return osBean.getSystemCpuLoad() < devProperties.getMaxCpuUsage() && devProperties.getParallelJobs() > activeSubmissions.size();
+		return osBean.getSystemCpuLoad() < serverConfiguration.getMaxCpuUsage() && serverConfiguration.getParallelJobs() > activeSubmissions.size();
 	}
 
 	@SneakyThrows

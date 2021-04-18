@@ -2,7 +2,7 @@ package ee.taltech.arete_testing_service.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.java.response.arete.FileDTO;
-import ee.taltech.arete_testing_service.configuration.DevProperties;
+import ee.taltech.arete_testing_service.configuration.ServerConfiguration;
 import ee.taltech.arete_testing_service.domain.OverrideParameters;
 import ee.taltech.arete_testing_service.domain.OverrideParametersCollection;
 import ee.taltech.arete_testing_service.domain.Submission;
@@ -30,7 +30,7 @@ public class SubmissionPropertyService {
 
 	private final Logger logger;
 	private final ObjectMapper objectMapper;
-	private final DevProperties devProperties;
+	private final ServerConfiguration serverConfiguration;
 
 
 	public OverrideParametersCollection update(Submission submission, String slug, String initialEmail) {
@@ -171,7 +171,7 @@ public class SubmissionPropertyService {
 		submission.setEmail(initialEmail);
 
 		if (!submission.getSystemExtra().contains("allowExternalMail")) {
-			if (!submission.getEmail().matches(devProperties.getSchoolMailMatcher())) {
+			if (!submission.getEmail().matches(serverConfiguration.getSchoolMailMatcher())) {
 				submission.setEmail(submission.getUniid() + "@ttu.ee");
 			}
 		}
@@ -182,11 +182,11 @@ public class SubmissionPropertyService {
 
 		for (String changed_file : submission.getSlugs()) {
 			String potentialSlug = changed_file.split("[/\\\\]")[0];
-			if (potentialSlug.matches(devProperties.getNameMatcher())) {
+			if (potentialSlug.matches(serverConfiguration.getNameMatcher())) {
 				if (submission.getGroupingFolders().contains(potentialSlug)) {
 					try {
 						String innerPotentialSlug = changed_file.split("[/\\\\]")[1];
-						if (innerPotentialSlug.matches(devProperties.getNameMatcher())) {
+						if (innerPotentialSlug.matches(serverConfiguration.getNameMatcher())) {
 							formattedSlugs.add(potentialSlug + "/" + innerPotentialSlug);
 						}
 					} catch (Exception ignored) {

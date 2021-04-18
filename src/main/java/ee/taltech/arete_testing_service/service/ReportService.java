@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.arete.java.response.arete.AreteResponseDTO;
 import ee.taltech.arete.java.response.hodor_studenttester.HodorStudentTesterResponse;
-import ee.taltech.arete_testing_service.configuration.DevProperties;
+import ee.taltech.arete_testing_service.configuration.ServerConfiguration;
 import ee.taltech.arete_testing_service.domain.Submission;
 import ee.taltech.arete_testing_service.service.arete.AreteConstructor;
 import ee.taltech.arete_testing_service.service.hodor.HodorParser;
@@ -31,7 +31,6 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.MessageFormat;
 import java.util.Optional;
 
 @Service
@@ -39,7 +38,7 @@ import java.util.Optional;
 public class ReportService {
 
 	private final Logger logger;
-	private final DevProperties devProperties;
+	private final ServerConfiguration serverConfiguration;
 	private final JavaMailSender javaMailSender;
 	private final ObjectMapper objectMapper;
 
@@ -128,7 +127,7 @@ public class ReportService {
 	}
 
 	private void returnToIntegrationTest(Submission submission, AreteResponseDTO areteResponse, String header, Boolean isHtml, Optional<String> output) throws JsonProcessingException {
-		this.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
+		this.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse), serverConfiguration.getAreteBackendToken());
 		logger.info("INTEGRATION TEST: Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
 
 		String integrationTestMail = System.getenv("INTEGRATION_TEST_MAIL");
@@ -140,7 +139,7 @@ public class ReportService {
 	private void reportToReturnUrl(Submission submission, AreteResponseDTO areteResponse) {
 		try {
 			if (submission.getReturnUrl() != null) {
-				this.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse));
+				this.sendTextToReturnUrl(submission.getReturnUrl(), objectMapper.writeValueAsString(areteResponse), "migrate to use auth header pls");
 				logger.info("Reported to return url for {} with score {}%", submission.getUniid(), areteResponse.getTotalGrade());
 			}
 		} catch (Exception e1) {
@@ -158,10 +157,9 @@ public class ReportService {
 
 			JSONObject extra = new JSONObject();
 			extra.put("used_extra", areteResponse.getReturnExtra());
-			extra.put("shared_secret", System.getenv().getOrDefault("SHARED_SECRET", "Please make sure that shared_secret is set up properly"));
 			areteResponse.setReturnExtra(new ObjectMapper().readTree(extra.toString()));
 
-			this.sendTextToReturnUrl(devProperties.getAreteBackend(), objectMapper.writeValueAsString(areteResponse));
+			this.sendTextToReturnUrl(serverConfiguration.getAreteBackend(), objectMapper.writeValueAsString(areteResponse), serverConfiguration.getAreteBackendToken());
 			logger.info("Reported to backend");
 		} catch (Exception e1) {
 			logger.error("Failed to report to backend with message: {}", e1.getMessage());
@@ -175,14 +173,14 @@ public class ReportService {
 			if (areteResponse.getFailed()) {
 				String submissionString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(submission);
 				try {
-					this.sendTextMail(devProperties.getAgo(), submissionString, header, html, output);
-					if (!devProperties.getAgo().equals(devProperties.getDeveloper())) {
-						this.sendTextMail(devProperties.getDeveloper(), submissionString, header, html, output);
+					this.sendTextMail(serverConfiguration.getAgo(), submissionString, header, html, output);
+					if (!serverConfiguration.getAgo().equals(serverConfiguration.getDeveloper())) {
+						this.sendTextMail(serverConfiguration.getDeveloper(), submissionString, header, html, output);
 					}
 				} catch (Exception e) {
-					this.sendTextMail(devProperties.getAgo(), submissionString, header, html, Optional.empty());
-					if (!devProperties.getAgo().equals(devProperties.getDeveloper())) {
-						this.sendTextMail(devProperties.getDeveloper(), submissionString, header, html, Optional.empty());
+					this.sendTextMail(serverConfiguration.getAgo(), submissionString, header, html, Optional.empty());
+					if (!serverConfiguration.getAgo().equals(serverConfiguration.getDeveloper())) {
+						this.sendTextMail(serverConfiguration.getDeveloper(), submissionString, header, html, Optional.empty());
 					}
 				}
 			}
@@ -210,7 +208,7 @@ public class ReportService {
 		try {
 			MimeMessage message = javaMailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
-			helper.setFrom(devProperties.getAreteMail());
+			helper.setFrom(serverConfiguration.getAreteMail());
 			helper.setTo(mail);
 			helper.setSubject(header);
 			helper.setText(text, html);
@@ -231,22 +229,23 @@ public class ReportService {
 		}
 	}
 
-	private void sendTextToReturnUrl(String returnUrl, String response) {
+	private void sendTextToReturnUrl(String returnUrl, String response, String token) {
 		try {
-			post(returnUrl, response);
+			post(returnUrl, response, token);
 		} catch (IOException | InterruptedException e) {
 			logger.error("Failed to POST: {}", e.getMessage());
 		}
 
 	}
 
-	private void post(String postUrl, String data) throws IOException, InterruptedException {
+	private void post(String postUrl, String data, String token) throws IOException, InterruptedException {
 
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create(postUrl))
 				.POST(HttpRequest.BodyPublishers.ofString(data))
 				.setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+				.setHeader(HttpHeaders.AUTHORIZATION, token)
 				.build();
 
 		client.send(request, HttpResponse.BodyHandlers.ofString());
