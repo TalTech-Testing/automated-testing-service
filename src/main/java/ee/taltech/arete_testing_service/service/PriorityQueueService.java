@@ -104,7 +104,6 @@ public class PriorityQueueService {
 
 	public void killThread(Submission submission) {
 		jobsRan++;
-		activeSubmissions.remove(submission);
 
 		try {
 			TimeUnit.SECONDS.sleep(10); // keep files for a little bit so mail can send them and prevent spam pushing
@@ -112,7 +111,8 @@ public class PriorityQueueService {
 		} catch (Exception e) {
 			logger.error("Failed deleting directory after killing thread: {}", e.getMessage());
 		}
-
+		
+		activeSubmissions.remove(submission);
 		logger.info("All done for submission on thread: {}", submission.getHash());
 	}
 
