@@ -41,7 +41,12 @@ import static com.github.dockerjava.api.model.HostConfig.newHostConfig;
 public class DockerTestRunner {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DockerTestRunner.class);
+	public static final long HIGH_PRIORITY_CPUS = 4L;
+	public static final long LOW_PRIORITY_CPUS = 2L;
+	public static final long HIGH_PRIORITY_MEMORY = 8000000000L;
+	public static final long LOW_PRIORITY_MEMORY = 4000000000L;
 	private final ObjectMapper mapper = new ObjectMapper();
+
 	private final String containerName;
 	private final String image;
 	private final Submission submission;
@@ -51,7 +56,7 @@ public class DockerTestRunner {
 	private String containerId;
 	private DockerClient dockerClient;
 	private boolean done = false;
-	private List<Volume> volumes = new ArrayList<>();
+	private final List<Volume> volumes = new ArrayList<>();
 
 	public DockerTestRunner(Submission submission, String slug) {
 		this.submission = submission;
@@ -128,7 +133,8 @@ public class DockerTestRunner {
 
 			container = dockerClient.createContainerCmd(imageId)
 					.withName(containerName)
-					.withEnv(uniidEnv, hashEnv, systemExtraEnv, dockerExtraEnv, dockerTimeoutEnv, dockerContentRootEnv, dockerTestRootEnv, commitMessageEnv)
+					.withEnv(uniidEnv, hashEnv, systemExtraEnv, dockerExtraEnv, dockerTimeoutEnv,
+							dockerContentRootEnv, dockerTestRootEnv, commitMessageEnv)
 					.withVolumes(volumeStudent, volumeTester, volumeOutput)
 					.withAttachStdout(true)
 					.withAttachStderr(true)
@@ -137,9 +143,9 @@ public class DockerTestRunner {
 									new Bind(new java.io.File(output).getAbsolutePath(), volumeOutput, rw),
 									new Bind(new java.io.File(studentHost).getAbsolutePath(), volumeStudent, rw),
 									new Bind(new java.io.File(testerHost).getAbsolutePath(), volumeTester, ro))
-							.withCpuCount((submission.getPriority() > 7 ? 4L : 2L))
-							.withMemory((submission.getPriority() > 7 ? 8000000000L : 4000000000L))
-							.withMemorySwap((submission.getPriority() > 7 ? 8000000000L : 4000000000L))
+							.withCpuCount((isPriorityJob(submission) ? HIGH_PRIORITY_CPUS : LOW_PRIORITY_CPUS))
+							.withMemory((isPriorityJob(submission) ? HIGH_PRIORITY_MEMORY : LOW_PRIORITY_MEMORY))
+							.withMemorySwap((isPriorityJob(submission) ? HIGH_PRIORITY_MEMORY : LOW_PRIORITY_MEMORY))
 							.withAutoRemove(true)
 							.withPidsLimit(8192L)
 							.withRestartPolicy(RestartPolicy.noRestart())
@@ -192,58 +198,6 @@ public class DockerTestRunner {
 		return containerId;
 	}
 
-
-	public String truncateLogs(String string) {
-		String cut = Stream.of(string.split("\n"))
-				.map(s -> s.substring(0, Math.min(s.length(), 10000)))
-				.limit(2000)
-				.collect(Collectors.joining("\n"));
-
-		return cut.substring(0, Math.min(cut.length(), 100000));
-	}
-
-	private String getImage(DockerClient dockerClient, String image) {
-
-		try {
-			ImageCheck imageCheck = new ImageCheck(dockerClient, image);
-			imageCheck.invoke();
-			return imageCheck.getTester().getId();
-		} catch (Exception e) {
-			throw new ImageNotFoundException(e.getMessage());
-		}
-	}
-
-	@SneakyThrows
-	private void copyFiles(String from, String to, String folder, List<FileDTO> source, String error) {
-		try {
-			if (folder != null) {
-				FileUtils.copyDirectory(new java.io.File(from), new java.io.File(to));
-			} else {
-				for (FileDTO file : source) {
-					copyFilesFromSource(to, file);
-				}
-			}
-		} catch (IOException e) {
-			LOGGER.error(error);
-			throw new IOException(e.getMessage());
-		}
-	}
-
-	private void copyFilesFromSource(String tempStudent, FileDTO file) throws IOException {
-		String temp;
-		try {
-			temp = file.getPath().substring(file.getPath().indexOf("\\"));
-		} catch (Exception e) {
-			temp = file.getPath().substring(file.getPath().indexOf("/"));
-		}
-
-		java.io.File path = new java.io.File(String.format("%s/%s", tempStudent, temp));
-		path.getParentFile().mkdirs();
-		FileWriter writer = new FileWriter(path);
-		writer.write(file.getContents());
-		writer.close();
-	}
-
 	public void cleanup() {
 		if (dockerClient != null && container != null) {
 
@@ -278,4 +232,59 @@ public class DockerTestRunner {
 		}
 	}
 
+	public static boolean isPriorityJob(Submission submission) {
+		return submission.getPriority() > 7;
+	}
+
+
+	public static String truncateLogs(String string) {
+		String cut = Stream.of(string.split("\n"))
+				.map(s -> s.substring(0, Math.min(s.length(), 10000)))
+				.limit(2000)
+				.collect(Collectors.joining("\n"));
+
+		return cut.substring(0, Math.min(cut.length(), 100000));
+	}
+
+	private static String getImage(DockerClient dockerClient, String image) {
+
+		try {
+			ImageCheck imageCheck = new ImageCheck(dockerClient, image);
+			imageCheck.invoke();
+			return imageCheck.getTester().getId();
+		} catch (Exception e) {
+			throw new ImageNotFoundException(e.getMessage());
+		}
+	}
+
+	@SneakyThrows
+	private static void copyFiles(String from, String to, String folder, List<FileDTO> source, String error) {
+		try {
+			if (folder != null) {
+				FileUtils.copyDirectory(new java.io.File(from), new java.io.File(to));
+			} else {
+				for (FileDTO file : source) {
+					copyFilesFromSource(to, file);
+				}
+			}
+		} catch (IOException e) {
+			LOGGER.error(error);
+			throw new IOException(e.getMessage());
+		}
+	}
+
+	private static void copyFilesFromSource(String tempStudent, FileDTO file) throws IOException {
+		String temp;
+		try {
+			temp = file.getPath().substring(file.getPath().indexOf("\\"));
+		} catch (Exception e) {
+			temp = file.getPath().substring(file.getPath().indexOf("/"));
+		}
+
+		java.io.File path = new java.io.File(String.format("%s/%s", tempStudent, temp));
+		path.getParentFile().mkdirs();
+		FileWriter writer = new FileWriter(path);
+		writer.write(file.getContents());
+		writer.close();
+	}
 }
