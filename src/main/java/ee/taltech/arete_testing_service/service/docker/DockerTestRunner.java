@@ -110,6 +110,13 @@ public class DockerTestRunner {
 			}
 			if (!submission.getSystemExtra().contains("skipCopying") && !submission.getSystemExtra().contains("skipCopyingTests")) {
 				copyFiles(tester, tempTester, submission.getCourse(), submission.getTestSource(), "Failed to copy files from tester folder to temp folder.");
+
+				for (String testerFolder : submission.getTesterFolders()) {
+					String testerFolderPath = String.format("tests/%s/%s", submission.getCourse(), testerFolder);
+					String tempTesterFolderPath = String.format("input_and_output/%s/%s/tester/%s", submission.getHash(), slug, testerFolder);
+					copyFiles(testerFolderPath, tempTesterFolderPath, submission.getCourse(), submission.getTestSource(),
+							"Failed to copy files from " + testerFolder + " folder to tester/" + testerFolder + " folder.");
+				}
 			}
 
 			mapper.writeValue(new java.io.File(String.format("input_and_output/%s/%s/host/input.json", submission.getHash(), slug)),
@@ -224,7 +231,7 @@ public class DockerTestRunner {
 
 			LOGGER.info("Cleaned up for submission: {}", submission.getHash());
 
-			for (Volume volume: volumes) {
+			for (Volume volume : volumes) {
 				dockerClient.removeVolumeCmd(volume.toString());
 			}
 

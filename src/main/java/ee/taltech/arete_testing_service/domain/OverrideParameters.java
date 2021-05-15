@@ -21,6 +21,7 @@ public class OverrideParameters {
 	private String dockerTestRoot;
 	private Integer dockerTimeout;
 	private Set<String> groupingFolders;
+	private Set<String> testerFolders;
 	private String solutionsRepository;
 	private Set<String> systemExtra;
 	private String testingPlatform;
@@ -85,7 +86,8 @@ public class OverrideParameters {
 		}
 
 		if (systemExtra != null) {
-			if (submission.getSystemExtra().contains("allowAppending") || systemExtra.contains("allowAppending")) {
+			if (submission.getSystemExtra().contains("allowAppending") ||
+					(systemExtra != null && systemExtra.contains("allowAppending"))) {
 				submission.getSystemExtra().addAll(systemExtra);
 			} else {
 				submission.setSystemExtra(systemExtra);
@@ -101,19 +103,30 @@ public class OverrideParameters {
 			}
 		}
 
+		if (testerFolders != null) {
+			if (submission.getSystemExtra().contains("allowAppending") ||
+					(systemExtra != null && systemExtra.contains("allowAppending"))) {
+				submission.getTesterFolders().addAll(testerFolders);
+			} else {
+				submission.setTesterFolders(testerFolders);
+			}
+		}
+
 		if (testingPlatform != null) {
 			submission.setTestingPlatform(testingPlatform);
 		}
 	}
 
 	public void invoke(Submission submission) {
-		OverrideParameters before = new OverrideParameters();
+		before = new OverrideParameters();
 		before.setDockerContentRoot(submission.getDockerContentRoot());
 		before.setDockerExtra(submission.getDockerExtra());
 		before.setDockerTestRoot(submission.getDockerTestRoot());
 		before.setDockerTimeout(submission.getDockerTimeout());
 		before.setGroupingFolders(new HashSet<>());
 		before.getGroupingFolders().addAll(submission.getGroupingFolders());
+		before.setTesterFolders(new HashSet<>());
+		before.getTesterFolders().addAll(submission.getTesterFolders());
 		before.setSolutionsRepository(submission.getGitStudentRepo());
 		before.setSystemExtra(new HashSet<>());
 		before.getSystemExtra().addAll(submission.getSystemExtra());
@@ -126,6 +139,7 @@ public class OverrideParameters {
 		submission.setDockerTestRoot(before.getDockerTestRoot());
 		submission.setDockerTimeout(before.getDockerTimeout());
 		submission.setGroupingFolders(before.getGroupingFolders());
+		submission.setTesterFolders(before.getTesterFolders());
 		submission.setGitStudentRepo(before.getSolutionsRepository());
 		submission.setSystemExtra(before.getSystemExtra());
 		submission.setTestingPlatform(before.getTestingPlatform());

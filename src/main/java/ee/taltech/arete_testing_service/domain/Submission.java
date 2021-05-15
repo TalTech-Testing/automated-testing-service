@@ -32,6 +32,8 @@ public class Submission {
 	private String gitTestRepo;
 	@Builder.Default
 	private Set<String> groupingFolders = new HashSet<>();
+	@Builder.Default
+	private Set<String> testerFolders = new HashSet<>();
 	private String hash;
 	private Set<String> initialSlugs;
 	private Integer priority;
