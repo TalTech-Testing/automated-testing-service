@@ -147,9 +147,7 @@ public class PriorityQueueService {
 				return;
 			}
 
-			if (job.getPriority() < 8 && job.getUniid() != null && activeSubmissions.stream().anyMatch(o -> o.getUniid().equals(job.getUniid()))) {
-				job.setPriority(4); // Mild punish for spam pushers.
-
+			if (job.getUniid() != null && activeSubmissions.stream().anyMatch(o -> o.getUniid().equals(job.getUniid()))) {
 				enqueue(job);
 				return;
 			}
