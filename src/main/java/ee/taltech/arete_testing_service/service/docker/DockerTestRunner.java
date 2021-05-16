@@ -154,6 +154,7 @@ public class DockerTestRunner {
 							.withMemory((isPriorityJob(submission) ? HIGH_PRIORITY_MEMORY : LOW_PRIORITY_MEMORY))
 							.withMemorySwap((isPriorityJob(submission) ? HIGH_PRIORITY_MEMORY : LOW_PRIORITY_MEMORY))
 							.withAutoRemove(true)
+							.withOomKillDisable(true)
 							.withPidsLimit(8192L)
 							.withRestartPolicy(RestartPolicy.noRestart())
 					).exec();
