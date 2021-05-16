@@ -20,6 +20,7 @@ public class OverrideParameters {
 	private String dockerExtra;
 	private String dockerTestRoot;
 	private Integer dockerTimeout;
+	private Integer priority;
 	private Set<String> groupingFolders;
 	private Set<String> testerFolders;
 	private String solutionsRepository;
@@ -85,6 +86,10 @@ public class OverrideParameters {
 			submission.setDockerExtra(dockerExtra);
 		}
 
+		if (priority != null) {
+			submission.setPriority(priority);
+		}
+
 		if (systemExtra != null) {
 			if (submission.getSystemExtra().contains("allowAppending") ||
 					(systemExtra != null && systemExtra.contains("allowAppending"))) {
@@ -123,6 +128,7 @@ public class OverrideParameters {
 		before.setDockerExtra(submission.getDockerExtra());
 		before.setDockerTestRoot(submission.getDockerTestRoot());
 		before.setDockerTimeout(submission.getDockerTimeout());
+		before.setPriority(submission.getPriority());
 		before.setGroupingFolders(new HashSet<>());
 		before.getGroupingFolders().addAll(submission.getGroupingFolders());
 		before.setTesterFolders(new HashSet<>());
@@ -138,6 +144,7 @@ public class OverrideParameters {
 		submission.setDockerExtra(before.getDockerExtra());
 		submission.setDockerTestRoot(before.getDockerTestRoot());
 		submission.setDockerTimeout(before.getDockerTimeout());
+		submission.setPriority(before.getPriority());
 		submission.setGroupingFolders(before.getGroupingFolders());
 		submission.setTesterFolders(before.getTesterFolders());
 		submission.setGitStudentRepo(before.getSolutionsRepository());
