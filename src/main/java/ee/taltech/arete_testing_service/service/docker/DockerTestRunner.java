@@ -166,6 +166,7 @@ public class DockerTestRunner {
 			LOGGER.info("Started container with id: {}", container.getId());
 
 			StringBuilder readStd = new StringBuilder();
+			submission.setResult("");
 
 			dockerClient
 					.logContainerCmd(containerName)
@@ -201,7 +202,7 @@ public class DockerTestRunner {
 			}
 
 		} catch (Exception e) {
-			throw new DockerRunnerException("Exception in docker, message: " + e.getMessage());
+			throw new DockerRunnerException("Exception in docker, message: " + e.getMessage(), e);
 		}
 		return containerId;
 	}

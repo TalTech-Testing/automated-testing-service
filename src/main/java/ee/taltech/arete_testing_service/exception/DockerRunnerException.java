@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class DockerRunnerException extends RuntimeException {
-	public DockerRunnerException(String s) {
-		super(s);
+	public DockerRunnerException(String s, Exception e) {
+		super(s, e);
 	}
 }
