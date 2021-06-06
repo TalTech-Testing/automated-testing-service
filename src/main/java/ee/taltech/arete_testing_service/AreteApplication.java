@@ -10,8 +10,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 public class AreteApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(AreteApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(AreteApplication.class, args);
+    }
 
 }

@@ -18,125 +18,125 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ContextConfiguration(classes = {AreteApplication.class})
 class SubmissionServiceTest {
 
-	@Autowired
-	private SubmissionService submissionService;
+    @Autowired
+    private SubmissionService submissionService;
 
-	@Test
-	void populateDefaultValues() {
-		Submission submission = Submission.empty();
-		submission.setUniid("envomp");
+    @Test
+    void populateDefaultValues() {
+        Submission submission = Submission.empty();
+        submission.setUniid("envomp");
 
-		submissionService.populateDefaultValues(submission);
+        submissionService.populateDefaultValues(submission);
 
-		assertTrue(submission.getHash().length() > 0);
-		assertEquals(5, submission.getPriority());
-		assertTrue(submission.getTimestamp() > 100000000);
-		assertTrue(submission.getReceivedTimestamp() > 100000000);
-		assertEquals(120, submission.getDockerTimeout());
-		assertEquals("envomp@ttu.ee", submission.getEmail());
-	}
+        assertTrue(submission.getHash().length() > 0);
+        assertEquals(5, submission.getPriority());
+        assertTrue(submission.getTimestamp() > 100000000);
+        assertTrue(submission.getReceivedTimestamp() > 100000000);
+        assertEquals(120, submission.getDockerTimeout());
+        assertEquals("envomp@ttu.ee", submission.getEmail());
+    }
 
-	@Test
-	void populateTesterRelatedFieldsThrowsException() {
-		Submission submission = Submission.empty();
+    @Test
+    void populateTesterRelatedFieldsThrowsException() {
+        Submission submission = Submission.empty();
 
-		Throwable thrown = catchThrowable(() -> submissionService.populateTesterRelatedFields(submission));
+        Throwable thrown = catchThrowable(() -> submissionService.populateTesterRelatedFields(submission));
 
-		assertThat(thrown).isInstanceOf(RequestFormatException.class);
-	}
+        assertThat(thrown).isInstanceOf(RequestFormatException.class);
+    }
 
-	@Test
-	void populateTesterRelatedFieldsGit() {
-		Submission submission = Submission.empty();
-		submission.setGitTestRepo("https://gitlab.cs.ttu.ee/iti0102-2020/ex.git");
+    @Test
+    void populateTesterRelatedFieldsGit() {
+        Submission submission = Submission.empty();
+        submission.setGitTestRepo("https://gitlab.cs.ttu.ee/iti0102-2020/ex.git");
 
-		submissionService.populateTesterRelatedFields(submission);
+        submissionService.populateTesterRelatedFields(submission);
 
-		assertEquals("iti0102-2020/ex", submission.getCourse());
-	}
+        assertEquals("iti0102-2020/ex", submission.getCourse());
+    }
 
-	@Test
-	void populateTesterRelatedFieldsGitSsh() {
-		Submission submission = Submission.empty();
-		submission.setGitTestRepo("git@gitlab.cs.ttu.ee:iti0102-2020/ex.git");
+    @Test
+    void populateTesterRelatedFieldsGitSsh() {
+        Submission submission = Submission.empty();
+        submission.setGitTestRepo("git@gitlab.cs.ttu.ee:iti0102-2020/ex.git");
 
-		submissionService.populateTesterRelatedFields(submission);
+        submissionService.populateTesterRelatedFields(submission);
 
-		assertEquals("iti0102-2020/ex", submission.getCourse());
-	}
+        assertEquals("iti0102-2020/ex", submission.getCourse());
+    }
 
-	@Test
-	void populateTesterRelatedFieldsSource() {
-		Submission submission = Submission.empty();
-		submission.getSystemExtra().add("skipCopyingTests");
-		submission.setTestingPlatform("test");
+    @Test
+    void populateTesterRelatedFieldsSource() {
+        Submission submission = Submission.empty();
+        submission.getSystemExtra().add("skipCopyingTests");
+        submission.setTestingPlatform("test");
 
-		submissionService.populateTesterRelatedFields(submission);
+        submissionService.populateTesterRelatedFields(submission);
 
-		assertEquals("test", submission.getGitTestRepo());
-	}
+        assertEquals("test", submission.getGitTestRepo());
+    }
 
-	@Test
-	void populateStudentRelatedFieldsGit() {
-		Submission submission = Submission.empty();
-		submission.setGitStudentRepo("https://gitlab.cs.ttu.ee/envomp/iti0102-2020.git");
+    @Test
+    void populateStudentRelatedFieldsGit() {
+        Submission submission = Submission.empty();
+        submission.setGitStudentRepo("https://gitlab.cs.ttu.ee/envomp/iti0102-2020.git");
 
-		submissionService.populateStudentRelatedFields(submission);
+        submissionService.populateStudentRelatedFields(submission);
 
-		assertEquals("envomp", submission.getUniid());
-		assertEquals("iti0102-2020", submission.getFolder());
-	}
+        assertEquals("envomp", submission.getUniid());
+        assertEquals("iti0102-2020", submission.getFolder());
+    }
 
-	@Test
-	void populateStudentRelatedFieldsGitSsh() {
-		Submission submission = Submission.empty();
-		submission.setGitStudentRepo("git@gitlab.cs.ttu.ee:envomp/iti0102-2020.git");
+    @Test
+    void populateStudentRelatedFieldsGitSsh() {
+        Submission submission = Submission.empty();
+        submission.setGitStudentRepo("git@gitlab.cs.ttu.ee:envomp/iti0102-2020.git");
 
-		submissionService.populateStudentRelatedFields(submission);
+        submissionService.populateStudentRelatedFields(submission);
 
-		assertEquals("envomp", submission.getUniid());
-		assertEquals("iti0102-2020", submission.getFolder());
-	}
+        assertEquals("envomp", submission.getUniid());
+        assertEquals("iti0102-2020", submission.getFolder());
+    }
 
-	@Test
-	void populateStudentRelatedFieldsSource() {
-		Submission submission = Submission.empty();
-		submission.getSystemExtra().add("skipCopyingStudent");
-		submission.setTestingPlatform("test");
+    @Test
+    void populateStudentRelatedFieldsSource() {
+        Submission submission = Submission.empty();
+        submission.getSystemExtra().add("skipCopyingStudent");
+        submission.setTestingPlatform("test");
 
-		submissionService.populateStudentRelatedFields(submission);
+        submissionService.populateStudentRelatedFields(submission);
 
-		assertEquals("test", submission.getGitTestRepo());
-	}
+        assertEquals("test", submission.getGitTestRepo());
+    }
 
-	@Test
-	void populateStudentRelatedFieldsThrowsException() {
-		Submission submission = Submission.empty();
+    @Test
+    void populateStudentRelatedFieldsThrowsException() {
+        Submission submission = Submission.empty();
 
-		Throwable thrown = catchThrowable(() -> submissionService.populateStudentRelatedFields(submission));
+        Throwable thrown = catchThrowable(() -> submissionService.populateStudentRelatedFields(submission));
 
-		assertThat(thrown).isInstanceOf(RequestFormatException.class);
-	}
+        assertThat(thrown).isInstanceOf(RequestFormatException.class);
+    }
 
-	@Test
-	void populateSyncFieldsNoException() {
-		Submission submission = Submission.empty();
-		submission.setGitStudentRepo("git@gitlab.cs.ttu.ee:envomp/iti0102-2020.git");
-		submission.setGitTestRepo("git@gitlab.cs.ttu.ee:iti0102-2020/ex.git");
+    @Test
+    void populateSyncFieldsNoException() {
+        Submission submission = Submission.empty();
+        submission.setGitStudentRepo("git@gitlab.cs.ttu.ee:envomp/iti0102-2020.git");
+        submission.setGitTestRepo("git@gitlab.cs.ttu.ee:iti0102-2020/ex.git");
 
-		submissionService.populateSyncFields(submission);
+        submissionService.populateSyncFields(submission);
 
-		assertEquals("envomp", submission.getUniid());
-	}
+        assertEquals("envomp", submission.getUniid());
+    }
 
-	@Test
-	void populateAsyncFieldsNoException() {
-		Submission submission = Submission.empty();
-		submission.setGitStudentRepo("git@gitlab.cs.ttu.ee:envomp/iti0102-2020.git");
-		submission.setGitTestRepo("git@gitlab.cs.ttu.ee:iti0102-2020/ex.git");
+    @Test
+    void populateAsyncFieldsNoException() {
+        Submission submission = Submission.empty();
+        submission.setGitStudentRepo("git@gitlab.cs.ttu.ee:envomp/iti0102-2020.git");
+        submission.setGitTestRepo("git@gitlab.cs.ttu.ee:iti0102-2020/ex.git");
 
-		submissionService.populateAsyncFields(submission);
+        submissionService.populateAsyncFields(submission);
 
-		assertEquals("envomp", submission.getUniid());
-	}
+        assertEquals("envomp", submission.getUniid());
+    }
 }

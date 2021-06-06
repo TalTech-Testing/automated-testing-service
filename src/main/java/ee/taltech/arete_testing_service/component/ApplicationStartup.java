@@ -17,45 +17,45 @@ import java.io.File;
 @AllArgsConstructor
 public class ApplicationStartup implements ApplicationRunner {
 
-	private final Logger logger;
+    private final Logger logger;
 
-	@Override
-	public void run(ApplicationArguments applicationArguments) {
-		logger.info("setting up temp folders.");
+    @Override
+    public void run(ApplicationArguments applicationArguments) {
+        logger.info("setting up temp folders.");
 
-		createDirectory("input_and_output");
-		createDirectory("students");
-		createDirectory("tests");
+        createDirectory("input_and_output");
+        createDirectory("students");
+        createDirectory("tests");
 
-		try {
-			String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
+        try {
+            String dockerHost = System.getenv().getOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock");
 
-			DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-					.withDockerHost(dockerHost)
-					.withDockerTlsVerify(false)
-					.build();
+            DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+                    .withDockerHost(dockerHost)
+                    .withDockerTlsVerify(false)
+                    .build();
 
-			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/java-tester").pull();
-			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/python-tester").pull();
-			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/prolog-tester").pull();
-			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/fsharp-tester").pull();
-			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/uva-tester").pull();
-			new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/hackerrank-tester").pull();
-		} catch (Exception ignored) {
-		}
+            new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/java-tester").pull();
+            new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/python-tester").pull();
+            new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/prolog-tester").pull();
+            new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/fsharp-tester").pull();
+            new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/uva-tester").pull();
+            new ImageCheck(DockerClientBuilder.getInstance(config).build(), "automatedtestingservice/hackerrank-tester").pull();
+        } catch (Exception ignored) {
+        }
 
-		logger.info("Done setup");
-		PriorityQueueService.go();
+        logger.info("Done setup");
+        PriorityQueueService.go();
 
-	}
+    }
 
-	private void createDirectory(String home) {
-		File file = new File(home);
-		if (!file.exists()) {
-			if (!file.exists()) {
-				file.mkdir();
-			}
-		}
-	}
+    private void createDirectory(String home) {
+        File file = new File(home);
+        if (!file.exists()) {
+            if (!file.exists()) {
+                file.mkdir();
+            }
+        }
+    }
 
 }

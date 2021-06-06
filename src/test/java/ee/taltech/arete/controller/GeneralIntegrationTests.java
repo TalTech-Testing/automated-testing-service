@@ -22,43 +22,43 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(classes = AreteApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class GeneralIntegrationTests {
 
-	@LocalServerPort
-	private int port;
+    @LocalServerPort
+    private int port;
 
-	@Before
-	public void init() {
-		RestAssured.defaultParser = Parser.JSON;
-		RestAssured.baseURI = "http://localhost";
-		RestAssured.port = port;
-	}
+    @Before
+    public void init() {
+        RestAssured.defaultParser = Parser.JSON;
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = port;
+    }
 
-	@Test
-	public void addNewSubmissionSyncBadRequestWrongTesterRepoFails() {
+    @Test
+    public void addNewSubmissionSyncBadRequestWrongTesterRepoFails() {
 
-		AreteRequestDTO badSubmission = getNormalSyncRequest();
-		badSubmission.setGitTestRepo("https://www.neti.ee/");
+        AreteRequestDTO badSubmission = getNormalSyncRequest();
+        badSubmission.setGitTestRepo("https://www.neti.ee/");
 
-		given()
-				.when()
-				.body(badSubmission)
-				.post(":testSync")
-				.then()
-				.statusCode(is(HttpStatus.SC_BAD_REQUEST));
-	}
+        given()
+                .when()
+                .body(badSubmission)
+                .post(":testSync")
+                .then()
+                .statusCode(is(HttpStatus.SC_BAD_REQUEST));
+    }
 
-	@Test
-	public void addNewSubmissionSyncNoFilesFails() {
+    @Test
+    public void addNewSubmissionSyncNoFilesFails() {
 
-		AreteRequestDTO badSubmission = getNormalSyncRequest();
-		badSubmission.setSource(new ArrayList<>());
-		badSubmission.setTestSource(new ArrayList<>());
+        AreteRequestDTO badSubmission = getNormalSyncRequest();
+        badSubmission.setSource(new ArrayList<>());
+        badSubmission.setTestSource(new ArrayList<>());
 
-		given()
-				.when()
-				.body(badSubmission)
-				.post(":testSync")
-				.then()
-				.statusCode(is(HttpStatus.SC_BAD_REQUEST));
+        given()
+                .when()
+                .body(badSubmission)
+                .post(":testSync")
+                .then()
+                .statusCode(is(HttpStatus.SC_BAD_REQUEST));
 
-	}
+    }
 }

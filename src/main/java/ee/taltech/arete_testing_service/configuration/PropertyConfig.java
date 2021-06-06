@@ -1,7 +1,6 @@
 package ee.taltech.arete_testing_service.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.management.OperatingSystemMXBean;
 import ee.taltech.arete_testing_service.service.git.SshTransportConfigCallback;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.slf4j.Logger;
@@ -15,8 +14,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import java.lang.management.ManagementFactory;
-
 /**
  * Custom properties for Spring Boot configuration.
  */
@@ -25,28 +22,28 @@ import java.lang.management.ManagementFactory;
 @EnableScheduling
 public class PropertyConfig {
 
-	@Bean
-	public JavaMailSender getJavaMailSender() {
-		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-		mailSender.setHost("localhost");
+    @Bean
+    public JavaMailSender getJavaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost("localhost");
 
-		return mailSender;
-	}
+        return mailSender;
+    }
 
-	@Bean
-	@Scope("prototype")
-	public Logger produceLogger(InjectionPoint injectionPoint) {
-		Class<?> classOnWired = injectionPoint.getMember().getDeclaringClass();
-		return LoggerFactory.getLogger(classOnWired);
-	}
+    @Bean
+    @Scope("prototype")
+    public Logger produceLogger(InjectionPoint injectionPoint) {
+        Class<?> classOnWired = injectionPoint.getMember().getDeclaringClass();
+        return LoggerFactory.getLogger(classOnWired);
+    }
 
-	@Bean
-	public ObjectMapper mapper() {
-		return new ObjectMapper();
-	}
+    @Bean
+    public ObjectMapper mapper() {
+        return new ObjectMapper();
+    }
 
-	@Bean
-	public TransportConfigCallback transportConfigCallback() {
-		return new SshTransportConfigCallback();
-	}
+    @Bean
+    public TransportConfigCallback transportConfigCallback() {
+        return new SshTransportConfigCallback();
+    }
 }

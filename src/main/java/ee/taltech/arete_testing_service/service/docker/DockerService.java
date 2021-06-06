@@ -9,35 +9,35 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class DockerService {
 
-	private final Logger logger;
+    private final Logger logger;
 
-	/**
-	 * @param submission : test job to be tested.
-	 * @return test job result path
-	 */
-	public String runDocker(Submission submission, String slug) throws Exception {
+    /**
+     * @param submission : test job to be tested.
+     * @return test job result path
+     */
+    public String runDocker(Submission submission, String slug) throws Exception {
 
-		DockerTestRunner docker = new DockerTestRunner(submission, slug);
-		Exception exception = null;
+        DockerTestRunner docker = new DockerTestRunner(submission, slug);
+        Exception exception = null;
 
-		try {
+        try {
 
-			docker.run();
+            docker.run();
 
-		} catch (Exception e) {
-			logger.error("Failed running docker: {}", e.getMessage());
-			exception = e;
+        } catch (Exception e) {
+            logger.error("Failed running docker: {}", e.getMessage());
+            exception = e;
 
-		} finally {
-			docker.cleanup();
-		}
+        } finally {
+            docker.cleanup();
+        }
 
-		if (exception == null) {
-			return docker.outputPath;
-		} else {
-			throw exception;
-		}
+        if (exception == null) {
+            return docker.outputPath;
+        } else {
+            throw exception;
+        }
 
-	}
+    }
 
 }

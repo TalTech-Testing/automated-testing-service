@@ -17,22 +17,22 @@ import java.util.Map;
 @ControllerAdvice
 public class ExceptionController extends ResponseEntityExceptionHandler {
 
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	@ExceptionHandler(value = ImageNotFoundException.class)
-	public ResponseEntity<Object> exception(ImageNotFoundException exception) {
-		Map<String, Object> body = new LinkedHashMap<>();
-		body.put("timestamp", LocalDateTime.now());
-		body.put("message", exception.getMessage());
-		return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-	}
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(value = ImageNotFoundException.class)
+    public ResponseEntity<Object> exception(ImageNotFoundException exception) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", exception.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
 
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(value = RequestFormatException.class)
-	public ResponseEntity<Object> exception(RequestFormatException exception) {
-		Map<String, Object> body = new LinkedHashMap<>();
-		body.put("timestamp", LocalDateTime.now());
-		body.put("message", exception.getMessage());
-		return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-	}
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = RequestFormatException.class)
+    public ResponseEntity<Object> exception(RequestFormatException exception) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", exception.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
 
 }

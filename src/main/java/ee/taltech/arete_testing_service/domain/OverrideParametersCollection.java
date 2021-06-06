@@ -13,12 +13,12 @@ import java.util.Optional;
 @AllArgsConstructor
 public class OverrideParametersCollection {
 
-	private Optional<OverrideParameters> testRoot;
-	private Optional<OverrideParameters> testGroup;
-	private Optional<OverrideParameters> testSlug;
-	private Optional<OverrideParameters> studentRoot;
-	private Optional<OverrideParameters> studentGroup;
-	private Optional<OverrideParameters> studentSlug;
-	boolean[] changed;
+    boolean[] changed;
+    private Optional<OverrideParameters> testRoot;
+    private Optional<OverrideParameters> testGroup;
+    private Optional<OverrideParameters> testSlug;
+    private Optional<OverrideParameters> studentRoot;
+    private Optional<OverrideParameters> studentGroup;
+    private Optional<OverrideParameters> studentSlug;
 
 }

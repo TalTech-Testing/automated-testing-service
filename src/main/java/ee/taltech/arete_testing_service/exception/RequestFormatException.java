@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class RequestFormatException extends RuntimeException {
-	public RequestFormatException(String s) {
-		super(s);
-	}
+    public RequestFormatException(String s) {
+        super(s);
+    }
 
-	public RequestFormatException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public RequestFormatException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

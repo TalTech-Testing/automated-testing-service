@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class DockerTimeoutException extends RuntimeException {
-	public DockerTimeoutException(String s) {
-		super(s);
-	}
+    public DockerTimeoutException(String s) {
+        super(s);
+    }
 }

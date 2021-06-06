@@ -2,7 +2,6 @@ package ee.taltech.arete.service.runner;
 
 import ee.taltech.arete_testing_service.AreteApplication;
 import ee.taltech.arete_testing_service.domain.Submission;
-import ee.taltech.arete_testing_service.service.JobRunnerService;
 import ee.taltech.arete_testing_service.service.SubmissionPropertyService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -21,35 +20,34 @@ import static ee.taltech.arete.initializers.SubmissionInitializer.getGitPullEndp
 @SpringBootTest(classes = AreteApplication.class)
 class SubmissionPropertyServiceTest {
 
-	@Autowired
-	private SubmissionPropertyService submissionPropertyService;
+    int port = 8080;
+    @Autowired
+    private SubmissionPropertyService submissionPropertyService;
 
-	int port = 8080;
+    @Test
+    void formatSlugs() {
+        // given
+        Submission submission = getGitPullEndpointSubmissionGitlab(String.format("http://localhost:%s", port));
 
-	@Test
-	void formatSlugs() {
-		// given
-		Submission submission = getGitPullEndpointSubmissionGitlab(String.format("http://localhost:%s", port));
+        // when
+        submissionPropertyService.formatSlugs(submission);
 
-		// when
-		submissionPropertyService.formatSlugs(submission);
+        // then
+        assert submission.getSlugs().containsAll(new HashSet<>(Arrays.asList("EX01IdCode", "TK/tk_tsükkel_1")));
+    }
 
-		// then
-		assert submission.getSlugs().containsAll(new HashSet<>(Arrays.asList("EX01IdCode", "TK/tk_tsükkel_1")));
-	}
+    @Test
+    void revertToInitialMail() {
+        // given
+        Submission submission = getGitPullEndpointSubmissionGitlab(String.format("http://localhost:%s", port));
+        submission.setEmail("enrico.vompa@gmail.com");
+        String initial = submission.getEmail();
 
-	@Test
-	void revertToInitialMail() {
-		// given
-		Submission submission = getGitPullEndpointSubmissionGitlab(String.format("http://localhost:%s", port));
-		submission.setEmail("enrico.vompa@gmail.com");
-		String initial = submission.getEmail();
+        // when
+        submissionPropertyService.modifyEmail(submission, initial);
 
-		// when
-		submissionPropertyService.modifyEmail(submission, initial);
-
-		// then
-		assert submission.getEmail().equals("envomp@ttu.ee");
-	}
+        // then
+        assert submission.getEmail().equals("envomp@ttu.ee");
+    }
 
 }

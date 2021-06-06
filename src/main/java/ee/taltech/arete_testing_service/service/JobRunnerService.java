@@ -13,46 +13,46 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class JobRunnerService {
 
-	private final Logger logger;
-	private final SubmissionPropertyService submissionPropertyService;
-	private final DockerService dockerService;
-	private final FolderManagementService folderManagementService;
-	private final ReportService reportService;
+    private final Logger logger;
+    private final SubmissionPropertyService submissionPropertyService;
+    private final DockerService dockerService;
+    private final FolderManagementService folderManagementService;
+    private final ReportService reportService;
 
 
-	@SneakyThrows
-	public void runJob(Submission submission) {
+    @SneakyThrows
+    public void runJob(Submission submission) {
 
-		if (folderManagementService.folderMaintenance(submission)) return; // if error, done
+        if (folderManagementService.folderMaintenance(submission)) return; // if error, done
 
-		submissionPropertyService.formatSlugs(submission);
-		logger.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
-		String initialEmail = submission.getEmail();
+        submissionPropertyService.formatSlugs(submission);
+        logger.info("Running slugs {} for {}", submission.getSlugs(), submission.getUniid());
+        String initialEmail = submission.getEmail();
 
-		for (String slug : submission.getSlugs()) {
+        for (String slug : submission.getSlugs()) {
 
-			if (folderManagementService.createDirsForSubmission(submission, slug)) {
-				continue;
-			}
+            if (folderManagementService.createDirsForSubmission(submission, slug)) {
+                continue;
+            }
 
-			OverrideParametersCollection coll = submissionPropertyService.update(submission, slug, initialEmail);
+            OverrideParametersCollection coll = submissionPropertyService.update(submission, slug, initialEmail);
 
-			runTests(submission, slug);
+            runTests(submission, slug);
 
-			submissionPropertyService.revert(submission, coll);
-		}
-	}
+            submissionPropertyService.revert(submission, coll);
+        }
+    }
 
-	private void runTests(Submission submission, String slug) {
-		try {
-			String outputPath = dockerService.runDocker(submission, slug);
-			logger.info("DOCKER Job {} has been ran for user {}", slug, submission.getUniid());
-			reportService.reportSuccessfulSubmission(slug, submission, outputPath);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("job {} has failed for user {} with exception: {}", slug, submission.getUniid(), e.getMessage());
-			reportService.reportFailedSubmission(submission, e.getMessage());
-		}
-	}
+    private void runTests(Submission submission, String slug) {
+        try {
+            String outputPath = dockerService.runDocker(submission, slug);
+            logger.info("DOCKER Job {} has been ran for user {}", slug, submission.getUniid());
+            reportService.reportSuccessfulSubmission(slug, submission, outputPath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("job {} has failed for user {} with exception: {}", slug, submission.getUniid(), e.getMessage());
+            reportService.reportFailedSubmission(submission, e.getMessage());
+        }
+    }
 
 }

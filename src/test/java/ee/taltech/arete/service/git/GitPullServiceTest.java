@@ -18,29 +18,28 @@ import static ee.taltech.arete.initializers.SubmissionInitializer.getGitPullEndp
 @SpringBootTest(classes = AreteApplication.class)
 class GitPullServiceTest {
 
-	@Autowired
-	private GitPullService gitPullService;
+    int port = 8080;
+    @Autowired
+    private GitPullService gitPullService;
 
-	int port = 8080;
+    @Test
+    void pullJobGithub() {
+        // given, when
+        Submission submission = getGitPullEndpointSubmissionGithub(String.format("http://localhost:%s", port));
 
-	@Test
-	void pullJobGithub() {
-		// given, when
-		Submission submission = getGitPullEndpointSubmissionGithub(String.format("http://localhost:%s", port));
+        // then
+        assert gitPullService.repositoryMaintenance(submission);
 
-		// then
-		assert gitPullService.repositoryMaintenance(submission);
+    }
 
-	}
+    @Test
+    void pullJobGitlab() {
+        // given, when
+        Submission submission = getGitPullEndpointSubmissionGitlab(String.format("http://localhost:%s", port));
 
-	@Test
-	void pullJobGitlab() {
-		// given, when
-		Submission submission = getGitPullEndpointSubmissionGitlab(String.format("http://localhost:%s", port));
+        // then
+        assert gitPullService.repositoryMaintenance(submission);
 
-		// then
-		assert gitPullService.repositoryMaintenance(submission);
-
-	}
+    }
 
 }
