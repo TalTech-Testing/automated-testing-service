@@ -14,6 +14,7 @@ services:
         env_file:
             - ..env #Change to .env to run locally
         environment:
+            LOG_LEVEL: ${LOG_LEVEL:-warn}
             BACKEND_URL: ${BACKEND_URL}
             BACKEND_TOKEN: ${BACKEND_TOKEN}
             ARETE_HOME: ${ARETE_HOME}
